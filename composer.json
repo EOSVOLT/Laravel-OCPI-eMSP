@@ -30,6 +30,13 @@
             "Ocpi\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ocpi\\OcpiServiceProvider"
+            ]
+        }
+    },
     "scripts": {
         "format": "vendor/bin/pint"
     },
