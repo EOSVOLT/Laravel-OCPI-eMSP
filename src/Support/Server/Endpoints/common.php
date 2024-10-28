@@ -12,4 +12,5 @@ Route::middleware([
     ->prefix('ocpi/emsp')
     ->name('ocpi.emsp.')
     ->group(
+        __DIR__.'/../../../Modules/Versions/Server/Endpoints/common.php'
     );

@@ -15,5 +15,6 @@ Route::middleware([
     ->name('ocpi.emsp.')
     ->group(function () {
         Route::prefix('2.1.1')
-            ->name('2_1_1.');
+            ->name('2_1_1.')
+            ->group(__DIR__.'/../../../Modules/Versions/Server/Endpoints/2.1.1.php');
     });
