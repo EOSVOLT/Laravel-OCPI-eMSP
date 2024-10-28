@@ -78,4 +78,13 @@ class Client extends Connector
     {
         $this->module = $module;
     }
+
+    /***
+     * Resources.
+     ***/
+
+    public function versions(): VersionsResource
+    {
+        return new VersionsResource($this);
+    }
 }
