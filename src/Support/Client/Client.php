@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
+use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
+use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
 use Saloon\Http\Auth\TokenAuthenticator;
@@ -82,6 +84,11 @@ class Client extends Connector
     /***
      * Resources.
      ***/
+
+    public function credentials(): CredentialsResource
+    {
+        return new CredentialsResource($this);
+    }
 
     public function versions(): VersionsResource
     {
