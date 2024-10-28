@@ -6,6 +6,8 @@ namespace Ocpi;
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Ocpi\Modules\Credentials\Console\Commands\Initialize as ModuleCredentialsInitialize;
+use Ocpi\Modules\Credentials\Console\Commands\Register as ModuleCredentialsRegister;
 
 class OcpiServiceProvider extends ServiceProvider
 {
@@ -53,5 +55,12 @@ class OcpiServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/2.1.1.php');
 
         $this->loadMigrationsFrom(__DIR__.'/Data/Migrations');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ModuleCredentialsInitialize::class,
+                ModuleCredentialsRegister::class,
+            ]);
+        }
     }
 }
