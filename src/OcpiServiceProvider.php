@@ -29,6 +29,17 @@ class OcpiServiceProvider extends ServiceProvider
             __DIR__.'/../config/ocpi.php' => config_path('ocpi.php'),
         ], 'ocpi-config');
 
+        app('config')
+            ->set(
+                'logging.channels.ocpi',
+                [
+                    'driver' => 'daily',
+                    'path' => storage_path('logs/ocpi.log'),
+                    'level' => env('OCPI_LOG_LEVEL', 'debug'),
+                    'days' => env('OCPI_LOG_DAILY_DAYS', 60),
+                ]
+            );
+
         $this->loadMigrationsFrom(__DIR__.'/Data/Migrations');
     }
 }
