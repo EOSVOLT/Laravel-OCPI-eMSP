@@ -97,6 +97,15 @@ return [
 
 ## Getting started
 
+Define the eMSP information environment variables:
+
+```dotenv
+OCPI_EMSP_PARTY_ID=MYC
+OCPI_EMSP_COUNTRY_CODE=FR
+OCPI_EMSP_NAME=My Company
+OCPI_EMSP_WEBSITE=https://www.my-company.org
+```
+
 Initialize a new "Sender" Party to start credentials exchange:
 
 ```bash
