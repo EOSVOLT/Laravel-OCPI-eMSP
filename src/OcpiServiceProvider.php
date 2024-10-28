@@ -40,6 +40,9 @@ class OcpiServiceProvider extends ServiceProvider
                 ]
             );
 
+        $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/common.php');
+        $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/2.1.1.php');
+
         $this->loadMigrationsFrom(__DIR__.'/Data/Migrations');
     }
 }
