@@ -1,0 +1,13 @@
+<?php
+
+namespace Ocpi\Modules\Credentials\Client;
+
+use Ocpi\Support\Client\Resource as OcpiResource;
+
+class Resource extends OcpiResource
+{
+    public function post(array $payload): ?array
+    {
+        return $this->requestPostSend($payload);
+    }
+}
