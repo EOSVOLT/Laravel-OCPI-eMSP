@@ -28,5 +28,7 @@ class OcpiServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/ocpi.php' => config_path('ocpi.php'),
         ], 'ocpi-config');
+
+        $this->loadMigrationsFrom(__DIR__.'/Data/Migrations');
     }
 }
