@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
+use Ocpi\Support\Client\Middlewares\LogRequest;
+use Ocpi\Support\Client\Middlewares\LogResponse;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Response;
@@ -21,6 +23,9 @@ class Client extends Connector
     ) {
         Context::add('trace_id', Str::uuid()->toString());
         Context::add('party_code', $party?->code);
+
+        $this->middleware()->onRequest(new LogRequest);
+        $this->middleware()->onResponse(new LogResponse);
     }
 
     protected function defaultAuth(): TokenAuthenticator
