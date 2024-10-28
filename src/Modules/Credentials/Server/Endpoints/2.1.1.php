@@ -10,7 +10,7 @@ Route::prefix('credentials')
     ->name('credentials')
     ->group(function () {
         Route::get('/', GetController::class);
-        Route::post('/', PostController::class);
-        Route::put('/', PutController::class);
-        Route::delete('/', DeleteController::class);
+        Route::post('/', PostController::class)->name('.post');
+        Route::put('/', PutController::class)->name('.put');
+        Route::delete('/', DeleteController::class)->name('.delete');
     });
