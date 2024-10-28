@@ -16,5 +16,6 @@ Route::middleware([
     ->group(function () {
         Route::prefix('2.1.1')
             ->name('2_1_1.')
+            ->group(__DIR__.'/../../../Modules/Credentials/Server/Endpoints/2.1.1.php')
             ->group(__DIR__.'/../../../Modules/Versions/Server/Endpoints/2.1.1.php');
     });
