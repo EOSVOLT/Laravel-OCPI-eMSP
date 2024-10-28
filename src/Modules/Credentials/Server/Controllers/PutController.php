@@ -12,9 +12,9 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
-use Ocpi\Support\Server\Controllers\Controller as BaseController;
+use Ocpi\Support\Server\Controllers\Controller;
 
-class PutController extends BaseController
+class PutController extends Controller
 {
     public function __invoke(Request $request, SelfCredentialsGetAction $selfCredentialsGetAction): JsonResponse
     {

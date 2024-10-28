@@ -3,6 +3,7 @@
 namespace Ocpi\Modules\Credentials\Server\Controllers;
 
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
@@ -11,11 +12,11 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
-use Ocpi\Support\Server\Controllers\Controller as BaseController;
+use Ocpi\Support\Server\Controllers\Controller;
 
-class PostController extends BaseController
+class PostController extends Controller
 {
-    public function __invoke(Request $request, SelfCredentialsGetAction $selfCredentialsGetAction)
+    public function __invoke(Request $request, SelfCredentialsGetAction $selfCredentialsGetAction): JsonResponse
     {
         $partyCode = Context::get('party_code');
 

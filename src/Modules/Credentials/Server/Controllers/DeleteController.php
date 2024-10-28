@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
-use Ocpi\Support\Server\Controllers\Controller as BaseController;
+use Ocpi\Support\Server\Controllers\Controller;
 
-class DeleteController extends BaseController
+class DeleteController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
