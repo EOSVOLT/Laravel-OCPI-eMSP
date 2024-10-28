@@ -95,6 +95,20 @@ return [
 ];
 ```
 
+## Getting started
+
+Initialize a new "Sender" Party to start credentials exchange:
+
+```bash
+php artisan ocpi:credentials:initialize
+```
+
+Run credentials exchange with a new "Sender" Party':
+
+```bash
+php artisan ocpi:credentials:register {party_code}
+```
+
 ## License
 
 The DBAD License (DBAD). Please see [License File](LICENSE.md) for more information.
