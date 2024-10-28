@@ -18,6 +18,11 @@ class OcpiServiceProvider extends ServiceProvider
             __DIR__.'/../config/ocpi.php',
             'ocpi'
         );
+
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/ocpi-emsp.php',
+            'ocpi-emsp'
+        );
     }
 
     /**
@@ -28,6 +33,10 @@ class OcpiServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/ocpi.php' => config_path('ocpi.php'),
         ], 'ocpi-config');
+
+        $this->publishes([
+            __DIR__.'/../config/ocpi-emsp.php' => config_path('ocpi-emsp.php'),
+        ], 'ocpi-emsp-config');
 
         app('config')
             ->set(
