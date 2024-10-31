@@ -7,6 +7,14 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Get the migration connection name.
+     */
+    public function getConnection(): ?string
+    {
+        return config('ocpi.database.connection');
+    }
+
+    /**
      * Run the migrations.
      */
     public function up(): void
