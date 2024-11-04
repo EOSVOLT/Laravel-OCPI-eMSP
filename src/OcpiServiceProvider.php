@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ocpi;
 
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Ocpi\Modules\Credentials\Console\Commands\Initialize as ModuleCredentialsInitialize;
 use Ocpi\Modules\Credentials\Console\Commands\Register as ModuleCredentialsRegister;
@@ -32,6 +31,34 @@ class OcpiServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->loadMigrations();
+            $this->publishConfig();
+            $this->registerCommands();
+        }
+
+        $this->loadRoutes();
+        $this->setLoggingChannel();
+    }
+
+    private function loadMigrations(): void
+    {
+        $this->loadMigrationsFrom(__DIR__.'/Data/Migrations');
+    }
+
+    private function loadRoutes(): void
+    {
+        if (config('ocpi.server.enabled', false) === true) {
+            $emspVersionList = config('ocpi-emsp.versions', []);
+            if (count($emspVersionList) > 0) {
+                $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/common.php');
+                $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/version.php');
+            }
+        }
+    }
+
+    private function publishConfig(): void
+    {
         $this->publishes([
             __DIR__.'/../config/ocpi.php' => config_path('ocpi.php'),
         ], 'ocpi-config');
@@ -39,7 +66,18 @@ class OcpiServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/ocpi-emsp.php' => config_path('ocpi-emsp.php'),
         ], 'ocpi-emsp-config');
+    }
 
+    private function registerCommands(): void
+    {
+        $this->commands([
+            ModuleCredentialsInitialize::class,
+            ModuleCredentialsRegister::class,
+        ]);
+    }
+
+    private function setLoggingChannel(): void
+    {
         app('config')
             ->set(
                 'logging.channels.ocpi',
@@ -50,17 +88,5 @@ class OcpiServiceProvider extends ServiceProvider
                     'days' => env('OCPI_LOG_DAILY_DAYS', 60),
                 ]
             );
-
-        $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/common.php');
-        $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/2.1.1.php');
-
-        $this->loadMigrationsFrom(__DIR__.'/Data/Migrations');
-
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                ModuleCredentialsInitialize::class,
-                ModuleCredentialsRegister::class,
-            ]);
-        }
     }
 }
