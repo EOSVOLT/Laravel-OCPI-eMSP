@@ -9,8 +9,8 @@ Route::middleware([
     IdentifyParty::class,
     LogRequest::class,
 ])
-    ->prefix('ocpi/emsp')
-    ->name('ocpi.emsp.')
+    ->prefix(config('ocpi.server.routing.uri_prefix'))
+    ->name(config('ocpi.server.routing.name_prefix'))
     ->group(
         __DIR__.'/../../../Modules/Versions/Server/Endpoints/common.php'
     );
