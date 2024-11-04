@@ -12,7 +12,7 @@ class IdentifyVersion
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $path = Str::before(Str::after($request->path(), 'ocpi/emsp/'), '/');
+        $path = Str::before(Str::after($request->path(), config('ocpi.server.routing.uri_prefix').'/'), '/');
 
         if (Str::contains($path, '.')) {
             Context::add('ocpi_version', $path);
