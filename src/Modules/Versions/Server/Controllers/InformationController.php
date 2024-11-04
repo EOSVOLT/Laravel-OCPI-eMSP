@@ -14,7 +14,8 @@ class InformationController extends Controller
     {
         $data = collect(config('ocpi-emsp.versions', []))
             ->map(function ($moduleList, $version) {
-                $route = 'ocpi.emsp.'.Str::replace('.', '_', $version).'.versions.details';
+                $route = config('ocpi.server.routing.name_prefix').Str::replace('.', '_', $version).'.versions.details';
+                ds($route);
 
                 return Route::has($route)
                     ? [

@@ -30,7 +30,7 @@ class DetailsController extends Controller
 
                 $endpointList = collect(($configInformation['modules'] ?? []))
                     ->map(function ($module) use ($routeVersion) {
-                        $route = 'ocpi.emsp.'.$routeVersion.'.'.$module;
+                        $route = config('ocpi.server.routing.name_prefix').$routeVersion.'.'.$module;
 
                         return Route::has($route)
                             ? [
