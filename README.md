@@ -25,34 +25,7 @@ You can install the package via composer:
 composer require codivores/laravel-ocpi-emsp
 ```
 
-If you want to customize the package configuration, you can publish the config file:
-
-```bash
-php artisan vendor:publish --tag="ocpi-config"
-```
-
-This is the content of the published config file:
-
-```php
-return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Database
-    |--------------------------------------------------------------------------
-    */
-
-    'database' => [
-        'connection' => env('OCPI_DATABASE_CONNECTION'),
-        'table' => [
-            'prefix' => env('OCPI_DATABASE_TABLE_PREFIX', 'ocpi_'),
-        ],
-    ],
-
-];
-```
-
-If you want to customize the eMSP configuration, you can publish the config file:
+If you want to customize the eMSP configuration (party information, versions and available modules), you can publish the dedicated config file:
 
 ```bash
 php artisan vendor:publish --tag="ocpi-emsp-config"
@@ -89,6 +62,47 @@ return [
             'modules' => [
                 'credentials',
             ],
+        ],
+    ],
+
+];
+```
+
+If you want to customize the package configuration, you can publish the config file:
+
+```bash
+php artisan vendor:publish --tag="ocpi-config"
+```
+
+This is the content of the published config file:
+
+```php
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Server
+    |--------------------------------------------------------------------------
+    */
+
+    'server' => [
+        'enabled' => env('OCPI_SERVER_ENABLED', true),
+        'routing' => [
+            'uri_prefix' => env('OCPI_SERVER_ROUTING_URI_PREFIX', 'ocpi/emsp'),
+            'name_prefix' => env('OCPI_SERVER_ROUTING_NAME_PREFIX', 'ocpi.emsp.'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database
+    |--------------------------------------------------------------------------
+    */
+
+    'database' => [
+        'connection' => env('OCPI_DATABASE_CONNECTION', env('DB_CONNECTION', 'sqlite')),
+        'table' => [
+            'prefix' => env('OCPI_DATABASE_TABLE_PREFIX', 'ocpi_'),
         ],
     ],
 
