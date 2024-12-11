@@ -3,6 +3,7 @@
 namespace Ocpi\Support\Server\Middlewares;
 
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
