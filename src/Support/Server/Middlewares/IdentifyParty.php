@@ -18,30 +18,29 @@ class IdentifyParty
     public function handle(Request $request, Closure $next): Response
     {
         // Retrieve Authorization Token from header.
-        $clientTokenEncoded = $this->token($request, 'Token');
-        if ($clientTokenEncoded === null) {
+        $clientToken = $this->token($request, 'Token');
+        if ($clientToken === null) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::NotEnoughInformation,
                 statusMessage: 'Authorization is missing.',
             );
         }
-
-        // Decode Token.
-        $clientToken = Party::decodeToken($clientTokenEncoded);
-        if ($clientToken === false) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::NotEnoughInformation,
-                statusMessage: 'Invalid Authorization Token.',
-            );
-        }
         $clientToken = Str::rtrim($clientToken);
 
+        // Decode Token (OCPI version >= 2.2).
+        $clientTokenDecoded = Party::decodeToken($clientToken);
+
         // Retrieve Party from Token.
-        $party = Party::where('client_token', $clientToken)->first();
+        $party = Party::where('client_token', $clientToken)
+            ->when($clientTokenDecoded !== false, function (Builder $query) use ($clientTokenDecoded) {
+                $query->orWhere('client_token', $clientTokenDecoded);
+            })
+            ->first();
+
         if ($party === null) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::InvalidParameters,
-                statusMessage: 'Invalid Party.',
+                statusMessage: 'Invalid Authorization Token or Party.',
             );
         }
 
@@ -60,7 +59,8 @@ class IdentifyParty
     {
         $header = $request->header('Authorization', '');
 
-        $position = strrpos($header, $prefix.' ');
+        $prefix .= ' ';
+        $position = strrpos($header, $prefix);
 
         if ($position !== false) {
             $header = substr($header, $position + strlen($prefix));
