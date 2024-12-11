@@ -53,7 +53,7 @@ class PostController extends Controller
         }
 
         $party->url = $request->input('url');
-        $party->client_token = Party::decodeToken($request->input('token'));
+        $party->client_token = Party::decodeToken($request->input('token'), $party);
         $party->registered = true;
 
         try {

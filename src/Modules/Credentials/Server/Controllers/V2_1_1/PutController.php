@@ -53,7 +53,7 @@ class PutController extends Controller
         }
 
         $party->url = $request->input('url', $party->url);
-        $party->client_token = $request->has('token') ? Party::decodeToken($request->input('token')) : $party->client_token;
+        $party->client_token = $request->has('token') ? Party::decodeToken($request->input('token'), $party) : $party->client_token;
 
         try {
             // TODO: Fetch Client's endpoints if version is different from the current version.
