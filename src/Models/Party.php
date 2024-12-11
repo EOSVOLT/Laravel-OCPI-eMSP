@@ -40,14 +40,18 @@ class Party extends Model
     protected function encodedClientToken(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => self::encodeToken($attributes['client_token']),
+            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+                ? self::encodeToken($attributes['client_token'])
+                : $attributes['client_token'],
         );
     }
 
     protected function encodedServerToken(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => self::encodeToken($attributes['server_token']),
+            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+                ? self::encodeToken($attributes['server_token'])
+                : $attributes['server_token'],
         );
     }
 
@@ -74,8 +78,12 @@ class Party extends Model
         return base64_encode($token);
     }
 
-    public static function decodeToken(string $token): false|string
+    public static function decodeToken(string $token, ?Party $party = null): false|string
     {
+        if ($party && version_compare($party->version, '2.2', '<')) {
+            return $token;
+        }
+
         return base64_decode($token, true);
     }
 }
