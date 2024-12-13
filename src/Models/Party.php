@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -53,6 +54,15 @@ class Party extends Model
                 ? self::encodeToken($attributes['server_token'])
                 : $attributes['server_token'],
         );
+    }
+
+    /***
+     * Scopes.
+     ***/
+
+    public function scopeRegistered(Builder $query, bool $registered = true): void
+    {
+        $query->where('registered', $registered);
     }
 
     /***
