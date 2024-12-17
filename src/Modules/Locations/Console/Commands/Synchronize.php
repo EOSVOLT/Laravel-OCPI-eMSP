@@ -68,7 +68,7 @@ class Synchronize extends Command
 
             foreach ($party->roles as $partyRole) {
                 $this->info('    - Call '.$partyRole->code.' / '.$partyRole->country_code.' - OCPI - Locations GET');
-                $ocpiLocationList = $ocpiClient->locations()->get();
+                $ocpiLocationList = $ocpiClient->locations()->all();
 
                 $locationProcessedList = [];
                 $locationEvseProcessedList = [];
