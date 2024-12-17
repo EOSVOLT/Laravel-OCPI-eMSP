@@ -12,7 +12,7 @@ class PutRequest extends BaseRequest implements HasBody
 
     protected Method $method = Method::PUT;
 
-    public function __construct(protected readonly array $payload) {}
+    public function __construct() {}
 
     protected function defaultBody(): array
     {

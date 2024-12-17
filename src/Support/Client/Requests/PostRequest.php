@@ -12,7 +12,7 @@ class PostRequest extends BaseRequest implements HasBody
 
     protected Method $method = Method::POST;
 
-    public function __construct(protected readonly array $payload) {}
+    public function __construct() {}
 
     protected function defaultBody(): array
     {

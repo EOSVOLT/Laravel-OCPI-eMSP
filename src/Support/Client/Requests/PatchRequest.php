@@ -12,7 +12,7 @@ class PatchRequest extends BaseRequest implements HasBody
 
     protected Method $method = Method::PATCH;
 
-    public function __construct(protected readonly array $payload) {}
+    public function __construct() {}
 
     protected function defaultBody(): array
     {

@@ -6,8 +6,30 @@ use Saloon\Http\Request;
 
 class BaseRequest extends Request
 {
+    protected ?string $endpoint = null;
+
+    protected ?array $payload = null;
+
     public function resolveEndpoint(): string
     {
-        return '';
+        return $this->endpoint ?? '';
+    }
+
+    /***
+     * Methods.
+     ***/
+
+    public function endpoint(?string $endpoint = null): BaseRequest
+    {
+        $this->endpoint = $endpoint;
+
+        return $this;
+    }
+
+    public function payload(?array $payload = null): BaseRequest
+    {
+        $this->payload = $payload ?? [];
+
+        return $this;
     }
 }
