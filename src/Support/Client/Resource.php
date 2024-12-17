@@ -9,9 +9,12 @@ use Saloon\Http\Response;
 
 class Resource extends BaseResource
 {
-    public function requestGetSend(): ?array
+    public function requestGetSend(?string $endpoint = null): ?array
     {
-        $response = $this->connector->send(new GetRequest);
+        $response = $this->connector->send(
+            (new GetRequest)
+                ->endpoint($endpoint)
+        );
 
         $response->throw();
 
@@ -20,7 +23,10 @@ class Resource extends BaseResource
 
     public function requestPostSend(?array $payload): ?array
     {
-        $response = $this->connector->send(new PostRequest($payload));
+        $response = $this->connector->send(
+            (new PostRequest)
+                ->payload($payload)
+        );
 
         $response->throw();
 
