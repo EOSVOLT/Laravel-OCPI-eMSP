@@ -7,6 +7,7 @@ namespace Ocpi;
 use Illuminate\Support\ServiceProvider;
 use Ocpi\Modules\Credentials\Console\Commands\Initialize as ModuleCredentialsInitialize;
 use Ocpi\Modules\Credentials\Console\Commands\Register as ModuleCredentialsRegister;
+use Ocpi\Modules\Locations\Console\Commands\Synchronize as ModuleLocationsSynchronize;
 
 class OcpiServiceProvider extends ServiceProvider
 {
@@ -73,6 +74,7 @@ class OcpiServiceProvider extends ServiceProvider
         $this->commands([
             ModuleCredentialsInitialize::class,
             ModuleCredentialsRegister::class,
+            ModuleLocationsSynchronize::class,
         ]);
     }
 
