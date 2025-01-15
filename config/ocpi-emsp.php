@@ -26,6 +26,7 @@ return [
     'versions' => [
         '2.1.1' => [
             'modules' => [
+                'commands',
                 'credentials',
             ],
         ],
