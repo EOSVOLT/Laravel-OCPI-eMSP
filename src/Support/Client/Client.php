@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
+use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
 use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
 use Ocpi\Modules\Locations\Client\Resource as LocationsResource;
 use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
@@ -85,6 +86,11 @@ class Client extends Connector
     /***
      * Resources.
      ***/
+
+    public function commands(): CommandsResource
+    {
+        return new CommandsResource($this);
+    }
 
     public function credentials(): CredentialsResource
     {
