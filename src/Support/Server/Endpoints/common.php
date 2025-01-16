@@ -6,8 +6,8 @@ use Ocpi\Support\Server\Middlewares\LogRequest;
 
 Route::middleware([
     'api',
-    IdentifyParty::class,
     LogRequest::class,
+    IdentifyParty::class,
 ])
     ->prefix(config('ocpi.server.routing.uri_prefix'))
     ->name(config('ocpi.server.routing.name_prefix'))
