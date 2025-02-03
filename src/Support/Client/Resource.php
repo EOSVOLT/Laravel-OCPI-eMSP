@@ -10,11 +10,12 @@ use Saloon\Http\Response;
 
 class Resource extends BaseResource
 {
-    public function requestGetSend(?string $endpoint = null): ?array
+    public function requestGetSend(?string $endpoint = null, ?array $query = null): ?array
     {
         $response = $this->connector->send(
             (new GetRequest)
                 ->endpoint($endpoint)
+                ->withQuery($query)
         );
 
         $response->throw();
