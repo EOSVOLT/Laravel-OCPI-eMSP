@@ -26,7 +26,7 @@ class BaseRequest extends Request
         return $this;
     }
 
-    public function payload(?array $payload = null): BaseRequest
+    public function withPayload(?array $payload = null): BaseRequest
     {
         $this->payload = $payload ?? [];
 
