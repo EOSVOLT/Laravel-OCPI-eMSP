@@ -19,7 +19,7 @@ class BaseRequest extends Request
      * Methods.
      ***/
 
-    public function endpoint(?string $endpoint = null): BaseRequest
+    public function withEndpoint(?string $endpoint = null): BaseRequest
     {
         $this->endpoint = $endpoint;
 
