@@ -14,7 +14,7 @@ class Resource extends BaseResource
     {
         $response = $this->connector->send(
             (new GetRequest)
-                ->endpoint($endpoint)
+                ->withEndpoint($endpoint)
                 ->withQuery($query)
         );
 
@@ -27,7 +27,7 @@ class Resource extends BaseResource
     {
         $response = $this->connector->send(
             (new PostRequest)
-                ->endpoint($endpoint)
+                ->withEndpoint($endpoint)
                 ->withPayload($payload)
         );
 
