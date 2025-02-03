@@ -32,4 +32,13 @@ class BaseRequest extends Request
 
         return $this;
     }
+
+    public function withQuery(?array $query = null): BaseRequest
+    {
+        foreach (($query ?? []) as $key => $value) {
+            $this->query()->add($key, $value);
+        }
+
+        return $this;
+    }
 }
