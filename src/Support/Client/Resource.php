@@ -28,7 +28,7 @@ class Resource extends BaseResource
         $response = $this->connector->send(
             (new PostRequest)
                 ->endpoint($endpoint)
-                ->payload($payload)
+                ->withPayload($payload)
         );
 
         $response->throw();
