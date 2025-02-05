@@ -33,17 +33,18 @@ class DeleteController extends Controller
             );
         }
 
-        $party->registered = false;
-
         try {
-            DB::beginTransaction();
+            DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
+            $party->registered = false;
             $party->save();
             $party->delete();
 
-            DB::commit();
+            DB::connection(config('ocpi.database.connection'))->commit();
+
+            return $this->ocpiSuccessResponse();
         } catch (Exception $e) {
-            DB::rollback();
+            DB::connection(config('ocpi.database.connection'))->rollback();
 
             Log::channel('ocpi')->error($e->getMessage());
 
@@ -51,7 +52,5 @@ class DeleteController extends Controller
                 statusCode: OcpiServerErrorCode::PartyApiUnusable
             );
         }
-
-        return $this->ocpiSuccessResponse();
     }
 }
