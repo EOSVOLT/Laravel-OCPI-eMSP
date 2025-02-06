@@ -5,9 +5,11 @@ namespace Ocpi\Modules\Credentials\Console\Commands;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
+use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
+use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\Client;
 
 class Register extends Command implements PromptsForMissingInput
@@ -24,13 +26,15 @@ class Register extends Command implements PromptsForMissingInput
      *
      * @var string
      */
-    protected $description = 'Credentials exchange with a new "Sender" Party';
+    protected $description = 'Credentials exchange with a new "Receiver" Party';
 
     /**
      * Execute the console command.
      */
-    public function handle(SelfCredentialsGetAction $selfCredentialsGetAction)
-    {
+    public function handle(
+        VersionsPartyInformationAndDetailsSynchronizeAction $versionsPartyInformationAndDetailsSynchronizeAction,
+        SelfCredentialsGetAction $selfCredentialsGetAction,
+    ) {
         $partyCode = $this->argument('party_code');
         $this->info('Starting credentials exchange with '.$partyCode);
 
@@ -48,95 +52,41 @@ class Register extends Command implements PromptsForMissingInput
             return Command::FAILURE;
         }
 
-        // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
-        $this->info('  - Call Party OCPI - GET - '.$party->url);
-        $ocpiClient = new Client($party, 'versions.information');
-
-        $versionList = $ocpiClient->versions()->information();
-        if (! is_array($versionList)) {
-            $this->error('Empty or invalid response for Versions Information.');
-
-            return Command::FAILURE;
-        }
-
-        $currentItem = null;
-        foreach ($versionList as $item) {
-            if ($currentItem === null || version_compare($item->version, $currentItem->version, '>')) {
-                $currentItem = $item;
-            }
-        }
-
-        if ($currentItem === null || $item?->version === null || $item?->url === null) {
-            $this->error('No version found.');
-
-            return Command::FAILURE;
-        }
-
-        $this->info('  - Set Party OCPI version to '.$currentItem->version);
-        $party->version = $currentItem->version;
-        $party->version_url = $currentItem->url;
-        if (! $party->save()) {
-            $this->error('Error updating Party OCPI version.');
-
-            return Command::FAILURE;
-        }
-
-        // OCPI GET call for Versions Details of  , store OCPI endpoints.
-        $this->info('  - Call Party OCPI - GET - Versions Details endpoint for version '.$party->version);
-        $ocpiClient->module('versions.details');
-
-        $versionDetails = $ocpiClient->versions()->details();
-        if (! is_array($versionDetails) || ! isset($versionDetails['version']) || ! is_array($versionDetails['endpoints'] ?? null)) {
-            $this->error('Empty or invalid response for Versions Details.');
-
-            return Command::FAILURE;
-        }
-
-        if ($versionDetails['version'] !== $party->version) {
-            $this->error('Version mismatch for Versions Details: requested '.$party->version.' / received '.$versionDetails['version'].'.');
-
-            return Command::FAILURE;
-        }
-
-        $this->info('  - Set Party OCPI endpoints for version '.$party->version);
-        $party->endpoints = collect($versionDetails['endpoints'])
-            ->pluck('url', 'identifier')
-            ->toArray();
-
-        if (! Arr::has($party->endpoints, 'credentials')) {
-            $this->error('Missing required `credentials` Module endpoint.');
-
-            return Command::FAILURE;
-        }
-
-        if (! $party->save()) {
-            $this->error('Error updating Party OCPI endpoints.');
-
-            return Command::FAILURE;
-        }
-
-        // Generate new Client Token for the Party.
-        $party->client_token = $party->generateToken();
-        $this->info('  - Store new Client Token for the Party OCPI: '.$party->client_token);
-        if (! $party->save()) {
-            $this->error('Error updating Party Client Token.');
-
-            return Command::FAILURE;
-        }
-
-        // OCPI POST call to update the Credentials.
-        $this->info('  - Call Party OCPI - POST - Credentials endpoint');
-        $ocpiClient->module('credentials');
-
         try {
-            $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($party));
+            DB::connection(config('ocpi.database.connection'))->beginTransaction();
+
+            // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
+            $this->info('  - Call Party OCPI - GET - Versions Information and Details, store OCPI endpoints');
+            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party);
+
+            // Generate new Client Token for the Party.
+            $party->client_token = $party->generateToken();
+            $this->info('  - Generate, store new OCPI Client Token: '.$party->client_token);
+            $party->save();
+
+            // OCPI POST call to update the Credentials and get new Server Token.
+            $this->info('  - Call Party OCPI - POST - Credentials endpoint with new Client Token');
+            $ocpiClient = new Client($party, 'credentials');
+            $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($party));
+            $credentialsInput = CredentialsValidator::validate($credentialsPostData);
+
+            // Store received OCPI Server Token, mark the Party as registered.
+            $this->info('  - Store received OCPI Server Token: '.$credentialsInput['token'].', mark the Party as registered');
+            $party->server_token = Party::decodeToken($credentialsInput['token'], $party);
+            $party->registered = true;
+            $party->save();
+
+            DB::connection(config('ocpi.database.connection'))->commit();
+
+            return Command::SUCCESS;
         } catch (Exception $e) {
-            $this->error('Error posting Credentials to Party');
+            DB::connection(config('ocpi.database.connection'))->rollback();
+
+            $this->error($e->getMessage());
 
             return Command::FAILURE;
         }
 
-        return Command::SUCCESS;
     }
 
     protected function promptForMissingArgumentsUsing(): array
