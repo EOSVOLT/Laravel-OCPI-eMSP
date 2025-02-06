@@ -8,61 +8,55 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
+use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
+use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PutController extends Controller
 {
-    public function __invoke(Request $request, SelfCredentialsGetAction $selfCredentialsGetAction): JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'token' => 'required',
-            'url' => 'required',
-            'party_id' => 'required',
-            'country_code' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::InvalidParameters,
-            );
-        }
-
-        $partyCode = Context::get('party_code');
-
-        $party = Party::with(['roles'])->where('code', $partyCode)->first();
-        if ($party === null) {
-            return $this->ocpiServerErrorResponse(
-                statusCode: OcpiServerErrorCode::PartyApiUnusable,
-                statusMessage: 'Client not found.',
-                httpCode: 405,
-            );
-        }
-
-        if ($party->registered === false) {
-            return $this->ocpiServerErrorResponse(
-                statusCode: OcpiServerErrorCode::PartyApiUnusable,
-                statusMessage: 'Client not registered.',
-                httpCode: 405,
-            );
-        }
-
-        $party->url = $request->input('url', $party->url);
-        $party->client_token = $request->has('token') ? Party::decodeToken($request->input('token'), $party) : $party->client_token;
-
+    public function __invoke(
+        Request $request,
+        VersionsPartyInformationAndDetailsSynchronizeAction $versionsPartyInformationAndDetailsSynchronizeAction,
+        SelfCredentialsGetAction $selfCredentialsGetAction,
+    ): JsonResponse {
         try {
-            // TODO: Fetch Client's endpoints if version is different from the current version.
+            $input = CredentialsValidator::validate($request->all());
 
-            DB::beginTransaction();
+            $partyCode = Context::get('party_code');
 
-            $party->server_token = $party->generateToken();
-            $party->save();
+            $party = Party::with(['roles'])->where('code', $partyCode)->first();
+            if ($party === null) {
+                return $this->ocpiServerErrorResponse(
+                    statusCode: OcpiServerErrorCode::PartyApiUnusable,
+                    statusMessage: 'Client not found.',
+                    httpCode: 405,
+                );
+            }
 
+            if ($party->registered === false) {
+                return $this->ocpiServerErrorResponse(
+                    statusCode: OcpiServerErrorCode::PartyApiUnusable,
+                    statusMessage: 'Client not registered.',
+                    httpCode: 405,
+                );
+            }
+
+            DB::connection(config('ocpi.database.connection'))->beginTransaction();
+
+            // Update Server Token, url for the Party.
+            $party->server_token = $request->has('token') ? Party::decodeToken($input['token'], $party) : $party->server_token;
+            $party->url = $request->input('url', $party->url);
+
+            // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
+            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party);
+
+            // Update PartyRole list.
             $partyRole = $party->roles
                 ->where('code', $request->input('party_id'))
                 ->where('country_code', $request->input('country_code'))
@@ -88,22 +82,34 @@ class PutController extends Controller
                     'business_details' => $request->input('business_details'),
                 ]);
 
-                $partyRole->touch();
+                $partyRole->save();
+                $party->touch();
             }
 
-            DB::commit();
+            // Generate new Client Token for the Party.
+            $party->client_token = $party->generateToken();
+            $party->save();
+
+            DB::connection(config('ocpi.database.connection'))->commit();
+
+            return $this->ocpiSuccessResponse(
+                $selfCredentialsGetAction->handle($party)
+            );
+        } catch (ValidationException $e) {
+            Log::channel('ocpi')->error($e->getMessage());
+
+            return $this->ocpiClientErrorResponse(
+                statusCode: OcpiClientErrorCode::InvalidParameters,
+                statusMessage: $e->getMessage(),
+            );
         } catch (Exception $e) {
-            DB::rollback();
+            DB::connection(config('ocpi.database.connection'))->rollback();
 
             Log::channel('ocpi')->error($e->getMessage());
 
             return $this->ocpiServerErrorResponse(
-                statusCode: OcpiServerErrorCode::PartyApiUnusable
+                statusCode: OcpiServerErrorCode::PartyApiUnusable,
             );
         }
-
-        return $this->ocpiSuccessResponse(
-            $selfCredentialsGetAction->handle($party)
-        );
     }
 }
