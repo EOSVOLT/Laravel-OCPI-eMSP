@@ -42,7 +42,9 @@ class Resource extends BaseResource
             return null;
         }
 
-        $responseObject = $response->object();
+        $responseArray = $response->array();
+
+        return $responseArray['data'] ?? null;
 
         return ($responseObject?->data ?? null) ? (array) $responseObject->data : null;
     }
@@ -53,10 +55,8 @@ class Resource extends BaseResource
             return null;
         }
 
-        $responseObject = $response->object();
+        $responseArray = $response->array();
 
-        return ($responseObject?->data ?? null)
-            ? (is_string($responseObject->data) ? $responseObject->data : (array) $responseObject->data)
-            : null;
+        return $responseArray['data'] ?? null;
     }
 }
