@@ -21,21 +21,42 @@ class PartyInformationAndDetailsSynchronizeAction
             new Exception('Party '.$party->code.' - Empty or invalid response for Versions Information.')
         );
 
-        // Find most recent version.
-        $currentItem = null;
-        foreach ($versionList as $item) {
-            if ($currentItem === null || version_compare(($item['version'] ?? null), ($currentItem['version'] ?? null), '>')) {
-                $currentItem = $item;
+        // Find supported OCPI versions.
+        $supportedVersionList = array_keys((config('ocpi-emsp.versions', [])));
+        throw_if(
+            count($supportedVersionList) === 0,
+            new Exception('No supported version found.')
+        );
+
+        // Find party OCPI versions.
+        $partyVersionList = Arr::sortDesc(
+            Arr::keyBy(
+                Arr::where($versionList, function ($version) {
+                    return Arr::has($version, ['version', 'url']);
+                }),
+                'version')
+        );
+        throw_if(
+            count($partyVersionList) === 0,
+            new Exception('Party '.$party->code.' - No valid version found for Party.')
+        );
+
+        // Find latest mutual OCPI version.
+        $latestMutualVersion = null;
+        foreach ($partyVersionList as $version => $item) {
+            if (in_array($version, $supportedVersionList)) {
+                $latestMutualVersion = $item;
+                break;
             }
         }
         throw_if(
-            $currentItem === null || ! Arr::has($currentItem, ['version', 'url']),
-            new Exception('Party '.$party->code.' - No version found.')
+            $latestMutualVersion === null,
+            new Exception('Party '.$party->code.' - No mutual version found.')
         );
 
-        Log::channel('ocpi')->info('Party '.$party->code.' - Set Party OCPI version to '.$currentItem['version']);
-        $party->version = $currentItem['version'];
-        $party->version_url = $currentItem['url'];
+        Log::channel('ocpi')->info('Party '.$party->code.' - Set Party OCPI version to '.$latestMutualVersion['version']);
+        $party->version = $latestMutualVersion['version'];
+        $party->version_url = $latestMutualVersion['url'];
         throw_if(
             ! $party->save(),
             new Exception('Party '.$party->code.' - Error updating Party OCPI version.')
