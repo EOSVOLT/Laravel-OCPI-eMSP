@@ -5,6 +5,7 @@ namespace Ocpi\Support\Client;
 use ArrayObject;
 use Ocpi\Support\Client\Requests\GetRequest;
 use Ocpi\Support\Client\Requests\PostRequest;
+use Ocpi\Support\Client\Requests\PutRequest;
 use Saloon\Http\BaseResource;
 use Saloon\Http\Response;
 
@@ -36,6 +37,19 @@ class Resource extends BaseResource
         return $this->responsePostProcess($response);
     }
 
+    public function requestPutSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
+    {
+        $response = $this->connector->send(
+            (new PutRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+
+        return $this->responsePutProcess($response);
+    }
+
     public function responseGetProcess(Response $response): ?array
     {
         if (! $response->successful()) {
@@ -50,6 +64,17 @@ class Resource extends BaseResource
     }
 
     public function responsePostProcess(Response $response): array|string|null
+    {
+        if (! $response->successful()) {
+            return null;
+        }
+
+        $responseArray = $response->array();
+
+        return $responseArray['data'] ?? null;
+    }
+
+    public function responsePutProcess(Response $response): array|string|null
     {
         if (! $response->successful()) {
             return null;
