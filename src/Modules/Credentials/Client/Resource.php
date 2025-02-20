@@ -10,4 +10,9 @@ class Resource extends OcpiResource
     {
         return $this->requestPostSend($payload);
     }
+
+    public function put(array $payload): ?array
+    {
+        return $this->requestPutSend($payload);
+    }
 }
