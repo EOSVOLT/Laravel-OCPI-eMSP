@@ -28,6 +28,7 @@ return [
             'modules' => [
                 'commands',
                 'credentials',
+                'locations',
             ],
         ],
     ],
