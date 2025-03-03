@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,6 +24,20 @@ class PartyRole extends Model
         return [
             'business_details' => AsArrayObject::class,
         ];
+    }
+
+    /***
+     * Scopes.
+     ***/
+
+    public function scopeCode(Builder $query, string $code): void
+    {
+        $query->where('code', $code);
+    }
+
+    public function scopeCountryCode(Builder $query, string $countryCode): void
+    {
+        $query->where('country_code', $countryCode);
     }
 
     /***
