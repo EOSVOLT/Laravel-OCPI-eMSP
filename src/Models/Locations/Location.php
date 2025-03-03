@@ -43,4 +43,10 @@ class Location extends Model
     {
         return $this->belongsTo(PartyRole::class);
     }
+
+    public function withTrashedEvses(): HasMany
+    {
+        return $this->hasMany(LocationEvse::class)
+            ->withTrashed();
+    }
 }
