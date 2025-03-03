@@ -54,4 +54,16 @@ class LocationEvse extends Model
     {
         return $this->belongsTo(Location::class);
     }
+
+    public function withTrashedConnectors(): HasMany
+    {
+        return $this->hasMany(LocationConnector::class)
+            ->withTrashed();
+    }
+
+    public function withTrashedLocation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'location_id')
+            ->withTrashed();
+    }
 }
