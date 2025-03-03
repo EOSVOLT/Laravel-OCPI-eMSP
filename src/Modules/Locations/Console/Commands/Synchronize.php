@@ -5,14 +5,14 @@ namespace Ocpi\Modules\Locations\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Ocpi\Models\Locations\Location;
-use Ocpi\Models\Locations\LocationConnector;
-use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\Party;
+use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Client\Client;
 
 class Synchronize extends Command
 {
+    use HandlesLocation;
+
     /**
      * The name and signature of the console command.
      *
@@ -55,6 +55,8 @@ class Synchronize extends Command
             return Command::FAILURE;
         }
 
+        $hasError = false;
+
         foreach ($partyList as $party) {
             $this->info('  - Processing Party '.$party->code);
 
@@ -71,88 +73,63 @@ class Synchronize extends Command
                 $ocpiLocationList = $ocpiClient->locations()->all();
 
                 $locationProcessedList = [];
-                $locationEvseProcessedList = [];
-                $locationConnectorProcessedList = [];
 
                 $this->info('    - '.count($ocpiLocationList).' Location(s) retrieved');
 
                 foreach ($ocpiLocationList as $ocpiLocation) {
-                    DB::beginTransaction();
+                    $ocpiLocationId = $ocpiLocation['id'] ?? null;
 
-                    $location = Location::firstOrNew([
-                        'party_role_id' => $partyRole->id,
-                        'id' => $ocpiLocation?->id,
-                    ]);
+                    DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
-                    $ocpiLocationEvseList = $ocpiLocation->evses;
-                    unset($ocpiLocation->evses);
+                    $location = $this->locationSearch(
+                        location_id: $ocpiLocationId,
+                        party_role_id: $partyRole->id,
+                        withTrashed: true,
+                    );
 
-                    $location->object = $ocpiLocation;
-                    if (! $location->save()) {
-                        $this->error('Error saving Location '.$ocpiLocation?->id.'.');
+                    $this->info('      > Processing '.($location === null ? 'new' : 'existing').' Location '.$ocpiLocationId);
 
-                        DB::rollBack();
+                    // New Location.
+                    if ($location === null) {
+                        if (! $this->locationCreate(
+                            payload: $ocpiLocation,
+                            party_role_id: $partyRole->id,
+                            location_id: $ocpiLocationId,
+                        )) {
+                            $hasError = true;
+                            $this->error('Error creating Location '.$ocpiLocationId.'.');
 
-                        continue;
-                    }
-
-                    $locationProcessedList[] = $location->id;
-
-                    if (! is_array($ocpiLocationEvseList) || count($ocpiLocationEvseList) === 0) {
-                        $this->warn('Location '.$ocpiLocation?->id.' without EVSE.');
-                    }
-
-                    foreach (($ocpiLocationEvseList ?? []) as $ocpiLocationEvse) {
-                        $locationEvse = LocationEvse::firstOrNew([
-                            'location_id' => $ocpiLocation?->id,
-                            'uid' => $ocpiLocationEvse?->uid,
-                        ]);
-
-                        $ocpiLocationEvseConnectorList = $ocpiLocationEvse->connectors;
-                        unset($ocpiLocationEvse->connectors);
-
-                        //                        $locationEvse->setCompositeId();
-                        $locationEvse->object = $ocpiLocationEvse;
-                        if (! $locationEvse->save()) {
-                            $this->error('Error saving EVSE '.$ocpiLocationEvse?->uid.'.');
-
-                            DB::rollBack();
+                            DB::connection(config('ocpi.database.connection'))->rollback();
 
                             continue;
                         }
+                    } else {
+                        // Replaced Location.
+                        if (! $this->locationReplace(
+                            payload: $ocpiLocation,
+                            location: $location,
+                        )) {
+                            $hasError = true;
+                            $this->error('Error replacing Location '.$ocpiLocationId.'.');
 
-                        $locationEvseProcessedList[] = $ocpiLocationEvse->uid;
+                            DB::connection(config('ocpi.database.connection'))->rollback();
 
-                        if (! is_array($ocpiLocationEvseConnectorList) || count($ocpiLocationEvseConnectorList) === 0) {
-                            $this->warn('EVSE '.$ocpiLocation?->id.' without Connector.');
-                        }
-
-                        foreach (($ocpiLocationEvseConnectorList ?? []) as $ocpiLocationEvseConnector) {
-                            $locationConnector = LocationConnector::firstOrNew([
-                                'location_evse_composite_id' => $locationEvse?->composite_id,
-                                'id' => $ocpiLocationEvseConnector?->id,
-                            ]);
-
-                            $locationConnector->object = $ocpiLocationEvseConnector;
-                            if (! $locationConnector->save()) {
-                                $this->error('Error saving Connector '.$locationConnector?->id.'.');
-
-                                DB::rollBack();
-
-                                continue;
-                            }
-
-                            $locationConnectorProcessedList[] = $ocpiLocationEvseConnector->id;
+                            continue;
                         }
                     }
 
-                    DB::commit();
+                    $locationProcessedList[] = $ocpiLocationId;
+
+                    DB::connection(config('ocpi.database.connection'))->commit();
+
                 }
 
                 $this->info('    - '.count($locationProcessedList).' Location(s) synchronized');
             }
-        }
 
-        return Command::SUCCESS;
+            return $hasError
+                ? Command::FAILURE
+                : Command::SUCCESS;
+        }
     }
 }
