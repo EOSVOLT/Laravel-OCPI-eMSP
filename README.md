@@ -127,7 +127,7 @@ return [
 
 ## Getting started
 
-Define the eMSP information environment variables:
+#### Define the eMSP information environment variables:
 
 ```dotenv
 OCPI_EMSP_PARTY_ID=MYC
@@ -136,17 +136,31 @@ OCPI_EMSP_NAME=My Company
 OCPI_EMSP_WEBSITE=https://www.my-company.org
 ```
 
-Initialize a new "Sender" Party to start credentials exchange:
+#### Initialize a new "Sender" Party to start credentials exchange:
 
 ```bash
 php artisan ocpi:credentials:initialize
 ```
 
-Run credentials exchange with a new "Sender" Party':
+#### Run credentials exchange with a new "Sender" Party:
 
 ```bash
 php artisan ocpi:credentials:register {party_code}
 ```
+## Other commands
+
+#### Update credentials and versions with a Party:
+
+```bash
+php artisan ocpi:credentials:update {party_code} {--without_new_client_token}
+```
+
+#### Synchronize locations of all or a specific Party:
+
+```bash
+php artisan ocpi:locations:synchronize {--P|party=}
+```
+
 
 ## License
 
