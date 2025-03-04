@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
+use Ocpi\Modules\Credentials\Events;
 use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
@@ -91,6 +92,8 @@ class PutController extends Controller
             $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();
+
+            Events\CredentialsUpdated::dispatch($party->id, $request->json()->all());
 
             return $this->ocpiSuccessResponse(
                 $selfCredentialsGetAction->handle($party)
