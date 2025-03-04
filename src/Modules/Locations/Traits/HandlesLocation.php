@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Locations\LocationEvse;
+use Ocpi\Modules\Locations\Events;
 
 trait HandlesLocation
 {
@@ -42,6 +43,8 @@ trait HandlesLocation
         $location->object = $payload;
         $location->save();
 
+        Events\LocationCreated::dispatch($party_role_id, $location_id, $payload);
+
         // Create EVSEs.
         foreach (($payloadEvseList ?? []) as $payloadEvse) {
             if (! $this->evseCreate(
@@ -72,6 +75,8 @@ trait HandlesLocation
 
         $location->object = $payload;
         $location->save();
+
+        Events\LocationReplaced::dispatch($location->party_role_id, $location->id, $payload);
 
         // Create or Replace EVSEs, Connectors.
         foreach (($payloadEvseList ?? []) as $payloadEvse) {
@@ -109,7 +114,13 @@ trait HandlesLocation
             $location->object[$field] = $value;
         }
 
-        return $location->save();
+        if (! $location->save()) {
+            return false;
+        }
+
+        Events\LocationUpdated::dispatch($location->party_role_id, $location->id, $payload);
+
+        return true;
     }
 
     private function evseSearch(string $evse_uid, int $party_role_id, bool $withTrashed = false): ?LocationEvse
@@ -144,10 +155,14 @@ trait HandlesLocation
         $locationEvse->object = $payload;
         $locationEvse->save();
 
+        Events\LocationEvseCreated::dispatch($locationEvse->withTrashedLocation?->party_role_id, $evse_uid, $payload);
+
         // Update Location.
         if ($updateLocation) {
             if (($payload['status'] ?? null) !== 'REMOVED' && $locationEvse->withTrashedLocation->trashed()) {
                 $locationEvse->withTrashedLocation->restore();
+
+                Events\LocationRestored::dispatch($locationEvse->withTrashedLocation?->party_role_id, $location_id);
             }
             if (($payload['last_updated'] ?? null) !== null) {
                 $locationEvse->withTrashedLocation->object['last_updated'] = $payload['last_updated'];
@@ -169,6 +184,8 @@ trait HandlesLocation
 
             $locationConnector->object = $payloadConnector;
             $locationConnector->save();
+
+            Events\LocationConnectorCreated::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $payloadConnector['id'], $payloadConnector);
         }
 
         return true;
@@ -184,12 +201,20 @@ trait HandlesLocation
         if (($payload['status'] ?? null) === 'REMOVED') {
             $locationEvse->delete();
             // $locationEvse->connectors()->delete();
-            $this->connectorUpdate($locationEvse->connectors, $locationEvse, [
-                'deleted_at' => now(),
-            ]);
+            $this->connectorUpdate(
+                $locationEvse->connectors,
+                $locationEvse,
+                [
+                    'deleted_at' => now(),
+                ]
+            );
+
+            Events\LocationEvseRemoved::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid);
 
             if ($locationEvse->withTrashedLocation->evses()->count() === 0) {
                 $locationEvse->withTrashedLocation->delete();
+
+                Events\LocationRemoved::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->withTrashedLocation?->id);
             }
 
             return true;
@@ -202,13 +227,22 @@ trait HandlesLocation
         // No Connectors => Delete EVSE.
         if (count($payloadConnectorList ?? []) === 0) {
             $locationEvse->delete();
+
+            Events\LocationEvseRemoved::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid);
+
             // $locationEvse->connectors()->delete();
-            $this->connectorUpdate($locationEvse->connectors, $locationEvse, [
-                'deleted_at' => now(),
-            ]);
+            $this->connectorUpdate(
+                $locationEvse->connectors,
+                $locationEvse,
+                [
+                    'deleted_at' => now(),
+                ]
+            );
 
             if ($locationEvse->withTrashedLocation->evses()->count() === 0) {
                 $locationEvse->withTrashedLocation->delete();
+
+                Events\LocationRemoved::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->withTrashedLocation?->id);
             }
 
             return true;
@@ -216,14 +250,20 @@ trait HandlesLocation
 
         if ($locationEvse->trashed()) {
             $locationEvse->restore();
+
+            Events\LocationEvseRestored::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid);
         }
         $locationEvse->object = $payload;
         $locationEvse->save();
+
+        Events\LocationEvseReplaced::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $payload);
 
         // Touch Location.
         if ($updateLocation) {
             if ($locationEvse->withTrashedLocation->trashed()) {
                 $locationEvse->withTrashedLocation->restore();
+
+                Events\LocationRestored::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->withTrashedLocation?->id);
             }
             if (($payload['last_updated'] ?? null) !== null) {
                 $locationEvse->withTrashedLocation->object['last_updated'] = $payload['last_updated'];
@@ -253,17 +293,25 @@ trait HandlesLocation
                     'object' => null,
                 ]);
                 $locationConnector->save();
+
+                Events\LocationConnectorCreated::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $payloadConnector['id'], $payloadConnector);
             } else {
                 if ($locationConnector->trashed()) {
                     // $locationConnector->restore();
                     $locationConnectorAttributes['deleted_at'] = null;
                 }
+
+                Events\LocationConnectorReplaced::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $payloadConnector['id'], $payloadConnector);
             }
 
             // $locationConnector->object = $payloadConnector;
             // $locationConnector->save();
             $locationConnectorAttributes['object'] = $payloadConnector;
-            $this->connectorUpdate($locationConnector?->id, $locationEvse, $locationConnectorAttributes);
+            $this->connectorUpdate(
+                $locationConnector?->id,
+                $locationEvse,
+                $locationConnectorAttributes
+            );
         }
 
         // Delete missing EVSE Connectors.
@@ -279,7 +327,8 @@ trait HandlesLocation
             $locationEvse,
             [
                 'deleted_at' => now(),
-            ]);
+            ]
+        );
 
         return true;
     }
@@ -289,13 +338,22 @@ trait HandlesLocation
         // Delete EVSE.
         if (($payload['status'] ?? null) === 'REMOVED') {
             $locationEvse->delete();
+
+            Events\LocationEvseRemoved::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid);
+
             // $locationEvse->connectors()->delete();
-            $this->connectorUpdate($locationEvse->connectors, $locationEvse, [
-                'deleted_at' => now(),
-            ]);
+            $this->connectorUpdate(
+                $locationEvse->connectors,
+                $locationEvse,
+                [
+                    'deleted_at' => now(),
+                ]
+            );
 
             if ($locationEvse->withTrashedLocation->evses()->count() === 0) {
                 $locationEvse->withTrashedLocation->delete();
+
+                Events\LocationRemoved::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->withTrashedLocation?->id);
             }
         }
 
@@ -311,7 +369,33 @@ trait HandlesLocation
             }
         }
 
-        return $locationEvse->save();
+        if (! $locationEvse->save()) {
+            return false;
+        }
+
+        Events\LocationEvseUpdated::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $payload);
+
+        if (($payload['status'] ?? null) !== null && $locationEvse->trashed()) {
+            $locationEvse->restore();
+
+            Events\LocationEvseRestored::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid);
+
+            $this->connectorUpdate(
+                $locationEvse->withTrashedConnectors,
+                $locationEvse,
+                [
+                    'deleted_at' => null,
+                ]
+            );
+
+            if ($locationEvse->withTrashedLocation->trashed()) {
+                $locationEvse->withTrashedLocation->restore();
+
+                Events\LocationRestored::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->withTrashedLocation?->id);
+            }
+        }
+
+        return true;
     }
 
     private function connectorCreateOrReplace(array $payload, ?string $connector_id, LocationEvse $locationEvse): bool
@@ -337,17 +421,25 @@ trait HandlesLocation
                 'object' => null,
             ]);
             $locationConnector->save();
+
+            Events\LocationConnectorCreated::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $connector_id, $payload);
         } else {
             if ($locationConnector->trashed()) {
                 // $locationConnector->restore();
                 $locationConnectorAttributes['deleted_at'] = null;
             }
+
+            Events\LocationConnectorReplaced::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $connector_id, $payload);
         }
 
         // $locationConnector->object = $payload;
         // $locationConnector->save();
         $locationConnectorAttributes['object'] = $payload;
-        $this->connectorUpdate($connector_id, $locationEvse, $locationConnectorAttributes);
+        $this->connectorUpdate(
+            $connector_id,
+            $locationEvse,
+            $locationConnectorAttributes
+        );
 
         // Touch EVSE, Location.
         if (($payload['last_updated'] ?? null) !== null) {
@@ -390,9 +482,15 @@ trait HandlesLocation
             $locationEvse->withTrashedLocation->save();
         }
 
-        $this->connectorUpdate($locationConnector->id, $locationEvse, [
-            'object' => $locationConnector->object->toArray(),
-        ]);
+        $this->connectorUpdate(
+            $locationConnector->id,
+            $locationEvse,
+            [
+                'object' => $locationConnector->object->toArray(),
+            ]
+        );
+
+        Events\LocationConnectorUpdated::dispatch($locationEvse->withTrashedLocation?->party_role_id, $locationEvse->uid, $locationConnector->id, $payload);
 
         return true;
     }
