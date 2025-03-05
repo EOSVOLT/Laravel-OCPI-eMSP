@@ -12,6 +12,7 @@ Laravel package for OCPI ([Open Charge Point Interface](https://github.com/ocpi/
   - Commands
   - Credentials & Registration
   - Locations
+  - Sessions
   - Versions
 
 ### Version support
@@ -65,6 +66,7 @@ return [
                 'commands',
                 'credentials',
                 'locations',
+                'sessions',
             ],
         ],
     ],
