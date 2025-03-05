@@ -10,6 +10,7 @@ use Ocpi\Modules\CDRs\Client\Resource as CDRsResource;
 use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
 use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
 use Ocpi\Modules\Locations\Client\Resource as LocationsResource;
+use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;
 use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
@@ -106,6 +107,11 @@ class Client extends Connector
     public function locations(): LocationsResource
     {
         return new LocationsResource($this);
+    }
+
+    public function sessions(): SessionsResource
+    {
+        return new SessionsResource($this);
     }
 
     public function versions(): VersionsResource
