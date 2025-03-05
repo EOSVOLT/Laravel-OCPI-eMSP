@@ -18,8 +18,8 @@ class Location extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'id',
         'party_role_id',
+        'id',
         'object',
     ];
 

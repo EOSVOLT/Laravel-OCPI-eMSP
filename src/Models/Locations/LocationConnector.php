@@ -16,6 +16,7 @@ class LocationConnector extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'party_role_id',
         'id',
         'location_evse_composite_id',
         'object',

@@ -19,9 +19,10 @@ class LocationEvse extends Model
     public $incrementing = false;
 
     protected $fillable = [
+        'party_role_id',
+        'location_id',
         'composite_id',
         'uid',
-        'location_id',
         'object',
     ];
 
