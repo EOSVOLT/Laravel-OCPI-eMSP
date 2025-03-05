@@ -37,7 +37,10 @@ class PutController extends Controller
                     withTrashed: true,
                 );
 
-                if ($locationEvse !== null && $locationEvse->location_id !== $location_id) {
+                if (
+                    ($locationEvse !== null && $locationEvse->location_id !== $location_id)
+                    || ($locationEvse === null && $connector_id !== null)
+                ) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::UnknownLocation,
                         statusMessage: 'Unknown Location or EVSE.',
@@ -48,6 +51,7 @@ class PutController extends Controller
                 if ($locationEvse === null) {
                     if (! $this->evseCreate(
                         payload: $payload,
+                        party_role_id: Context::get('party_role_id'),
                         location_id: $location_id,
                         evse_uid: $evse_uid,
                     )) {
