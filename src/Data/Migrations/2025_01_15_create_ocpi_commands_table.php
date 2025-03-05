@@ -20,13 +20,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create(config('ocpi.database.table.prefix').'commands', function (Blueprint $table) {
-            $table->ulid('id')->primary();
             $table->foreignId('party_role_id')
                 ->constrained(
                     table: config('ocpi.database.table.prefix').'party_roles',
                     indexName: 'commands_party_role_id',
                 )
                 ->cascadeOnDelete();
+            $table->ulid('id')->primary();
             $table->string('type', length: 20);
             $table->json('payload')->nullable();
             $table->string('response', length: 15)->nullable();

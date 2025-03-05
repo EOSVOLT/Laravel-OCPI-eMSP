@@ -16,8 +16,8 @@ class Command extends Model
     use HasUlids;
 
     protected $fillable = [
-        'id',
         'party_role_id',
+        'id',
         'type',
         'payload',
         'response',
