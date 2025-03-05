@@ -49,6 +49,7 @@ trait HandlesLocation
         foreach (($payloadEvseList ?? []) as $payloadEvse) {
             if (! $this->evseCreate(
                 payload: $payloadEvse,
+                party_role_id: $party_role_id,
                 location_id: $location->id,
                 evse_uid: ($payloadEvse['uid'] ?? null),
                 updateLocation: false
@@ -88,6 +89,7 @@ trait HandlesLocation
             if ($locationEvse === null) {
                 if (! $this->evseCreate(
                     payload: $payloadEvse,
+                    party_role_id: $party_role_id,
                     location_id: $location->id,
                     evse_uid: ($payloadEvse['uid'] ?? null),
                     updateLocation: false,
@@ -130,13 +132,11 @@ trait HandlesLocation
                 return $query->withTrashed();
             })
             ->where('uid', $evse_uid)
-            ->whereHas($withTrashed ? 'withTrashedLocation' : 'location', function (Builder $query) use ($party_role_id) {
-                $query->where('party_role_id', $party_role_id);
-            })
+            ->where('party_role_id', $party_role_id)
             ->first();
     }
 
-    private function evseCreate(array $payload, string $location_id, ?string $evse_uid, bool $updateLocation = true): bool
+    private function evseCreate(array $payload, int $party_role_id, string $location_id, ?string $evse_uid, bool $updateLocation = true): bool
     {
         if (($payload['uid'] ?? null) === null || $payload['uid'] !== $evse_uid) {
             return false;
@@ -145,6 +145,7 @@ trait HandlesLocation
         // Create EVSE.
         $locationEvse = new LocationEvse;
         $locationEvse->fill([
+            'party_role_id' => $party_role_id,
             'location_id' => $location_id,
             'uid' => $payload['uid'],
         ]);
@@ -178,6 +179,7 @@ trait HandlesLocation
 
             $locationConnector = new LocationConnector;
             $locationConnector->fill([
+                'party_role_id' => $party_role_id,
                 'location_evse_composite_id' => $locationEvse?->composite_id,
                 'id' => $payloadConnector['id'],
             ]);
@@ -284,10 +286,12 @@ trait HandlesLocation
             $locationConnector = $locationEvse
                 ->withTrashedConnectors
                 ->where('id', $payloadConnector['id'])
+                ->where('party_role_id', $locationEvse->party_role_id)
                 ->first();
             if ($locationConnector === null) {
                 $locationConnector = new LocationConnector;
                 $locationConnector->fill([
+                    'party_role_id' => $locationEvse?->party_role_id,
                     'location_evse_composite_id' => $locationEvse?->composite_id,
                     'id' => $payloadConnector['id'],
                     'object' => null,
@@ -409,6 +413,7 @@ trait HandlesLocation
         $locationConnector = $locationEvse
             ->withTrashedConnectors
             ->where('id', $connector_id)
+            ->where('party_role_id', $locationEvse->party_role_id)
             ->first();
 
         $locationConnectorAttributes = [];
@@ -416,6 +421,7 @@ trait HandlesLocation
         if ($locationConnector === null) {
             $locationConnector = new LocationConnector;
             $locationConnector->fill([
+                'party_role_id' => $locationEvse->party_role_id,
                 'location_evse_composite_id' => $locationEvse?->composite_id,
                 'id' => $connector_id,
                 'object' => null,
@@ -458,6 +464,7 @@ trait HandlesLocation
         LocationConnector::query()
             ->withTrashed()
             ->where('location_evse_composite_id', $locationEvse?->composite_id)
+            ->where('party_role_id', $locationEvse?->party_role_id)
             ->when(
                 is_string($connectorIdOrCollection), function (Builder $query) use ($connectorIdOrCollection) {
                     $query->where('id', $connectorIdOrCollection);
