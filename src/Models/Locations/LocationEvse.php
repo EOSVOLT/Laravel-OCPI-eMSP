@@ -3,6 +3,7 @@
 namespace Ocpi\Models\Locations;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,18 +11,12 @@ use Ocpi\Support\Models\Model;
 
 class LocationEvse extends Model
 {
-    use SoftDeletes;
+    use HasVersion7Uuids, SoftDeletes;
 
-    protected $primaryKey = 'composite_id';
-
-    protected $keyType = 'string';
-
-    public $incrementing = false;
+    protected $primaryKey = 'emsp_id';
 
     protected $fillable = [
-        'party_role_id',
-        'location_id',
-        'composite_id',
+        'location_emsp_id',
         'uid',
         'object',
     ];
@@ -33,38 +28,29 @@ class LocationEvse extends Model
         ];
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->composite_id = "{$model->location_id}_{$model->uid}";
-        });
-    }
-
     /***
      * Relations.
      ***/
 
     public function connectors(): HasMany
     {
-        return $this->hasMany(LocationConnector::class);
+        return $this->hasMany(LocationConnector::class, 'location_evse_emsp_id', 'emsp_id');
+    }
+
+    public function connectorsWithTrashed(): HasMany
+    {
+        return $this->hasMany(LocationConnector::class, 'location_evse_emsp_id', 'emsp_id')
+            ->withTrashed();
     }
 
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Location::class);
+        return $this->belongsTo(Location::class, 'location_emsp_id', 'emsp_id');
     }
 
-    public function withTrashedConnectors(): HasMany
+    public function locationWithTrashed(): BelongsTo
     {
-        return $this->hasMany(LocationConnector::class)
-            ->withTrashed();
-    }
-
-    public function withTrashedLocation(): BelongsTo
-    {
-        return $this->belongsTo(Location::class, 'location_id')
+        return $this->belongsTo(Location::class, 'location_emsp_id', 'emsp_id')
             ->withTrashed();
     }
 }
