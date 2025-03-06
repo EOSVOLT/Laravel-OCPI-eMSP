@@ -32,12 +32,13 @@ class PatchController extends Controller
             // EVSE or Connector.
             if ($evse_uid !== null) {
                 $locationEvse = $this->evseSearch(
-                    evse_uid: $evse_uid,
                     party_role_id: Context::get('party_role_id'),
+                    location_id: $location_id,
+                    evse_uid: $evse_uid,
                     withTrashed: true,
                 );
 
-                if ($locationEvse === null || $locationEvse->location_id !== $location_id) {
+                if ($locationEvse === null || $locationEvse->locationWithTrashed?->id !== $location_id) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::UnknownLocation,
                         statusMessage: 'Unknown Location or EVSE.',
@@ -59,7 +60,7 @@ class PatchController extends Controller
                 } // Updated Connector.
                 else {
                     $locationConnector = $locationEvse
-                        ->withTrashedConnectors
+                        ->connectorsWithTrashed
                         ->where('id', $connector_id)
                         ->first();
 
@@ -86,8 +87,8 @@ class PatchController extends Controller
             } // Location.
             else {
                 $location = $this->locationSearch(
-                    location_id: $location_id,
                     party_role_id: Context::get('party_role_id'),
+                    location_id: $location_id,
                     withTrashed: true,
                 );
 

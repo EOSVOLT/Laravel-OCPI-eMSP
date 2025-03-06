@@ -29,16 +29,23 @@ class PutController extends Controller
 
             $payload = $request->json()->all();
 
+            $location = $this->locationSearch(
+                party_role_id: Context::get('party_role_id'),
+                location_id: $location_id,
+                withTrashed: true,
+            );
+
             // EVSE or Connector.
             if ($evse_uid !== null) {
                 $locationEvse = $this->evseSearch(
-                    evse_uid: $evse_uid,
                     party_role_id: Context::get('party_role_id'),
+                    location_id: $location_id,
+                    evse_uid: $evse_uid,
                     withTrashed: true,
                 );
 
                 if (
-                    ($locationEvse !== null && $locationEvse->location_id !== $location_id)
+                    ($locationEvse !== null && $location?->id !== $location_id)
                     || ($locationEvse === null && $connector_id !== null)
                 ) {
                     return $this->ocpiClientErrorResponse(
@@ -51,8 +58,7 @@ class PutController extends Controller
                 if ($locationEvse === null) {
                     if (! $this->evseCreate(
                         payload: $payload,
-                        party_role_id: Context::get('party_role_id'),
-                        location_id: $location_id,
+                        location: $location,
                         evse_uid: $evse_uid,
                     )) {
                         DB::connection(config('ocpi.database.connection'))->rollback();
@@ -92,12 +98,6 @@ class PutController extends Controller
 
             } // Location.
             else {
-                $location = $this->locationSearch(
-                    location_id: $location_id,
-                    party_role_id: Context::get('party_role_id'),
-                    withTrashed: true,
-                );
-
                 // New Location.
                 if ($location === null) {
                     if (! $this->locationCreate(

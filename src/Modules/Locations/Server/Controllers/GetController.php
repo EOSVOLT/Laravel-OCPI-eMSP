@@ -29,8 +29,8 @@ class GetController extends Controller
         }
 
         $location = $this->locationSearch(
-            location_id: $location_id,
             party_role_id: Context::get('party_role_id'),
+            location_id: $location_id,
         );
 
         if ($location === null) {
