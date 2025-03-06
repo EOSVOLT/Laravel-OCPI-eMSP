@@ -11,6 +11,7 @@ class LocationEvseRemoved implements ShouldDispatchAfterCommit
 
     public function __construct(
         public int $party_role_id,
+        public string $location_id,
         public string $uid,
     ) {}
 }
