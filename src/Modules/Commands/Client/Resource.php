@@ -10,13 +10,14 @@ use Ocpi\Models\Commands\Command;
 use Ocpi\Models\Commands\Enums\CommandResponseType;
 use Ocpi\Models\Commands\Enums\CommandType;
 use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Commands\Events;
 use Ocpi\Support\Client\Resource as OcpiResource;
 
 class Resource extends OcpiResource
 {
     public function reserveNow(PartyRole $partyRole, array $payload): void
     {
-        DB::beginTransaction();
+        DB::connection(config('ocpi.database.connection'))->beginTransaction();
         try {
             $command = Command::create([
                 'party_role_id' => $partyRole->id,
@@ -28,7 +29,7 @@ class Resource extends OcpiResource
             $command->payload = $payload;
             $command->save();
 
-            DB::commit();
+            DB::connection(config('ocpi.database.connection'))->commit();
 
             $response = $this->requestPostSend(
                 payload: $command->payload->toArray(),
@@ -44,11 +45,15 @@ class Resource extends OcpiResource
             $command->response = $commandResponseType->name;
             $command->save();
 
-            if ($commandResponseType !== CommandResponseType::ACCEPTED) {
+            if ($commandResponseType === CommandResponseType::ACCEPTED) {
+                Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
+            } else {
+                Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $payload);
+
                 throw new Exception('Command not accepted');
             }
         } catch (Exception $e) {
-            DB::rollBack();
+            DB::connection(config('ocpi.database.connection'))->rollBack();
             throw $e;
         }
     }
@@ -57,7 +62,7 @@ class Resource extends OcpiResource
     {
         return (config('ocpi.server.enabled', false) === true)
             ? route('ocpi.emsp.'.Str::replace('.', '_', $partyRole?->party?->version).'.commands.post', [
-                'command' => $command->type->name,
+                'type' => $command->type->name,
                 'id' => $command->id,
             ])
             : config('ocpi.client.server.url').'/'.$partyRole?->party?->version.'/commands/'.$command->type->name.'/'.$command->id;
