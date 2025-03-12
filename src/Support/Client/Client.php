@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
-use Ocpi\Modules\CDRs\Client\Resource as CDRsResource;
+use Ocpi\Modules\Cdrs\Client\Resource as CdrsResource;
 use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
 use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
 use Ocpi\Modules\Locations\Client\Resource as LocationsResource;
@@ -89,9 +89,9 @@ class Client extends Connector
      * Resources.
      ***/
 
-    public function cdrs(): CDRsResource
+    public function cdrs(): CdrsResource
     {
-        return new CDRsResource($this);
+        return new CdrsResource($this);
     }
 
     public function commands(): CommandsResource
