@@ -32,6 +32,19 @@ class Cdr extends Model
     }
 
     /***
+     * Computed Attributes.
+     ***/
+
+    protected function emspId(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => $this->party_role?->code
+                .config('ocpi-emsp.module.cdrs.id_separator')
+                .$attributes['id'],
+        );
+    }
+
+    /***
      * Relations.
      ***/
 
