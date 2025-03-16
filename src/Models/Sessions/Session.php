@@ -4,13 +4,15 @@ namespace Ocpi\Models\Sessions;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\PartyRole;
 use Ocpi\Support\Models\Model;
 use Ocpi\Support\Traits\Models\HasCompositeKey;
 
 class Session extends Model
 {
-    use HasCompositeKey;
+    use HasCompositeKey,
+        SoftDeletes;
 
     protected $primaryKey = [
         'party_role_id',
