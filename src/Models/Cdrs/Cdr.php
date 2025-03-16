@@ -5,13 +5,15 @@ namespace Ocpi\Models\Cdrs;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\PartyRole;
 use Ocpi\Support\Models\Model;
 use Ocpi\Support\Traits\Models\HasCompositeKey;
 
 class Cdr extends Model
 {
-    use HasCompositeKey;
+    use HasCompositeKey,
+        SoftDeletes;
 
     protected $primaryKey = [
         'party_role_id',
