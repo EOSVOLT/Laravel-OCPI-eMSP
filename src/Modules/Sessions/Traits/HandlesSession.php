@@ -15,7 +15,7 @@ trait HandlesSession
             ->first();
     }
 
-    private function sessionCreate(array $payload, int $party_role_id, string $session_id): bool
+    private function sessionCreate(array $payload, int $party_role_id, string $session_id, ?string $location_evse_emsp_id): bool
     {
         if (($payload['id'] ?? null) === null || $payload['id'] !== $session_id) {
             return false;
@@ -24,6 +24,7 @@ trait HandlesSession
         $session = new Session;
         $session->fill([
             'party_role_id' => $party_role_id,
+            'location_evse_emsp_id' => $location_evse_emsp_id,
             'id' => $session_id,
             'object' => $payload,
         ]);
