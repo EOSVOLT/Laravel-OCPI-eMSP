@@ -10,13 +10,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
 use Ocpi\Modules\Cdrs\Traits\HandlesCdr;
+use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
 {
-    use HandlesCdr;
+    use HandlesCdr,
+        HandlesLocation;
 
     public function __invoke(
         Request $request,
@@ -39,7 +41,7 @@ class PostController extends Controller
 
             // Verify CDR not already exists.
             $cdr = $this->cdrSearch(
-                cdr_emsp_id: $payload['id'] ?? null,
+                cdr_id: $payload['id'] ?? null,
                 party_role_id: $partyRoleId,
             );
 
@@ -50,11 +52,25 @@ class PostController extends Controller
                 );
             }
 
+            // Find LocationEvse.
+            $locationEvse = null;
+            $location_id = data_get($payload, 'location.id');
+            $location_evse_uid = data_get($payload, 'location.evses.0.uid');
+            if ($location_id && $location_evse_uid) {
+                $locationEvse = $this->evseSearch(
+                    party_role_id: $partyRoleId,
+                    location_id: $location_id,
+                    evse_uid: $location_evse_uid,
+                );
+            }
+
             DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
             if (! ($cdr = $this->cdrCreate(
                 payload: $payload,
                 party_role_id: $partyRoleId,
+                location_evse_emsp_id: $locationEvse?->emsp_id,
+
             ))) {
                 DB::connection(config('ocpi.database.connection'))->rollback();
 
