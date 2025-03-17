@@ -15,7 +15,7 @@ trait HandlesCdr
             ->when(
                 $cdr_emsp_id !== null,
                 function ($query) use ($cdr_emsp_id) {
-                    $query->where('id', Str::after($cdr_emsp_id, config('ocpi-emsp.module.cdrs.id_separator')));
+                    $query->where('emsp_id', $cdr_emsp_id);
                 },
                 function ($query) use ($cdr_id) {
                     $query->where('id', $cdr_id);
@@ -28,7 +28,7 @@ trait HandlesCdr
             ->first();
     }
 
-    private function cdrCreate(array $payload, int $party_role_id): ?Cdr
+    private function cdrCreate(array $payload, int $party_role_id, ?string $location_evse_emsp_id): ?Cdr
     {
         if (($payload['id'] ?? null) === null) {
             return null;
@@ -37,6 +37,7 @@ trait HandlesCdr
         $cdr = new Cdr;
         $cdr->fill([
             'party_role_id' => $party_role_id,
+            'location_evse_emsp_id' => $location_evse_emsp_id,
             'id' => $payload['id'],
             'object' => $payload,
         ]);
