@@ -8,13 +8,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Modules\Sessions\Traits\HandlesSession;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PutController extends Controller
 {
-    use HandlesSession;
+    use HandlesLocation,
+        HandlesSession;
 
     public function __invoke(
         Request $request,
@@ -34,10 +36,23 @@ class PutController extends Controller
 
             // New Session.
             if ($session === null) {
+                // Find LocationEvse.
+                $locationEvse = null;
+                $location_id = data_get($payload, 'location.id');
+                $location_evse_uid = data_get($payload, 'location.evses.0.uid');
+                if ($location_id && $location_evse_uid) {
+                    $locationEvse = $this->evseSearch(
+                        party_role_id: Context::get('party_role_id'),
+                        location_id: $location_id,
+                        evse_uid: $location_evse_uid,
+                    );
+                }
+
                 if (! $this->sessionCreate(
                     payload: $payload,
                     party_role_id: Context::get('party_role_id'),
                     session_id: $session_id,
+                    location_evse_emsp_id: $locationEvse?->emsp_id,
                 )) {
                     DB::connection(config('ocpi.database.connection'))->rollback();
 
