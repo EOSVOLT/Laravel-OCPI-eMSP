@@ -20,18 +20,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create(config('ocpi.database.table.prefix').'sessions', function (Blueprint $table) {
+            $table->uuid('emsp_id')->primary();
             $table->foreignId('party_role_id')
                 ->constrained(
                     table: config('ocpi.database.table.prefix').'party_roles',
                     indexName: 'sessions_party_role_id',
                 )
                 ->cascadeOnDelete();
+            $table->foreignUuid('location_evse_emsp_id')
+                ->nullable()
+                ->constrained(
+                    table: config('ocpi.database.table.prefix').'location_evses',
+                    column: 'emsp_id',
+                )
+                ->cascadeOnDelete();
+
             $table->string('id', length: 36);
             $table->json('object');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->primary(['party_role_id', 'id']);
+            $table->unique(['party_role_id', 'id']);
+            $table->index('id');
         });
     }
 

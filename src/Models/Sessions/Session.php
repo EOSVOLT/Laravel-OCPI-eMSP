@@ -3,24 +3,23 @@
 namespace Ocpi\Models\Sessions;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\PartyRole;
 use Ocpi\Support\Models\Model;
-use Ocpi\Support\Traits\Models\HasCompositeKey;
 
 class Session extends Model
 {
-    use HasCompositeKey,
+    use HasVersion7Uuids,
         SoftDeletes;
 
-    protected $primaryKey = [
-        'party_role_id',
-        'id',
-    ];
+    protected $primaryKey = 'emsp_id';
 
     protected $fillable = [
         'party_role_id',
+        'location_evse_emsp_id',
         'id',
         'object',
     ];
@@ -35,6 +34,11 @@ class Session extends Model
     /***
      * Relations.
      ***/
+
+    public function location_evse(): BelongsTo
+    {
+        return $this->belongsTo(LocationEvse::class, 'location_evse_emsp_id', 'emsp_id');
+    }
 
     public function party_role(): BelongsTo
     {
