@@ -25,8 +25,6 @@ class PutController extends Controller
         string $session_id,
     ): JsonResponse {
         try {
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
-
             $payload = $request->json()->all();
 
             $session = $this->sessionSearch(
@@ -48,38 +46,41 @@ class PutController extends Controller
                     );
                 }
 
-                if (! $this->sessionCreate(
-                    payload: $payload,
-                    party_role_id: Context::get('party_role_id'),
-                    session_id: $session_id,
-                    location_evse_emsp_id: $locationEvse?->emsp_id,
-                )) {
-                    DB::connection(config('ocpi.database.connection'))->rollback();
-
+                // New Session.
+                if (
+                    ! DB::connection(config('ocpi.database.connection'))
+                        ->transaction(function () use ($payload, $session_id, $locationEvse) {
+                            return $this->sessionCreate(
+                                payload: $payload,
+                                party_role_id: Context::get('party_role_id'),
+                                session_id: $session_id,
+                                location_evse_emsp_id: $locationEvse?->emsp_id,
+                            );
+                        })
+                ) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::NotEnoughInformation,
                     );
                 }
             } else {
                 // Replaced Session.
-                if (! $this->sessionReplace(
-                    payload: $payload,
-                    session: $session,
-                )) {
-                    DB::connection(config('ocpi.database.connection'))->rollback();
-
+                if (
+                    ! DB::connection(config('ocpi.database.connection'))
+                        ->transaction(function () use ($payload, $session) {
+                            return $this->sessionReplace(
+                                payload: $payload,
+                                session: $session,
+                            );
+                        })
+                ) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::NotEnoughInformation,
                     );
                 }
             }
 
-            DB::connection(config('ocpi.database.connection'))->commit();
-
             return $this->ocpiSuccessResponse();
         } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollback();
-
             Log::channel('ocpi')->error($e->getMessage());
 
             return $this->ocpiServerErrorResponse();

@@ -23,8 +23,6 @@ class PatchController extends Controller
         string $session_id,
     ): JsonResponse {
         try {
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
-
             $payload = $request->json()->all();
 
             $session = $this->sessionSearch(
@@ -40,23 +38,22 @@ class PatchController extends Controller
             }
 
             // Updated Session.
-            if (! $this->sessionObjectUpdate(
-                payload: $payload,
-                session: $session,
-            )) {
-                DB::connection(config('ocpi.database.connection'))->rollback();
-
+            if (
+                ! DB::connection(config('ocpi.database.connection'))
+                    ->transaction(function () use ($payload, $session) {
+                        return $this->sessionObjectUpdate(
+                            payload: $payload,
+                            session: $session,
+                        );
+                    })
+            ) {
                 return $this->ocpiClientErrorResponse(
                     statusCode: OcpiClientErrorCode::NotEnoughInformation,
                 );
             }
 
-            DB::connection(config('ocpi.database.connection'))->commit();
-
             return $this->ocpiSuccessResponse();
         } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollback();
-
             Log::channel('ocpi')->error($e->getMessage());
 
             return $this->ocpiServerErrorResponse();
