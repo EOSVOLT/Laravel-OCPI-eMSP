@@ -25,8 +25,6 @@ class PatchController extends Controller
         ?string $connector_id = null,
     ): JsonResponse {
         try {
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
-
             $payload = $request->json()->all();
 
             // EVSE or Connector.
@@ -47,12 +45,15 @@ class PatchController extends Controller
 
                 // Updated EVSE.
                 if ($connector_id === null) {
-                    if (! $this->evseObjectUpdate(
-                        payload: $payload,
-                        locationEvse: $locationEvse,
-                    )) {
-                        DB::connection(config('ocpi.database.connection'))->rollback();
-
+                    if (
+                        ! DB::connection(config('ocpi.database.connection'))
+                            ->transaction(function () use ($payload, $locationEvse) {
+                                return $this->evseObjectUpdate(
+                                    payload: $payload,
+                                    locationEvse: $locationEvse,
+                                );
+                            })
+                    ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
                         );
@@ -71,13 +72,16 @@ class PatchController extends Controller
                         );
                     }
 
-                    if (! $this->connectorObjectUpdate(
-                        payload: $payload,
-                        locationConnector: $locationConnector,
-                        locationEvse: $locationEvse,
-                    )) {
-                        DB::connection(config('ocpi.database.connection'))->rollback();
-
+                    if (
+                        ! DB::connection(config('ocpi.database.connection'))
+                            ->transaction(function () use ($payload, $locationConnector, $locationEvse) {
+                                return $this->connectorObjectUpdate(
+                                    payload: $payload,
+                                    locationConnector: $locationConnector,
+                                    locationEvse: $locationEvse,
+                                );
+                            })
+                    ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
                         );
@@ -100,24 +104,23 @@ class PatchController extends Controller
                 }
 
                 // Updated Location.
-                if (! $this->locationObjectUpdate(
-                    payload: $payload,
-                    location: $location,
-                )) {
-                    DB::connection(config('ocpi.database.connection'))->rollback();
-
+                if (
+                    ! DB::connection(config('ocpi.database.connection'))
+                        ->transaction(function () use ($payload, $location) {
+                            return $this->locationObjectUpdate(
+                                payload: $payload,
+                                location: $location,
+                            );
+                        })
+                ) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::NotEnoughInformation,
                     );
                 }
             }
 
-            DB::connection(config('ocpi.database.connection'))->commit();
-
             return $this->ocpiSuccessResponse();
         } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollback();
-
             Log::channel('ocpi')->error($e->getMessage());
 
             return $this->ocpiServerErrorResponse();

@@ -25,8 +25,6 @@ class PutController extends Controller
         ?string $connector_id = null,
     ): JsonResponse {
         try {
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
-
             $payload = $request->json()->all();
 
             $location = $this->locationSearch(
@@ -56,13 +54,16 @@ class PutController extends Controller
 
                 // New EVSE.
                 if ($locationEvse === null) {
-                    if (! $this->evseCreate(
-                        payload: $payload,
-                        location: $location,
-                        evse_uid: $evse_uid,
-                    )) {
-                        DB::connection(config('ocpi.database.connection'))->rollback();
-
+                    if (
+                        ! DB::connection(config('ocpi.database.connection'))
+                            ->transaction(function () use ($payload, $location, $evse_uid) {
+                                return $this->evseCreate(
+                                    payload: $payload,
+                                    location: $location,
+                                    evse_uid: $evse_uid,
+                                );
+                            })
+                    ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
                         );
@@ -70,25 +71,31 @@ class PutController extends Controller
                 } else {
                     // Replaced EVSE.
                     if ($connector_id === null) {
-                        if (! $this->evseReplace(
-                            payload: $payload,
-                            locationEvse: $locationEvse,
-                        )) {
-                            DB::connection(config('ocpi.database.connection'))->rollback();
-
+                        if (
+                            ! DB::connection(config('ocpi.database.connection'))
+                                ->transaction(function () use ($payload, $locationEvse) {
+                                    return $this->evseReplace(
+                                        payload: $payload,
+                                        locationEvse: $locationEvse,
+                                    );
+                                })
+                        ) {
                             return $this->ocpiClientErrorResponse(
                                 statusCode: OcpiClientErrorCode::NotEnoughInformation,
                             );
                         }
                     } // New or replaced Connector.
                     else {
-                        if (! $this->connectorCreateOrReplace(
-                            payload: $payload,
-                            connector_id: $connector_id,
-                            locationEvse: $locationEvse,
-                        )) {
-                            DB::connection(config('ocpi.database.connection'))->rollback();
-
+                        if (
+                            ! DB::connection(config('ocpi.database.connection'))
+                                ->transaction(function () use ($payload, $connector_id, $locationEvse) {
+                                    return $this->connectorCreateOrReplace(
+                                        payload: $payload,
+                                        connector_id: $connector_id,
+                                        locationEvse: $locationEvse,
+                                    );
+                                })
+                        ) {
                             return $this->ocpiClientErrorResponse(
                                 statusCode: OcpiClientErrorCode::NotEnoughInformation,
                             );
@@ -100,25 +107,31 @@ class PutController extends Controller
             else {
                 // New Location.
                 if ($location === null) {
-                    if (! $this->locationCreate(
-                        payload: $payload,
-                        party_role_id: Context::get('party_role_id'),
-                        location_id: $location_id,
-                    )) {
-                        DB::connection(config('ocpi.database.connection'))->rollback();
-
+                    if (
+                        ! DB::connection(config('ocpi.database.connection'))
+                            ->transaction(function () use ($payload, $location_id) {
+                                return $this->locationCreate(
+                                    payload: $payload,
+                                    party_role_id: Context::get('party_role_id'),
+                                    location_id: $location_id,
+                                );
+                            })
+                    ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
                         );
                     }
                 } else {
                     // Replaced Location.
-                    if (! $this->locationReplace(
-                        payload: $payload,
-                        location: $location,
-                    )) {
-                        DB::connection(config('ocpi.database.connection'))->rollback();
-
+                    if (
+                        ! DB::connection(config('ocpi.database.connection'))
+                            ->transaction(function () use ($payload, $location) {
+                                return $this->locationReplace(
+                                    payload: $payload,
+                                    location: $location,
+                                );
+                            })
+                    ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
                         );
@@ -126,12 +139,8 @@ class PutController extends Controller
                 }
             }
 
-            DB::connection(config('ocpi.database.connection'))->commit();
-
             return $this->ocpiSuccessResponse();
         } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollback();
-
             Log::channel('ocpi')->error($e->getMessage());
 
             return $this->ocpiServerErrorResponse();
