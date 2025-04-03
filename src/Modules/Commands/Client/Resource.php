@@ -17,89 +17,81 @@ class Resource extends OcpiResource
 {
     public function reserveNow(PartyRole $partyRole, array $payload): void
     {
-        try {
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
+        $command = DB::connection(config('ocpi.database.connection'))
+            ->transaction(function () use ($partyRole, $payload) {
+                $command = Command::create([
+                    'party_role_id' => $partyRole->id,
+                    'type' => CommandType::RESERVE_NOW,
+                ]);
 
-            $command = Command::create([
-                'party_role_id' => $partyRole->id,
-                'type' => CommandType::RESERVE_NOW,
-            ]);
+                $payload['response_url'] = $this->responseUrl($partyRole, $command);
 
-            $payload['response_url'] = $this->responseUrl($partyRole, $command);
+                $command->payload = $payload;
+                $command->save();
 
-            $command->payload = $payload;
-            $command->save();
+                return $command;
+            });
 
-            DB::connection(config('ocpi.database.connection'))->commit();
+        $response = $this->requestPostSend(
+            payload: $command->payload->toArray(),
+            endpoint: $command->type->name,
+        );
 
-            $response = $this->requestPostSend(
-                payload: $command->payload->toArray(),
-                endpoint: $command->type->name,
-            );
+        $commandResponseType = CommandResponseType::fromName($response);
+        if (! $commandResponseType) {
+            Log::channel('ocpi')->error('Unknown CommandResponseType '.json_encode($response));
+            throw new Exception('Unknown CommandResponseType '.json_encode($response));
+        }
 
-            $commandResponseType = CommandResponseType::fromName($response);
-            if (! $commandResponseType) {
-                Log::channel('ocpi')->error('Unknown CommandResponseType '.json_encode($response));
-                throw new Exception('Unknown CommandResponseType '.json_encode($response));
-            }
+        $command->response = $commandResponseType->name;
+        $command->save();
 
-            $command->response = $commandResponseType->name;
-            $command->save();
+        if ($commandResponseType === CommandResponseType::ACCEPTED) {
+            Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
+        } else {
+            Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $command->payload);
 
-            if ($commandResponseType === CommandResponseType::ACCEPTED) {
-                Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
-            } else {
-                Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $payload);
-
-                throw new Exception('Command not accepted');
-            }
-        } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollBack();
-            throw $e;
+            throw new Exception('Command not accepted');
         }
     }
 
     public function cancelReservation(PartyRole $partyRole, array $payload): void
     {
-        try {
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
+        $command = DB::connection(config('ocpi.database.connection'))
+            ->transaction(function () use ($partyRole, $payload) {
+                $command = Command::create([
+                    'party_role_id' => $partyRole->id,
+                    'type' => CommandType::CANCEL_RESERVATION,
+                ]);
 
-            $command = Command::create([
-                'party_role_id' => $partyRole->id,
-                'type' => CommandType::CANCEL_RESERVATION,
-            ]);
+                $payload['response_url'] = $this->responseUrl($partyRole, $command);
 
-            $payload['response_url'] = $this->responseUrl($partyRole, $command);
+                $command->payload = $payload;
+                $command->save();
 
-            $command->payload = $payload;
-            $command->save();
+                return $command;
+            });
 
-            DB::connection(config('ocpi.database.connection'))->commit();
+        $response = $this->requestPostSend(
+            payload: $command->payload->toArray(),
+            endpoint: $command->type->name,
+        );
 
-            $response = $this->requestPostSend(
-                payload: $command->payload->toArray(),
-                endpoint: $command->type->name,
-            );
+        $commandResponseType = CommandResponseType::fromName($response);
+        if (! $commandResponseType) {
+            Log::channel('ocpi')->error('Unknown CommandResponseType '.json_encode($response));
+            throw new Exception('Unknown CommandResponseType '.json_encode($response));
+        }
 
-            $commandResponseType = CommandResponseType::fromName($response);
-            if (! $commandResponseType) {
-                Log::channel('ocpi')->error('Unknown CommandResponseType '.json_encode($response));
-                throw new Exception('Unknown CommandResponseType '.json_encode($response));
-            }
+        $command->response = $commandResponseType->name;
+        $command->save();
 
-            $command->response = $commandResponseType->name;
-            $command->save();
+        if ($commandResponseType === CommandResponseType::ACCEPTED) {
+            Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
+        } else {
+            Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $command->payload);
 
-            if ($commandResponseType === CommandResponseType::ACCEPTED) {
-                Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
-            } else {
-                Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $payload);
-
-                throw new Exception('Command not accepted');
-            }
-        } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollBack();
-            throw $e;
+            throw new Exception('Command not accepted');
         }
     }
 
