@@ -34,18 +34,17 @@ class DeleteController extends Controller
         }
 
         try {
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
+            DB::connection(config('ocpi.database.connection'))
+                ->transaction(function () use ($party) {
+                    $party->registered = false;
+                    $party->save();
+                    $party->delete();
 
-            $party->registered = false;
-            $party->save();
-            $party->delete();
-
-            DB::connection(config('ocpi.database.connection'))->commit();
+                    $party->roles()->delete();
+                });
 
             return $this->ocpiSuccessResponse();
         } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollback();
-
             Log::channel('ocpi')->error($e->getMessage());
 
             return $this->ocpiServerErrorResponse(
