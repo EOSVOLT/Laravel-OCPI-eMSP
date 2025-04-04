@@ -64,29 +64,24 @@ class PostController extends Controller
                 );
             }
 
-            DB::connection(config('ocpi.database.connection'))->beginTransaction();
+            // New CDR.
+            $cdr = DB::connection(config('ocpi.database.connection'))
+                ->transaction(function () use ($payload, $partyRoleId, $locationEvse) {
+                    return $this->cdrCreate(
+                        payload: $payload,
+                        party_role_id: $partyRoleId,
+                        location_evse_emsp_id: $locationEvse?->emsp_id,
+                    );
+                });
 
-            if (! ($cdr = $this->cdrCreate(
-                payload: $payload,
-                party_role_id: $partyRoleId,
-                location_evse_emsp_id: $locationEvse?->emsp_id,
-
-            ))) {
-                DB::connection(config('ocpi.database.connection'))->rollback();
-
-                return $this->ocpiClientErrorResponse(
+            return $cdr
+                // Add Location header with CDR GET URL.
+                ? $this->ocpiSuccessResponse()
+                    ->header('Location', $this->cdrRoute($cdr))
+                : $this->ocpiClientErrorResponse(
                     statusCode: OcpiClientErrorCode::NotEnoughInformation,
                 );
-            }
-
-            DB::connection(config('ocpi.database.connection'))->commit();
-
-            // Add Location header with CDR GET URL.
-            return $this->ocpiSuccessResponse()
-                ->header('Location', $this->cdrRoute($cdr));
         } catch (Exception $e) {
-            DB::connection(config('ocpi.database.connection'))->rollback();
-
             Log::channel('ocpi')->error($e->getMessage());
 
             return $this->ocpiServerErrorResponse();
