@@ -2,8 +2,12 @@
 
 namespace Ocpi\Models\Commands\Enums;
 
+use Ocpi\Support\Traits\Enums\FromName;
+
 enum CommandResultType
 {
+    use FromName;
+
     case ACCEPTED;
     case CANCELED_RESERVATION;
     case EVSE_OCCUPIED;
