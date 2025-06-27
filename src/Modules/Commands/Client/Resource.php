@@ -50,8 +50,6 @@ class Resource extends OcpiResource
             Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
         } else {
             Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $command->payload);
-
-            throw new Exception('Command not accepted');
         }
     }
 
@@ -90,8 +88,6 @@ class Resource extends OcpiResource
             Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
         } else {
             Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $command->payload);
-
-            throw new Exception('Command not accepted');
         }
     }
 
