@@ -33,6 +33,15 @@ return [
                 'sessions',
             ],
         ],
+        '2.2.1' => [
+            'modules' => [
+                'cdrs',
+                'commands',
+                'credentials',
+                'locations',
+                'sessions',
+            ],
+        ],
     ],
 
     /*
