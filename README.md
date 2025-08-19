@@ -26,7 +26,7 @@ Laravel package for OCPI ([Open Charge Point Interface](https://github.com/ocpi/
 You can install the package via composer:
 
 ```bash
-composer require codivores/laravel-ocpi-emsp
+composer require eosvolt/laravel-ocpi-emsp
 ```
 
 If you want to customize the eMSP configuration (party information, versions and available modules), you can publish the dedicated config file:
