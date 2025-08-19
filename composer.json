@@ -1,7 +1,7 @@
 {
-    "name": "codivores/laravel-ocpi-emsp",
+    "name": "eosvolt/laravel-ocpi-emsp",
     "description": "A Laravel package for OCPI (Open Charge Point Interface) protocol as eMSP (e-Mobility Service Provider).",
-    "homepage": "https://github.com/Codivores/Laravel-OCPI-eMSP",
+    "homepage": "https://github.com/EOSVOLT/Laravel-OCPI-eMSP",
     "keywords": [
         "laravel",
         "laravel-ocpi-emsp",
@@ -13,14 +13,14 @@
     "license": "proprietary",
     "authors": [
         {
-            "name": "codivores",
-            "email": "tech@codivores.com",
+            "name": "eosvolt",
+            "email": "tech@eosvolt.com",
             "role": "Developer"
         }
     ],
     "require": {
-        "php": "^8.2",
-        "illuminate/contracts": "^11.0",
+        "php": "^8.4",
+        "illuminate/contracts": "^12.0",
         "saloonphp/laravel-plugin": "^3.0",
         "saloonphp/saloon": "^3.0"
     },
