@@ -22,5 +22,5 @@ Route::middleware([
     ->prefix(config('ocpi.server.routing_cpo.uri_prefix'))
     ->name(config('ocpi.server.routing_cpo.name_prefix'))
     ->group(
-        __DIR__ . '../../../Modules/Versions/Server/Endpoints/CPO/common.php'
+        __DIR__ . '/../../../Modules/Versions/Server/Endpoints/CPO/common.php'
     );
