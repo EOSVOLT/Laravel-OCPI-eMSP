@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Credentials\Console\Commands;
+namespace Ocpi\Modules\Credentials\Console\Commands\EMSP;
 
 use Exception;
 use Illuminate\Console\Command;
@@ -13,7 +13,7 @@ class Initialize extends Command
      *
      * @var string
      */
-    protected $signature = 'ocpi:credentials:initialize';
+    protected $signature = 'ocpi:emsp:credentials:initialize';
 
     /**
      * The console command description.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Credentials\Console\Commands;
+namespace Ocpi\Modules\Credentials\Console\Commands\EMSP;
 
 use Exception;
 use Illuminate\Console\Command;
@@ -12,21 +12,23 @@ use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\Client;
 
-class Update extends Command implements PromptsForMissingInput
+use function Ocpi\Modules\Credentials\Console\Commands\config;
+
+class Register extends Command implements PromptsForMissingInput
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'ocpi:credentials:update {party_code} {--without_new_client_token}';
+    protected $signature = 'ocpi:emsp:credentials:register {party_code}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Credentials update with a "Receiver" Party';
+    protected $description = 'Credentials exchange with a new "Receiver" Party';
 
     /**
      * Execute the console command.
@@ -36,8 +38,7 @@ class Update extends Command implements PromptsForMissingInput
         SelfCredentialsGetAction $selfCredentialsGetAction,
     ) {
         $partyCode = $this->argument('party_code');
-        $generateNewClientToken = ! ($this->option('without_new_client_token') ?? false);
-        $this->info('Starting credentials update with '.$partyCode.($generateNewClientToken ? ' with' : ' without').' new OCPI Client Token');
+        $this->info('Starting credentials exchange with '.$partyCode);
 
         // Retrieve the Party.
         $party = Party::where('code', $partyCode)->first();
@@ -47,8 +48,8 @@ class Update extends Command implements PromptsForMissingInput
             return Command::FAILURE;
         }
 
-        if ($party->registered === false) {
-            $this->error('Party not registered.');
+        if ($party->registered === true) {
+            $this->error('Party already registered.');
 
             return Command::FAILURE;
         }
@@ -61,25 +62,24 @@ class Update extends Command implements PromptsForMissingInput
             $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party);
 
             // Generate new Client Token for the Party.
-            if ($generateNewClientToken) {
-                $party->client_token = $party->generateToken();
-                $this->info('  - Generate, store new OCPI Client Token: '.$party->client_token);
-                $party->save();
-            }
+            $party->client_token = $party->generateToken();
+            $this->info('  - Generate, store new OCPI Client Token: '.$party->client_token);
+            $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();
 
             DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
-            // OCPI PUT call to update the Credentials and get new Server Token.
-            $this->info('  - Call Party OCPI - PUT - Credentials endpoint with new Client Token');
+            // OCPI POST call to update the Credentials and get new Server Token.
+            $this->info('  - Call Party OCPI - POST - Credentials endpoint with new Client Token');
             $ocpiClient = new Client($party, 'credentials');
-            $credentialsPutData = $ocpiClient->credentials()->put($selfCredentialsGetAction->handle($party));
-            $credentialsInput = CredentialsValidator::validate($credentialsPutData);
+            $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($party));
+            $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
-            // Store received OCPI Server Token.
-            $this->info('  - Store received OCPI Server Token: '.$credentialsInput['token']);
+            // Store received OCPI Server Token, mark the Party as registered.
+            $this->info('  - Store received OCPI Server Token: '.$credentialsInput['token'].', mark the Party as registered');
             $party->server_token = Party::decodeToken($credentialsInput['token'], $party);
+            $party->registered = true;
             $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();

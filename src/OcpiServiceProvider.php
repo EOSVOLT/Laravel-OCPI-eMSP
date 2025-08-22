@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ocpi;
 
 use Illuminate\Support\ServiceProvider;
-use Ocpi\Modules\Credentials\Console\Commands\Initialize as ModuleCredentialsInitialize;
-use Ocpi\Modules\Credentials\Console\Commands\Register as ModuleCredentialsRegister;
-use Ocpi\Modules\Credentials\Console\Commands\Update as ModuleCredentialsUpdate;
+use Ocpi\Modules\Credentials\Console\Commands\EMSP\Initialize as ModuleCredentialsInitialize;
+use Ocpi\Modules\Credentials\Console\Commands\EMSP\Register as ModuleCredentialsRegister;
+use Ocpi\Modules\Credentials\Console\Commands\EMSP\Update as ModuleCredentialsUpdate;
 use Ocpi\Modules\Locations\Console\Commands\Synchronize as ModuleLocationsSynchronize;
 use Ocpi\Modules\Versions\Console\Commands\Update as ModuleVersionsUpdate;
 

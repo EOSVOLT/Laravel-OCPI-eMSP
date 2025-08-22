@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
-class IdentifyVersion
+class IdentifyEMSPVersion
 {
     public function handle(Request $request, Closure $next): Response
     {
