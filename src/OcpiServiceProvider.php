@@ -69,6 +69,9 @@ class OcpiServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/ocpi-emsp.php' => config_path('ocpi-emsp.php'),
         ], 'ocpi-emsp-config');
+        $this->publishes([
+            __DIR__.'/../config/ocpi-cpo.php' => config_path('ocpi-cpo.php'),
+        ], 'ocpi-cpo-config');
     }
 
     private function registerCommands(): void
