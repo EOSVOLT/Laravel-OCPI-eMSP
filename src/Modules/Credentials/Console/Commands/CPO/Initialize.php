@@ -32,7 +32,7 @@ class Initialize extends Command
         $input = [];
         $input['name'] = $this->ask('Party name');
         $input['code'] = $partyId;
-        $input['url'] = config('ocpi.client.server.url').'/versions';
+        $input['url'] = config('ocpi.server.routing.cpo.uri_prefix').'/versions';
         $input['server_token'] = Str::random(32);
         try {
             /** @var Party $party */

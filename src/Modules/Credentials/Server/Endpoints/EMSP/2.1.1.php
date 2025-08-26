@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Ocpi\Modules\Credentials\Server\Controllers\DeleteController;
+use Ocpi\Modules\Credentials\Server\Controllers\EMSP\V2_1_1\PostController;
+use Ocpi\Modules\Credentials\Server\Controllers\EMSP\V2_1_1\PutController;
 use Ocpi\Modules\Credentials\Server\Controllers\GetController;
-use Ocpi\Modules\Credentials\Server\Controllers\V2_1_1\PostController;
-use Ocpi\Modules\Credentials\Server\Controllers\V2_1_1\PutController;
 
 Route::prefix('credentials')
     ->name('credentials')

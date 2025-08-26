@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Modules\Commands\Server\Controllers\V2_1_1\GetController;
-use Ocpi\Modules\Commands\Server\Controllers\V2_1_1\PostController;
+use Ocpi\Modules\Commands\Server\Controllers\EMSP\V2_1_1\GetController;
+use Ocpi\Modules\Commands\Server\Controllers\EMSP\V2_1_1\PostController;
 
 Route::prefix('commands')
     ->name('commands')

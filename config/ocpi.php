@@ -11,12 +11,14 @@ return [
     'server' => [
         'enabled' => env('OCPI_SERVER_ENABLED', true),
         'routing' => [
-            'uri_prefix' => env('OCPI_SERVER_ROUTING_URI_PREFIX', 'ocpi/emsp'),
-            'name_prefix' => env('OCPI_SERVER_ROUTING_NAME_PREFIX', 'ocpi.emsp.'),
-        ],
-        'routing_cpo' => [
-            'uri_prefix' => env('OCPI_CPO_SERVER_ROUTING_URI_PREFIX', 'ocpi/cpo'),
-            'name_prefix' => env('OCPI_CPO_SERVER_ROUTING_NAME_PREFIX', 'ocpi.cpo.'),
+            'cpo' => [
+                'uri_prefix' => env('OCPI_CPO_SERVER_ROUTING_URI_PREFIX', 'ocpi/cpo'),
+                'name_prefix' => env('OCPI_CPO_SERVER_ROUTING_NAME_PREFIX', 'ocpi.cpo.')
+            ],
+            'emsp' => [
+                'uri_prefix' => env('OCPI_SERVER_ROUTING_URI_PREFIX', 'ocpi/emsp'),
+                'name_prefix' => env('OCPI_SERVER_ROUTING_NAME_PREFIX', 'ocpi.emsp.')
+            ]
         ],
     ],
 

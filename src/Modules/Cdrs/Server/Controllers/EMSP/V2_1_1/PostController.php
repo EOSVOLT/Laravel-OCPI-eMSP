@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Cdrs\Server\Controllers\V2_1_1;
+namespace Ocpi\Modules\Cdrs\Server\Controllers\EMSP\V2_1_1;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +14,8 @@ use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
+
+use function Ocpi\Modules\Cdrs\Server\Controllers\V2_1_1\config;
 
 class PostController extends Controller
 {

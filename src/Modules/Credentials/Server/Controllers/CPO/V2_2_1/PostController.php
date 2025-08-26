@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Credentials\Server\Controllers\V2_1_1;
+namespace Ocpi\Modules\Credentials\Server\Controllers\CPO\V2_2_1;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -19,7 +19,9 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
-class PutController extends Controller
+use function Ocpi\Modules\Credentials\Server\Controllers\V2_1_1\config;
+
+class PostController extends Controller
 {
     public function __invoke(
         Request $request,
@@ -40,19 +42,20 @@ class PutController extends Controller
                 );
             }
 
-            if ($party->registered === false) {
+            if ($party->registered === true) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
-                    statusMessage: 'Client not registered.',
+                    statusMessage: 'Client already registered.',
                     httpCode: 405,
                 );
             }
 
             $party = DB::connection(config('ocpi.database.connection'))
                 ->transaction(function () use ($party, $request, $input, $versionsPartyInformationAndDetailsSynchronizeAction) {
-                    // Update Server Token, url for the Party.
-                    $party->server_token = $request->has('token') ? Party::decodeToken($input['token'], $party) : $party->server_token;
-                    $party->url = $request->input('url', $party->url);
+                    // Update Server Token, url for the Party and mark it as registered.
+                    $party->server_token = Party::decodeToken($input['token'], $party);
+                    $party->url = $request->input('url');
+                    $party->registered = true;
 
                     // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
                     $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party);
@@ -94,9 +97,9 @@ class PutController extends Controller
                     return $party;
                 });
 
-            Events\CredentialsUpdated::dispatch($party->id, $request->json()->all());
+            Events\CredentialsCreated::dispatch($party->id, $request->json()->all());
 
-            return $this->ocpiSuccessResponse(
+            return $this->ocpiCreatedResponse(
                 $selfCredentialsGetAction->handle($party)
             );
         } catch (ValidationException $e) {

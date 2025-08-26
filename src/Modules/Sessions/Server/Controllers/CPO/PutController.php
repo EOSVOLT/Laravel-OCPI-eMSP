@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Sessions\Server\Controllers;
+namespace Ocpi\Modules\Sessions\Server\Controllers\CPO;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -48,7 +48,7 @@ class PutController extends Controller
 
                 // New Session.
                 if (
-                    ! DB::connection(config('ocpi.database.connection'))
+                    !DB::connection(config('ocpi.database.connection'))
                         ->transaction(function () use ($payload, $session_id, $locationEvse) {
                             return $this->sessionCreate(
                                 payload: $payload,
@@ -65,7 +65,7 @@ class PutController extends Controller
             } else {
                 // Replaced Session.
                 if (
-                    ! DB::connection(config('ocpi.database.connection'))
+                    !DB::connection(config('ocpi.database.connection'))
                         ->transaction(function () use ($payload, $session) {
                             return $this->sessionReplace(
                                 payload: $payload,

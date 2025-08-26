@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Cdrs\Server\Controllers\V2_1_1;
+namespace Ocpi\Modules\Cdrs\Server\Controllers\CPO\V2_2_1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

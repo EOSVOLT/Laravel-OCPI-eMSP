@@ -1,6 +1,5 @@
 <?php
-
-namespace Ocpi\Modules\Versions\Server\Controllers;
+namespace Ocpi\Modules\Versions\Server\Controllers\EMSP;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,18 +23,20 @@ class DetailsController extends Controller
         $version = Context::get('ocpi_version');
         $data = null;
 
-        foreach (config('ocpi-emsp.versions', []) as $configVersion => $configInformation) {
+        foreach (
+            config('ocpi-emsp.versions', []
+            ) as $configVersion => $configInformation) {
             if ($configVersion === $version) {
                 $routeVersion = Str::replace('.', '_', $version);
 
                 $endpointList = collect(($configInformation['modules'] ?? []))
                     ->map(function ($module) use ($routeVersion) {
-                        $route = config('ocpi.server.routing.name_prefix').$routeVersion.'.'.$module;
+                        $route = config('ocpi.server.routing.emsp.name_prefix') .$routeVersion.'.'.$module;
 
                         return Route::has($route)
                             ? [
                                 'identifier' => $module,
-                                'url' => route($route),
+                                'url' => \Ocpi\Modules\Versions\Server\Controllers\route($route),
                             ]
                             : null;
                     })

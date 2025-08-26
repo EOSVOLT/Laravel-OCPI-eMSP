@@ -12,8 +12,8 @@ Route::middleware([
     IdentifyParty::class,
     IdentifyEMSPVersion::class,
 ])
-    ->prefix(config('ocpi.server.routing.uri_prefix'))
-    ->name(config('ocpi.server.routing.name_prefix'))
+    ->prefix(config('ocpi.server.routing.emsp.uri_prefix'))
+    ->name(config('ocpi.server.routing.emsp.name_prefix'))
     ->group(function () {
         foreach (config('ocpi-emsp.versions', []) as $version => $versionConfiguration) {
             if (count($versionConfiguration['modules'] ?? []) > 0) {
@@ -36,8 +36,8 @@ Route::middleware([
     IdentifyParty::class,
     IdentifyEMSPVersion::class,
 ])
-    ->prefix(config('ocpi.server.routing_cpo.uri_prefix'))
-    ->name(config('ocpi.server.routing_cpo.name_prefix'))
+    ->prefix(config('ocpi.server.routing.cpo.uri_prefix'))
+    ->name(config('ocpi.server.routing.cpo.name_prefix'))
     ->group(function () {
         foreach (config('ocpi-cpo.versions', []) as $version => $versionConfiguration) {
             if (count($versionConfiguration['modules'] ?? []) > 0) {

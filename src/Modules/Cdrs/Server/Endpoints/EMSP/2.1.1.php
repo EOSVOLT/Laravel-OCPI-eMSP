@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Modules\Cdrs\Server\Controllers\V2_1_1\GetController;
-use Ocpi\Modules\Cdrs\Server\Controllers\V2_1_1\PostController;
+use Ocpi\Modules\Cdrs\Server\Controllers\EMSP\V2_1_1\GetController;
+use Ocpi\Modules\Cdrs\Server\Controllers\EMSP\V2_1_1\PostController;
 
 Route::prefix('cdrs')
     ->name('cdrs')

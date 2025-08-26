@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Server\Controllers;
+namespace Ocpi\Modules\Locations\Server\Controllers\CPO;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -55,7 +55,7 @@ class PutController extends Controller
                 // New EVSE.
                 if ($locationEvse === null) {
                     if (
-                        ! DB::connection(config('ocpi.database.connection'))
+                        !DB::connection(config('ocpi.database.connection'))
                             ->transaction(function () use ($payload, $location, $evse_uid) {
                                 return $this->evseCreate(
                                     payload: $payload,
@@ -72,7 +72,7 @@ class PutController extends Controller
                     // Replaced EVSE.
                     if ($connector_id === null) {
                         if (
-                            ! DB::connection(config('ocpi.database.connection'))
+                            !DB::connection(config('ocpi.database.connection'))
                                 ->transaction(function () use ($payload, $locationEvse) {
                                     return $this->evseReplace(
                                         payload: $payload,
@@ -87,7 +87,7 @@ class PutController extends Controller
                     } // New or replaced Connector.
                     else {
                         if (
-                            ! DB::connection(config('ocpi.database.connection'))
+                            !DB::connection(config('ocpi.database.connection'))
                                 ->transaction(function () use ($payload, $connector_id, $locationEvse) {
                                     return $this->connectorCreateOrReplace(
                                         payload: $payload,
@@ -102,13 +102,12 @@ class PutController extends Controller
                         }
                     }
                 }
-
             } // Location.
             else {
                 // New Location.
                 if ($location === null) {
                     if (
-                        ! DB::connection(config('ocpi.database.connection'))
+                        !DB::connection(config('ocpi.database.connection'))
                             ->transaction(function () use ($payload, $location_id) {
                                 return $this->locationCreate(
                                     payload: $payload,
@@ -124,7 +123,7 @@ class PutController extends Controller
                 } else {
                     // Replaced Location.
                     if (
-                        ! DB::connection(config('ocpi.database.connection'))
+                        !DB::connection(config('ocpi.database.connection'))
                             ->transaction(function () use ($payload, $location) {
                                 return $this->locationReplace(
                                     payload: $payload,

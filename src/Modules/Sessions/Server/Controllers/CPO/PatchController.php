@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Sessions\Server\Controllers;
+namespace Ocpi\Modules\Sessions\Server\Controllers\CPO;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -39,7 +39,7 @@ class PatchController extends Controller
 
             // Updated Session.
             if (
-                ! DB::connection(config('ocpi.database.connection'))
+                !DB::connection(config('ocpi.database.connection'))
                     ->transaction(function () use ($payload, $session) {
                         return $this->sessionObjectUpdate(
                             payload: $payload,

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Modules\Versions\Server\Controllers\InformationController;
+use Ocpi\Modules\Versions\Server\Controllers\CPO\InformationController;
 
 Route::name('versions.')
     ->group(function () {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Server\Controllers;
+namespace Ocpi\Modules\Locations\Server\Controllers\EMSP;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -46,7 +46,7 @@ class PatchController extends Controller
                 // Updated EVSE.
                 if ($connector_id === null) {
                     if (
-                        ! DB::connection(config('ocpi.database.connection'))
+                        !DB::connection(config('ocpi.database.connection'))
                             ->transaction(function () use ($payload, $locationEvse) {
                                 return $this->evseObjectUpdate(
                                     payload: $payload,
@@ -73,7 +73,7 @@ class PatchController extends Controller
                     }
 
                     if (
-                        ! DB::connection(config('ocpi.database.connection'))
+                        !DB::connection(config('ocpi.database.connection'))
                             ->transaction(function () use ($payload, $locationConnector, $locationEvse) {
                                 return $this->connectorObjectUpdate(
                                     payload: $payload,
@@ -87,7 +87,6 @@ class PatchController extends Controller
                         );
                     }
                 }
-
             } // Location.
             else {
                 $location = $this->locationSearch(
@@ -105,7 +104,7 @@ class PatchController extends Controller
 
                 // Updated Location.
                 if (
-                    ! DB::connection(config('ocpi.database.connection'))
+                    !DB::connection(config('ocpi.database.connection'))
                         ->transaction(function () use ($payload, $location) {
                             return $this->locationObjectUpdate(
                                 payload: $payload,

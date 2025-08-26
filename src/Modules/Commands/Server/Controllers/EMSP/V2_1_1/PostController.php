@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Commands\Server\Controllers\V2_1_1;
+namespace Ocpi\Modules\Commands\Server\Controllers\EMSP\V2_1_1;
 
 use Exception;
 use Illuminate\Http\JsonResponse;

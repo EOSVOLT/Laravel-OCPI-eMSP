@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Support\Models\Model;
 
+/**
+ * @property string $role
+ */
 class PartyRole extends Model
 {
     use SoftDeletes;

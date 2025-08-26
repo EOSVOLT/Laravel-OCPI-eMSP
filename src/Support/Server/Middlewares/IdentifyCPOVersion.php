@@ -12,7 +12,7 @@ class IdentifyCPOVersion
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $path = Str::before(Str::after($request->path(), config('ocpi.server.routing_cpo.uri_prefix').'/'), '/');
+        $path = Str::before(Str::after($request->path(), config('ocpi.server.routing.cpo.uri_prefix').'/'), '/');
 
         if (Str::contains($path, '.')) {
             Context::add('ocpi_version', $path);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Versions\Server\Controllers;
+namespace Ocpi\Modules\Versions\Server\Controllers\CPO;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,9 +12,13 @@ class InformationController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $data = collect(config('ocpi-emsp.versions', []))
+        $data = collect(config('ocpi-cpo.versions', []))
             ->map(function ($moduleList, $version) {
-                $route = config('ocpi.server.routing.name_prefix').Str::replace('.', '_', $version).'.versions.details';
+                $route = config('ocpi.server.routing.cpo.name_prefix') . Str::replace(
+                        '.',
+                        '_',
+                        $version
+                    ) . '.versions.details';
 
                 return Route::has($route)
                     ? [
