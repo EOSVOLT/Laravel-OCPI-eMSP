@@ -2,8 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Ocpi\Support\Server\Middlewares\IdentifyParty;
 use Ocpi\Support\Server\Middlewares\IdentifyEMSPVersion;
+use Ocpi\Support\Server\Middlewares\IdentifyParty;
 use Ocpi\Support\Server\Middlewares\LogRequest;
 
 Route::middleware([
@@ -21,10 +21,16 @@ Route::middleware([
                     ->name(Str::replace('.', '_', $version) . 'Endpoints')
                     ->group(function () use ($version, $versionConfiguration) {
                         Route::middleware([])
-                            ->group(__DIR__ . '/../../../../Modules/Versions/Server/Endpoints/CPO/' .$version.'.php');
+                            ->group(
+                                __DIR__ . '/../../../../Modules/Versions/Server/Endpoints/CPO/' . $version . '.php'
+                            );
                         foreach ($versionConfiguration['modules'] as $module) {
                             Route::middleware([])
-                                ->group(__DIR__ . '/../../../../Modules/' .Str::ucfirst($module).'/Server/Endpoints/CPO/'.$version.'.php');
+                                ->group(
+                                    __DIR__ . '/../../../../Modules/' . Str::ucfirst(
+                                        $module
+                                    ) . '/Server/Endpoints/CPO/' . $version . '.php'
+                                );
                         }
                     });
             }
