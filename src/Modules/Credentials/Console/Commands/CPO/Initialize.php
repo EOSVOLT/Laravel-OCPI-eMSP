@@ -28,15 +28,20 @@ class Initialize extends Command
      */
     public function handle()
     {
-        $partyId = $this->generateUniquePartyId();
         $input = [];
         $input['name'] = $this->ask('Party name');
+        if (Party::where('name', $input['name'])->exists()) {
+            $this->error('Party name already exists.');
+
+            return Command::FAILURE;
+        }
+        $partyId = $this->generateUniquePartyId();
         $input['code'] = $partyId;
-        $input['url'] = config('ocpi.server.routing.cpo.uri_prefix').'/versions';
+        $input['url'] = config('ocpi.server.routing.cpo.uri_prefix') . '/versions';
         $input['server_token'] = Str::random(32);
         try {
             /** @var Party $party */
-            $party = Party::create($input);
+            $party = Party::query()->create($input);
         } catch (Exception $e) {
             $this->error('Error creating Party.');
             $this->newLine(2);
@@ -45,8 +50,11 @@ class Initialize extends Command
             return Command::FAILURE;
         }
 
-        $this->info('Party "'.$party->code.'" created successfully.');
-        $this->info('Credentials exchange can be launch executing: php artisan ocpi:credentials:register '.$party->server_token);
+        $this->info('Party "' . $party->code . '" created successfully.');
+        $this->info('Token A "' . $party->server_token . '" created successfully.');
+        $this->info(
+            'Credentials has been created, please share it to your 3rd party system and let them initiate the handshake.'
+        );
 
         return Command::SUCCESS;
     }
@@ -54,8 +62,8 @@ class Initialize extends Command
     private function generateUniquePartyId(): string
     {
         do {
-            $randomString = Str::random(3); // Or your desired length
-        } while (Party::query()->where('code', $randomString)->exists());
+            $randomString = Str::random(3);
+        } while (false === Party::query()->where('code', $randomString)->exists());
 
         return $randomString;
     }

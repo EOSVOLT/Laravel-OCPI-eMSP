@@ -3,13 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Ocpi\Support\Server\Middlewares\IdentifyEMSPVersion;
-use Ocpi\Support\Server\Middlewares\IdentifyParty;
+use Ocpi\Support\Server\Middlewares\IdentifyReceiverParty;
 use Ocpi\Support\Server\Middlewares\LogRequest;
 
 Route::middleware([
     'api',
     LogRequest::class,
-    IdentifyParty::class,
+    IdentifyReceiverParty::class,
     IdentifyEMSPVersion::class,
 ])
     ->prefix(config('ocpi.server.routing.emsp.uri_prefix'))

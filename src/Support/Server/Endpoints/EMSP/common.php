@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Support\Server\Middlewares\IdentifyParty;
+use Ocpi\Support\Server\Middlewares\IdentifyReceiverParty;
 use Ocpi\Support\Server\Middlewares\LogRequest;
 
 Route::middleware([
     'api',
     LogRequest::class,
-    IdentifyParty::class,
+    IdentifyReceiverParty::class,
 ])
     ->prefix(config('ocpi.server.routing.emsp.uri_prefix'))
     ->name(config('ocpi.server.routing.emsp.name_prefix'))

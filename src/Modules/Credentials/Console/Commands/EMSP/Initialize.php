@@ -51,8 +51,10 @@ class Initialize extends Command
             return Command::FAILURE;
         }
 
-        $this->info('Party "'.$party->code.'" created successfully.');
-        $this->info('Credentials exchange can be launch executing: php artisan ocpi:credentials:register '.$party->code);
+        $this->info('Party "' . $party->code . '" created successfully.');
+        $this->info(
+            'Credentials exchange can be launch executing: php artisan ocpi:credentials:register ' . $party->code
+        );
 
         return Command::SUCCESS;
     }

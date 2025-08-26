@@ -12,7 +12,10 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Traits\Server\Response as ServerResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class IdentifyParty
+/**
+ * Identify a Receiver party aka CPO party
+ */
+class IdentifyReceiverParty
 {
     use ServerResponse;
 
