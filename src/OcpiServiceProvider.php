@@ -54,8 +54,13 @@ class OcpiServiceProvider extends ServiceProvider
         if (config('ocpi.server.enabled', false) === true) {
             $emspVersionList = config('ocpi-emsp.versions', []);
             if (count($emspVersionList) > 0) {
-                $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/common.php');
-                $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/version.php');
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/EMSP/common.php');
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/EMSP/version.php');
+            }
+            $cpoVersionList = config('ocpi-cpo.versions', []);
+            if (count($cpoVersionList) > 0) {
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/CPO/common.php');
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/CPO/version.php');
             }
         }
     }
