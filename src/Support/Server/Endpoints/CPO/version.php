@@ -2,15 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Ocpi\Support\Server\Middlewares\IdentifyEMSPVersion;
-use Ocpi\Support\Server\Middlewares\IdentifyReceiverParty;
+use Ocpi\Support\Server\Middlewares\IdentifyCPOVersion;
+use Ocpi\Support\Server\Middlewares\IdentifySenderParty;
 use Ocpi\Support\Server\Middlewares\LogRequest;
 
 Route::middleware([
     'api',
     LogRequest::class,
-    IdentifyReceiverParty::class,
-    IdentifyEMSPVersion::class,
+    IdentifySenderParty::class,
+    IdentifyCPOVersion::class,
 ])
     ->prefix(config('ocpi.server.routing.cpo.uri_prefix'))
     ->name(config('ocpi.server.routing.cpo.name_prefix'))
