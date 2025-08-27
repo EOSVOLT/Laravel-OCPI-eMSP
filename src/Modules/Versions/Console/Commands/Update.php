@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
-use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
+use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
 
 class Update extends Command implements PromptsForMissingInput
 {

@@ -52,6 +52,7 @@ class Initialize extends Command
 
         $this->info('Party "' . $party->code . '" created successfully.');
         $this->info('Token A "' . $party->server_token . '" created successfully.');
+        $this->info('URL "' . $party->url . '" created successfully.');
         $this->info(
             'Credentials has been created, please share it to your 3rd party system and let them initiate the handshake.'
         );

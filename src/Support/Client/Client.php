@@ -2,24 +2,16 @@
 
 namespace Ocpi\Support\Client;
 
-use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
-use Ocpi\Modules\Cdrs\Client\Resource as CdrsResource;
-use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
-use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
-use Ocpi\Modules\Locations\Client\Resource as LocationsResource;
-use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;
-use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
-use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Response;
 use Saloon\Traits\Plugins\AcceptsJson;
 
-class Client extends Connector
+abstract class Client extends Connector
 {
     use AcceptsJson;
 
@@ -34,16 +26,6 @@ class Client extends Connector
         $this->middleware()->onResponse(new LogResponse);
     }
 
-    protected function defaultAuth(): TokenAuthenticator
-    {
-        return new TokenAuthenticator($this->party?->encoded_server_token, 'Token');
-    }
-
-    protected function defaultConfig(): array
-    {
-        return [];
-    }
-
     protected function defaultHeaders(): array
     {
         return [
@@ -52,13 +34,9 @@ class Client extends Connector
         ];
     }
 
-    public function resolveBaseUrl(): string
+    protected function defaultConfig(): array
     {
-        return match ($this->module) {
-            'versions.information' => $this->party?->url,
-            'versions.details' => $this->party?->version_url,
-            default => $this->party?->endpoints[$this->module] ?? '',
-        };
+        return [];
     }
 
     public function hasRequestFailed(Response $response): ?bool
@@ -74,48 +52,5 @@ class Client extends Connector
         }
 
         return true;
-    }
-
-    /***
-     * Methods.
-     ***/
-
-    public function module(string $module): void
-    {
-        $this->module = $module;
-    }
-
-    /***
-     * Resources.
-     ***/
-
-    public function cdrs(): CdrsResource
-    {
-        return new CdrsResource($this);
-    }
-
-    public function commands(): CommandsResource
-    {
-        return new CommandsResource($this);
-    }
-
-    public function credentials(): CredentialsResource
-    {
-        return new CredentialsResource($this);
-    }
-
-    public function locations(): LocationsResource
-    {
-        return new LocationsResource($this);
-    }
-
-    public function sessions(): SessionsResource
-    {
-        return new SessionsResource($this);
-    }
-
-    public function versions(): VersionsResource
-    {
-        return new VersionsResource($this);
     }
 }

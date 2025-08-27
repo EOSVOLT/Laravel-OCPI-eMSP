@@ -7,16 +7,22 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Ocpi\Support\Models\Model;
 
 /**
  * @property string $server_token
+ * @property string $client_token
+ * @property string $encoded_client_token
+ * @property string $encoded_server_token
  * @property string $code
  * @property string $url
  * @property string $name
  * @property string $version
- *
+ * @property string $version_url
+ * @property bool $registered
+ * @property Collection|PartyRole[] $roles
  */
 class Party extends Model
 {
@@ -34,34 +40,18 @@ class Party extends Model
         'registered',
     ];
 
-    protected function casts(): array
+    public static function encodeToken(string $token): string
     {
-        return [
-            'endpoints' => AsArrayObject::class,
-            'registered' => 'boolean',
-        ];
+        return base64_encode($token);
     }
 
-    /***
-     * Computed Attributes.
-     ***/
-
-    protected function encodedClientToken(): Attribute
+    public static function decodeToken(string $token, ?Party $party = null): false|string
     {
-        return Attribute::make(
-            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
-                ? self::encodeToken($attributes['client_token'])
-                : $attributes['client_token'],
-        );
-    }
+        if ($party && version_compare($party->version, '2.2', '<')) {
+            return $token;
+        }
 
-    protected function encodedServerToken(): Attribute
-    {
-        return Attribute::make(
-            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
-                ? self::encodeToken($attributes['server_token'])
-                : $attributes['server_token'],
-        );
+        return base64_decode($token, true);
     }
 
     /***
@@ -88,20 +78,36 @@ class Party extends Model
 
     public function generateToken(): string
     {
-        return $this->code.'_'.Str::uuid();
+        return $this->code . '_' . Str::uuid();
     }
 
-    public static function encodeToken(string $token): string
+    protected function casts(): array
     {
-        return base64_encode($token);
+        return [
+            'endpoints' => AsArrayObject::class,
+            'registered' => 'boolean',
+        ];
     }
 
-    public static function decodeToken(string $token, ?Party $party = null): false|string
-    {
-        if ($party && version_compare($party->version, '2.2', '<')) {
-            return $token;
-        }
+    /***
+     * Computed Attributes.
+     ***/
 
-        return base64_decode($token, true);
+    protected function encodedClientToken(): Attribute
+    {
+        return Attribute::make(
+            get: fn(mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+                ? self::encodeToken($attributes['client_token'])
+                : $attributes['client_token'],
+        );
+    }
+
+    protected function encodedServerToken(): Attribute
+    {
+        return Attribute::make(
+            get: fn(mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+                ? self::encodeToken($attributes['server_token'])
+                : $attributes['server_token'],
+        );
     }
 }

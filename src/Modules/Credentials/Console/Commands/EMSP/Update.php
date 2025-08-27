@@ -7,10 +7,10 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
-use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
+use Ocpi\Modules\Credentials\Actions\Party\EMSP\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
-use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
-use Ocpi\Support\Client\Client;
+use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
+use Ocpi\Support\Client\EMSPClient;
 
 use function Ocpi\Modules\Credentials\Console\Commands\config;
 
@@ -75,7 +75,7 @@ class Update extends Command implements PromptsForMissingInput
 
             // OCPI PUT call to update the Credentials and get new Server Token.
             $this->info('  - Call Party OCPI - PUT - Credentials endpoint with new Client Token');
-            $ocpiClient = new Client($party, 'credentials');
+            $ocpiClient = new EMSPClient($party, 'credentials');
             $credentialsPutData = $ocpiClient->credentials()->put($selfCredentialsGetAction->handle($party));
             $credentialsInput = CredentialsValidator::validate($credentialsPutData);
 

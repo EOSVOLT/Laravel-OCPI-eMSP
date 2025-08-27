@@ -7,10 +7,10 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
-use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
+use Ocpi\Modules\Credentials\Actions\Party\EMSP\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
-use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
-use Ocpi\Support\Client\Client;
+use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
+use Ocpi\Support\Client\EMSPClient;
 
 use function Ocpi\Modules\Credentials\Console\Commands\config;
 

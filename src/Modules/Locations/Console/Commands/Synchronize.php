@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
-use Ocpi\Support\Client\Client;
+use Ocpi\Support\Client\EMSPClient;
 
 class Synchronize extends Command
 {
@@ -60,7 +60,7 @@ class Synchronize extends Command
         foreach ($partyList as $party) {
             $this->info('  - Processing Party '.$party->code);
 
-            $ocpiClient = new Client($party, 'locations');
+            $ocpiClient = new EMSPClient($party, 'locations');
 
             if (empty($ocpiClient->resolveBaseUrl())) {
                 $this->warn('Party '.$party->code.' is not configured to use the Locations module.');
