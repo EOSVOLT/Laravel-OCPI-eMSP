@@ -37,7 +37,7 @@ class Initialize extends Command
         }
         $partyId = $this->generateUniquePartyId();
         $input['code'] = $partyId;
-        $input['url'] = config('ocpi.server.routing.cpo.uri_prefix') . '/versions';
+        $input['url'] = config('ocpi.client.server.url') . '/cpo/versions';
         $input['server_token'] = Str::random(32);
         try {
             /** @var Party $party */
@@ -62,8 +62,8 @@ class Initialize extends Command
     private function generateUniquePartyId(): string
     {
         do {
-            $randomString = Str::random(3);
-        } while (false === Party::query()->where('code', $randomString)->exists());
+            $randomString = strtoupper(Str::random(3));
+        } while (true === Party::query()->where('code', $randomString)->exists());
 
         return $randomString;
     }

@@ -98,6 +98,6 @@ class Resource extends OcpiResource
                 'type' => $command->type->name,
                 'id' => $command->id,
             ])
-            : config('ocpi.client.server.url').'/emps/'.$partyRole?->party?->version.'/commands/'.$command->type->name.'/'.$command->id;
+            : config('ocpi.client.server.url').'/emsp/'.$partyRole?->party?->version.'/commands/'.$command->type->name.'/'.$command->id;
     }
 }
