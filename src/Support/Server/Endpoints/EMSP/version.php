@@ -18,7 +18,7 @@ Route::middleware([
         foreach (config('ocpi-emsp.versions', []) as $version => $versionConfiguration) {
             if (count($versionConfiguration['modules'] ?? []) > 0) {
                 Route::prefix($version)
-                    ->name(Str::replace('.', '_', $version) . 'Endpoints')
+                    ->name(Str::replace('.', '_', $version) . '.')
                     ->group(function () use ($version, $versionConfiguration) {
                         Route::middleware([])
                             ->group(__DIR__ . '/../../../../Modules/Versions/Server/Endpoints/EMSP/' . $version . '.php');
