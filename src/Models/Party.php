@@ -10,6 +10,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Ocpi\Support\Models\Model;
 
+/**
+ * @property string $server_token
+ * @property string $code
+ * @property string $url
+ * @property string $name
+ * @property string $version
+ *
+ */
 class Party extends Model
 {
     use SoftDeletes;

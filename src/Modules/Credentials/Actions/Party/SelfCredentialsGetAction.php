@@ -9,7 +9,7 @@ class SelfCredentialsGetAction
 {
     public function handle(Party $party): ?array
     {
-        $urlRoute = config('ocpi.server.routing.name_prefix').'versions.information';
+        $urlRoute = config('ocpi.server.routing.emsp.name_prefix').'versions.information';
 
         return Route::has($urlRoute)
             ? [

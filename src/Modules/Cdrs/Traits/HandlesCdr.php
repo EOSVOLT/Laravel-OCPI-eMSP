@@ -54,7 +54,7 @@ trait HandlesCdr
     private function cdrRoute(Cdr $cdr): string
     {
         return route(
-            config('ocpi.server.routing.name_prefix')
+            config('ocpi.server.routing.emsp.name_prefix')
             .Str::replace('.', '_', Context::get('ocpi_version'))
             .'.cdrs', [
                 'cdr_emsp_id' => $cdr->emsp_id,

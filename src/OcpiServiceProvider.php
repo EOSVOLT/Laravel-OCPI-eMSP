@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Ocpi;
 
 use Illuminate\Support\ServiceProvider;
-use Ocpi\Modules\Credentials\Console\Commands\Initialize as ModuleCredentialsInitialize;
-use Ocpi\Modules\Credentials\Console\Commands\Register as ModuleCredentialsRegister;
-use Ocpi\Modules\Credentials\Console\Commands\Update as ModuleCredentialsUpdate;
+use Ocpi\Modules\Credentials\Console\Commands\CPO\Initialize as ModuleCPOCredentialsInitialize;
+use Ocpi\Modules\Credentials\Console\Commands\EMSP\Initialize as ModuleCredentialsInitialize;
+use Ocpi\Modules\Credentials\Console\Commands\EMSP\Register as ModuleCredentialsRegister;
+use Ocpi\Modules\Credentials\Console\Commands\EMSP\Update as ModuleCredentialsUpdate;
 use Ocpi\Modules\Locations\Console\Commands\Synchronize as ModuleLocationsSynchronize;
 use Ocpi\Modules\Versions\Console\Commands\Update as ModuleVersionsUpdate;
 
@@ -26,6 +27,11 @@ class OcpiServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/ocpi-emsp.php',
             'ocpi-emsp'
+        );
+
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/ocpi-cpo.php',
+            'ocpi-cpo'
         );
     }
 
@@ -54,8 +60,13 @@ class OcpiServiceProvider extends ServiceProvider
         if (config('ocpi.server.enabled', false) === true) {
             $emspVersionList = config('ocpi-emsp.versions', []);
             if (count($emspVersionList) > 0) {
-                $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/common.php');
-                $this->loadRoutesFrom(__DIR__.'/Support/Server/Endpoints/version.php');
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/EMSP/common.php');
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/EMSP/version.php');
+            }
+            $cpoVersionList = config('ocpi-cpo.versions', []);
+            if (count($cpoVersionList) > 0) {
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/CPO/common.php');
+                $this->loadRoutesFrom(__DIR__ . '/Support/Server/Endpoints/CPO/version.php');
             }
         }
     }
@@ -69,6 +80,9 @@ class OcpiServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/ocpi-emsp.php' => config_path('ocpi-emsp.php'),
         ], 'ocpi-emsp-config');
+        $this->publishes([
+            __DIR__.'/../config/ocpi-cpo.php' => config_path('ocpi-cpo.php'),
+        ], 'ocpi-cpo-config');
     }
 
     private function registerCommands(): void
@@ -79,6 +93,7 @@ class OcpiServiceProvider extends ServiceProvider
             ModuleCredentialsRegister::class,
             ModuleCredentialsUpdate::class,
             ModuleLocationsSynchronize::class,
+            ModuleCPOCredentialsInitialize::class,
         ]);
     }
 
