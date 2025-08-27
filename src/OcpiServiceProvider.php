@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ocpi;
 
 use Illuminate\Support\ServiceProvider;
+use Ocpi\Modules\Credentials\Console\Commands\CPO\Initialize as ModuleCPOCredentialsInitialize;
 use Ocpi\Modules\Credentials\Console\Commands\EMSP\Initialize as ModuleCredentialsInitialize;
 use Ocpi\Modules\Credentials\Console\Commands\EMSP\Register as ModuleCredentialsRegister;
 use Ocpi\Modules\Credentials\Console\Commands\EMSP\Update as ModuleCredentialsUpdate;
@@ -92,6 +93,7 @@ class OcpiServiceProvider extends ServiceProvider
             ModuleCredentialsRegister::class,
             ModuleCredentialsUpdate::class,
             ModuleLocationsSynchronize::class,
+            ModuleCPOCredentialsInitialize::class,
         ]);
     }
 
