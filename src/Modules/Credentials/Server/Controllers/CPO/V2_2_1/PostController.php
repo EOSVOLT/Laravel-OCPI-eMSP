@@ -13,7 +13,7 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Credentials\Actions\Party\CPO\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Events;
-use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
+use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\CPO\PartyInformationAndDetailsSynchronizeAction as CPOSynchronizeDetailsAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
