@@ -22,7 +22,7 @@ class PartyInformationAndDetailsSynchronizeAction
         );
 
         // Find supported OCPI versions.
-        $supportedVersionList = array_keys((config('ocpi-emsp.versions', [])));
+        $supportedVersionList = array_keys((config('ocpi-cpo.versions', [])));
         throw_if(
             count($supportedVersionList) === 0,
             new Exception('No supported version found.')
