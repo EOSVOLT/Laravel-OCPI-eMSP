@@ -15,11 +15,11 @@ class CredentialsValidator
             'token' => 'required',
             'url' => 'required',
             'roles' => 'required|array',
-            'roles.role' => ['required', Rule::enum(Role::class)],
-            'roles.business_details' => 'required|array:name,website,logo',
-            'roles.business_details.name' => 'required',
-            'roles.party_id' => 'required',
-            'roles.country_code' => 'required',
+            'roles.*.role' => ['required', Rule::enum(Role::class)],
+            'roles.*.business_details' => 'required|array:name,website,logo',
+            'roles.*.business_details.name' => 'required',
+            'roles.*.party_id' => 'required',
+            'roles.*.country_code' => 'required',
         ];
         return Validator::make($input, $rules)
             ->validate();
