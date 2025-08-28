@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Ocpi\Support\Helpers\Base64Helper;
 use Ocpi\Support\Models\Model;
 
 /**
@@ -40,18 +41,32 @@ class Party extends Model
         'registered',
     ];
 
+    /**
+     * @param string $token
+     * @return string
+     * @todo move to helper or static factory
+     */
     public static function encodeToken(string $token): string
     {
         return base64_encode($token);
     }
 
+    /**
+     * @param string $token
+     * @param Party|null $party
+     * @return false|string
+     * @todo move to helper or static factory
+     */
     public static function decodeToken(string $token, ?Party $party = null): false|string
     {
         if ($party && version_compare($party->version, '2.2', '<')) {
             return $token;
         }
 
-        return base64_decode($token, true);
+        if (true === Base64Helper::isBase64Encoded($token)) {
+            return base64_decode($token, true);
+        }
+        return $token;
     }
 
     /***
