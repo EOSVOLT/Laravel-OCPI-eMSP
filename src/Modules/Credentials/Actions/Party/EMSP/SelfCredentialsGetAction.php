@@ -4,6 +4,7 @@ namespace Ocpi\Modules\Credentials\Actions\Party\EMSP;
 
 use Illuminate\Support\Facades\Route;
 use Ocpi\Models\Party;
+use Ocpi\Support\Enums\Role;
 
 class SelfCredentialsGetAction
 {
@@ -31,7 +32,7 @@ class SelfCredentialsGetAction
                 'token' => $party->encoded_client_token,
                 'roles'=> [
                     [
-                        "role" => 'CPO',
+                        "role" => Role::CPO->value,
                         'party_id' => config('ocpi-emsp.party.party_id'),
                         'country_code' => config('ocpi-emsp.party.country_code'),
                         'business_details' => [
