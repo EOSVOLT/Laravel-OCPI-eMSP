@@ -35,6 +35,7 @@ class Initialize extends Command
 
             return Command::FAILURE;
         }
+        $input['version'] = $this->ask('OCPI version');
         $partyId = $this->generateUniquePartyId();
         $input['code'] = $partyId;
         $input['url'] = config('ocpi.client.server.url') . '/cpo/versions';
