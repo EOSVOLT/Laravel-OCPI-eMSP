@@ -10,6 +10,7 @@ use Ocpi\Models\Party;
 use Ocpi\Modules\Credentials\Actions\Party\EMSP\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
+use Ocpi\Support\Client\EMSPClient;
 
 class Register extends Command implements PromptsForMissingInput
 {
@@ -69,7 +70,7 @@ class Register extends Command implements PromptsForMissingInput
 
             // OCPI POST call to update the Credentials and get new Server Token.
             $this->info('  - Call Party OCPI - POST - Credentials endpoint with new Client Token');
-            $ocpiClient = new Client($party, 'credentials');
+            $ocpiClient = new EMSPClient($party, 'credentials');
             $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($party));
             $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
