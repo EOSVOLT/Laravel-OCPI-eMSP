@@ -10,9 +10,6 @@ use Ocpi\Models\Party;
 use Ocpi\Modules\Credentials\Actions\Party\EMSP\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
-use Ocpi\Support\Client\EMSPClient;
-
-use function Ocpi\Modules\Credentials\Console\Commands\config;
 
 class Register extends Command implements PromptsForMissingInput
 {
@@ -38,7 +35,7 @@ class Register extends Command implements PromptsForMissingInput
         SelfCredentialsGetAction $selfCredentialsGetAction,
     ) {
         $partyCode = $this->argument('party_code');
-        $this->info('Starting credentials exchange with '.$partyCode);
+        $this->info('Starting credentials exchange with ' . $partyCode);
 
         // Retrieve the Party.
         $party = Party::where('code', $partyCode)->first();
@@ -63,7 +60,7 @@ class Register extends Command implements PromptsForMissingInput
 
             // Generate new Client Token for the Party.
             $party->client_token = $party->generateToken();
-            $this->info('  - Generate, store new OCPI Client Token: '.$party->client_token);
+            $this->info('  - Generate, store new OCPI Client Token: ' . $party->client_token);
             $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();
@@ -77,7 +74,9 @@ class Register extends Command implements PromptsForMissingInput
             $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
             // Store received OCPI Server Token, mark the Party as registered.
-            $this->info('  - Store received OCPI Server Token: '.$credentialsInput['token'].', mark the Party as registered');
+            $this->info(
+                '  - Store received OCPI Server Token: ' . $credentialsInput['token'] . ', mark the Party as registered'
+            );
             $party->server_token = Party::decodeToken($credentialsInput['token'], $party);
             $party->registered = true;
             $party->save();
@@ -92,7 +91,6 @@ class Register extends Command implements PromptsForMissingInput
 
             return Command::FAILURE;
         }
-
     }
 
     protected function promptForMissingArgumentsUsing(): array

@@ -12,8 +12,6 @@ use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\EMSPClient;
 
-use function Ocpi\Modules\Credentials\Console\Commands\config;
-
 class Update extends Command implements PromptsForMissingInput
 {
     /**
