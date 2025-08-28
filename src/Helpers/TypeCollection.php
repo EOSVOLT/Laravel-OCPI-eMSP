@@ -12,7 +12,7 @@ abstract class TypeCollection extends Collection
     public function add(mixed $item): void
     {
         if (!$item instanceof $this->type) {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException(sprintf('Collection type for %s is not specified!', get_class($this)));
         }
 
         parent::add($item);
