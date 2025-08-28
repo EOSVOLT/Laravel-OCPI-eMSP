@@ -15,8 +15,6 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
-use function Ocpi\Modules\Cdrs\Server\Controllers\V2_1_1\config;
-
 class PostController extends Controller
 {
     use HandlesCdr,

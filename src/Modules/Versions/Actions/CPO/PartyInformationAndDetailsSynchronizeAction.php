@@ -1,12 +1,12 @@
 <?php
 
-namespace Ocpi\Modules\Versions\Actions;
+namespace Ocpi\Modules\Versions\Actions\CPO;
 
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
-use Ocpi\Support\Client\Client as OcpiClient;
+use Ocpi\Support\Client\CPOClient as OcpiClient;
 
 class PartyInformationAndDetailsSynchronizeAction
 {
@@ -22,7 +22,7 @@ class PartyInformationAndDetailsSynchronizeAction
         );
 
         // Find supported OCPI versions.
-        $supportedVersionList = array_keys((config('ocpi-emsp.versions', [])));
+        $supportedVersionList = array_keys((config('ocpi-cpo.versions', [])));
         throw_if(
             count($supportedVersionList) === 0,
             new Exception('No supported version found.')

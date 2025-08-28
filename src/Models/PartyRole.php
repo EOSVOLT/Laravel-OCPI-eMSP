@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Models\Model;
 
 /**
- * @property string $role
+ * @property string $code
+ * @property Role $role
+ * @property string $country_code
+ * @property array $business_details
  */
 class PartyRole extends Model
 {
@@ -26,6 +30,7 @@ class PartyRole extends Model
     {
         return [
             'business_details' => AsArrayObject::class,
+            'role' => Role::class,
         ];
     }
 
