@@ -4,11 +4,11 @@ namespace Ocpi\Support\Enums;
 
 enum Role: string
 {
-    case CPO = "cpo";
-    case EMSP = "emsp";
-    case HUB = "hub";
-    case NAP = "nap";
-    case NSP = "nsp";
-    case OTHER = "other";
-    case SCSP = "scsp";
+    case CPO = "CPO";
+    case EMSP = "EMSP";
+    case HUB = "HUB";
+    case NAP = "NAP";
+    case NSP = "NSP";
+    case OTHER = "OTHER";
+    case SCSP = "SCSP";
 }
