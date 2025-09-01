@@ -13,17 +13,19 @@ use Ocpi\Support\Helpers\Base64Helper;
 use Ocpi\Support\Models\Model;
 
 /**
- * @property string $server_token
+ * @property int $id
+ * @property string|null $server_token
  * @property string $client_token
- * @property string $encoded_client_token
- * @property string $encoded_server_token
+ * @property string|null $encoded_client_token
+ * @property string|null $encoded_server_token
  * @property string $code
- * @property string $url
+ * @property string|null $url
  * @property string $name
- * @property string $version
- * @property string $version_url
+ * @property string|null $version
+ * @property string|null $version_url
  * @property bool $registered
  * @property Collection|PartyRole[] $roles
+ * @property array|null $endpoints
  */
 class Party extends Model
 {
