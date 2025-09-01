@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
+use Ocpi\Support\Helpers\GeneratorHelper;
 
 class Initialize extends Command
 {
@@ -36,7 +37,7 @@ class Initialize extends Command
             return Command::FAILURE;
         }
         $input['version'] = $this->ask('OCPI version');
-        $partyId = $this->generateUniquePartyId();
+        $partyId = GeneratorHelper::generateUniquePartyId();
         $input['code'] = $partyId;
         $input['url'] = config('ocpi.client.server.url') . '/cpo/versions';
         $input['server_token'] = Str::random(32);
@@ -59,14 +60,5 @@ class Initialize extends Command
         );
 
         return Command::SUCCESS;
-    }
-
-    private function generateUniquePartyId(): string
-    {
-        do {
-            $randomString = strtoupper(Str::random(3));
-        } while (true === Party::query()->where('code', $randomString)->exists());
-
-        return $randomString;
     }
 }
