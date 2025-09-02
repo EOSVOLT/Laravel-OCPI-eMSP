@@ -43,6 +43,10 @@ class Party extends Model
         'registered',
     ];
 
+    protected $attributes = [
+        'registered' => false,
+    ];
+
     /**
      * @param string $token
      * @return string
