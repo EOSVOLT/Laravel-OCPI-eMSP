@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Object;
+namespace Ocpi\Modules\Locations\Objects;
 
 
 use Carbon\Carbon;

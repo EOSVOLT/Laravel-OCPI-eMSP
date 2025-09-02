@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Object;
+namespace Ocpi\Modules\Locations\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 
@@ -10,10 +10,10 @@ class AdditionalGeoLocation implements Arrayable
      * @var string|null
      */
     private ?string $name = null;
+
     public function __construct(
         private readonly GeoLocation $geoLocation,
-    )
-    {
+    ) {
     }
 
     /**
