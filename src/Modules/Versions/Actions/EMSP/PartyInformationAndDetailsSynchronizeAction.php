@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
-use Ocpi\Support\Client\EMSPClient as OcpiClient;
+use Ocpi\Support\Client\EMSPClient;
 
 class PartyInformationAndDetailsSynchronizeAction
 {
@@ -14,7 +14,7 @@ class PartyInformationAndDetailsSynchronizeAction
     {
         // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
         Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Information of the Party on '.$party->url);
-        $ocpiClient = new OcpiClient($party, 'versions.information');
+        $ocpiClient = new EMSPClient($party, 'versions.information');
         $versionList = $ocpiClient->versions()->information();
         throw_if(
             ! is_array($versionList),

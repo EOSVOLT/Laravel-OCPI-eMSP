@@ -13,8 +13,8 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Credentials\Actions\Party\EMSP\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Events;
-use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
-use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
+use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
+use Ocpi\Modules\Versions\Actions\CPO\PartyInformationAndDetailsSynchronizeAction as CPOSynchronizeDetailsAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
@@ -22,7 +22,7 @@ class PutController extends Controller
 {
     public function __invoke(
         Request $request,
-        VersionsPartyInformationAndDetailsSynchronizeAction $versionsPartyInformationAndDetailsSynchronizeAction,
+        CPOSynchronizeDetailsAction $synchronizeCPODetailsAction,
         SelfCredentialsGetAction $selfCredentialsGetAction,
     ): JsonResponse {
         try {
@@ -48,48 +48,34 @@ class PutController extends Controller
             }
 
             $party = DB::connection(config('ocpi.database.connection'))
-                ->transaction(function () use ($party, $request, $input, $versionsPartyInformationAndDetailsSynchronizeAction) {
-                    // Update Server Token, url for the Party.
-                    $party->server_token = $request->has('token') ? Party::decodeToken($input['token'], $party) : $party->server_token;
-                    $party->url = $request->input('url', $party->url);
+                ->transaction(function () use ($party, $request, $input, $synchronizeCPODetailsAction) {
+                    // Update Server Token, url for the Party and mark it as registered.
+                    $decodedToken = Party::decodeToken($input['token'], $party);
+                    $party->client_token = false === $decodedToken ? $input['token'] : $decodedToken;
+                    $party->url = $request->input('url');
+                    $party->registered = true;
 
                     // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
-                    $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party);
+                    $party = $synchronizeCPODetailsAction->handle($party);
 
-                    // Update PartyRole list.
-                    $partyRole = $party->roles
-                        ->where('code', $request->input('party_id'))
-                        ->where('country_code', $request->input('country_code'))
-                        ->first();
-
-                    if ($partyRole === null) {
-                        if ($party->roles->count() > 0) {
-                            $party->roles()->delete();
-                        }
-
+                    //clear all roles existing.
+                    if ($party->roles->count() > 0) {
+                        $party->roles()->delete();
+                    }
+                    foreach ($request->input('roles') as $role) {
                         $partyRole = new PartyRole;
                         $partyRole->fill([
-                            'code' => $request->input('party_id'),
-                            'role' => 'CPO',
-                            'country_code' => $request->input('country_code'),
-                            'business_details' => $request->input('business_details'),
+                            'code' => $role['party_id'],
+                            'role' => $role['role'],
+                            'country_code' => $role['country_code'],
+                            'business_details' => $role['business_details'],
                         ]);
 
                         $party->roles()->save($partyRole);
-                    } else {
-                        $partyRole->fill([
-                            'role' => 'CPO',
-                            'business_details' => $request->input('business_details'),
-                        ]);
-
-                        $partyRole->save();
-                        $party->touch();
                     }
-
-                    // Generate new Client Token for the Party.
-                    $party->client_token = $party->generateToken();
+                    // Generate a Token C for the eMSP Party.
+                    $party->server_token = $party->generateToken();
                     $party->save();
-
                     return $party;
                 });
 

@@ -59,34 +59,20 @@ class PostController extends Controller
                         // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
                         $party = $synchronizeCPODetailsAction->handle($party);
 
+                        //clear all roles existing.
                         if ($party->roles->count() > 0) {
                             $party->roles()->delete();
                         }
                         foreach ($request->input('roles') as $role) {
-                            // Update PartyRole list.
-                            $partyRole = $party->roles
-                                ->where('code', $role['party_id'])
-                                ->where('country_code', $role['country_code'])
-                                ->first();
+                            $partyRole = new PartyRole;
+                            $partyRole->fill([
+                                'code' => $role['party_id'],
+                                'role' => $role['role'],
+                                'country_code' => $role['country_code'],
+                                'business_details' => $role['business_details'],
+                            ]);
 
-                            if ($partyRole === null) {
-                                $partyRole = new PartyRole;
-                                $partyRole->fill([
-                                    'code' => $role['party_id'],
-                                    'role' => $role['role'],
-                                    'country_code' => $role['country_code'],
-                                    'business_details' => $role['business_details'],
-                                ]);
-
-                                $party->roles()->save($partyRole);
-                            } else {
-                                $partyRole->fill([
-                                    'role' => $role['role'],
-                                    'business_details' => $role['business_details'],
-                                ]);
-                                $partyRole->save();
-                                $party->touch();
-                            }
+                            $party->roles()->save($partyRole);
                         }
                         // Generate a Token C for the eMSP Party.
                         $party->server_token = $party->generateToken();
