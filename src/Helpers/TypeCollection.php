@@ -2,6 +2,7 @@
 
 namespace Ocpi\Helpers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
@@ -16,5 +17,17 @@ abstract class TypeCollection extends Collection
         }
 
         parent::add($item);
+    }
+
+    public function arrayPluck($value, $key = null): array
+    {
+        $return = [];
+        foreach ($this->items as $item) {
+            $return[] = $item->{'get' . ucfirst($value)}();
+        }
+        if ($key) {
+            return $return[$key];
+        }
+        return $return;
     }
 }
