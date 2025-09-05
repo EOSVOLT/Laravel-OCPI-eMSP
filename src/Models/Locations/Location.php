@@ -13,8 +13,7 @@ use Ocpi\Support\Models\Model;
 
 class Location extends Model
 {
-    use HasVersion7Uuids,
-        SoftDeletes;
+    use SoftDeletes;
 
     protected $primaryKey = 'emsp_id';
 
