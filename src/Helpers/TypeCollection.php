@@ -2,7 +2,6 @@
 
 namespace Ocpi\Helpers;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
@@ -19,15 +18,22 @@ abstract class TypeCollection extends Collection
         parent::add($item);
     }
 
-    public function arrayPluck($value, $key = null): array
+    public function pluck($value, $key = null): array
     {
         $return = [];
+        $camelValue = $this->snakeToCamel($value);
         foreach ($this->items as $item) {
-            $return[] = $item->{'get' . ucfirst($value)}();
-        }
-        if ($key) {
-            return $return[$key];
+            if (is_null($key)) {
+                $return[] = $item->{'get' . ucfirst($camelValue)}();
+            } else {
+                $return[$key] = $item->{'get' . ucfirst($camelValue)}();
+            }
         }
         return $return;
+    }
+
+    private function snakeToCamel(string $value): string
+    {
+        return str_replace('_', '', ucwords($value, '_'));
     }
 }
