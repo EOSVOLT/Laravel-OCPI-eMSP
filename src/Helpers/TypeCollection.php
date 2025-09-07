@@ -9,6 +9,12 @@ use InvalidArgumentException;
 abstract class TypeCollection extends \ArrayIterator implements Arrayable
 {
     protected string $type;
+    protected const array SCALAR_TYPES = [
+        'integer',
+        'double',
+        'string',
+        'array',
+    ];
 
     public function add(mixed $item): void
     {
@@ -46,5 +52,19 @@ abstract class TypeCollection extends \ArrayIterator implements Arrayable
 
         $merged = array_merge($this->getArrayCopy(), $collection->getArrayCopy());
         return new static($merged);
+    }
+
+    public function toArray(): array
+    {
+        if (in_array($this->type, self::SCALAR_TYPES, true)) {
+            return $this->getArrayCopy();
+        }
+
+        $return = [];
+        foreach ($this->getArrayCopy() as $item) {
+            $return[] = $item->toArray();
+        }
+
+        return $return;
     }
 }
