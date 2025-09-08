@@ -16,6 +16,26 @@ abstract class TypeCollection extends \ArrayIterator implements Arrayable
         'array',
     ];
 
+    public function __construct(mixed $array = [])
+    {
+        if ('' === $this->type) {
+            throw new InvalidArgumentException(sprintf('Collection type for %s is not specified!', get_class($this)));
+        }
+
+        $isScalar = in_array($this->type, self::SCALAR_TYPES, true);
+
+        foreach ($array as $item) {
+            if (
+                (!$isScalar && !$item instanceof $this->type)
+                || ($isScalar && gettype($item) !== $this->type)
+            ) {
+                throw new InvalidArgumentException(sprintf('All elements of array should be type of %s!', $this->type));
+            }
+        }
+
+        parent::__construct($array);
+    }
+
     public function add(mixed $item): void
     {
         if (!$item instanceof $this->type) {
