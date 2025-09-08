@@ -86,4 +86,82 @@ abstract class TypeCollection extends \ArrayIterator implements Arrayable
 
         return $return;
     }
+
+    /**
+     * @return mixed
+     */
+    public function first(): mixed
+    {
+        $this->rewind();
+        return $this->current();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function last(): mixed
+    {
+        $array = $this->getArrayCopy();
+        return end($array) ?: null;
+    }
+
+    /**
+     * @param callable $callback
+     * @return $this
+     */
+    public function map(callable $callback): static
+    {
+        $mappedItems = [];
+
+        foreach ($this->getArrayCopy() as $item) {
+            $result = $callback($item);
+            if (null === $result) {
+                continue;
+            }
+            if (get_class($result) === $this->type) {
+                $mappedItems[] = $result;
+                continue;
+            }
+            throw new InvalidArgumentException(sprintf('All elements should be type of %s!', $this->type));
+        }
+
+        return new static($mappedItems);
+    }
+
+    public function sum(string $field): float|int
+    {
+        $sum = 0;
+        foreach ($this->getArrayCopy() as $item) {
+            $sum += $item->{'get' . ucfirst($field)}();
+        }
+        return $sum;
+    }
+
+    public function min(string $field): float|int
+    {
+        $values = [];
+        foreach ($this->getArrayCopy() as $item) {
+            $values[] = $item->{'get' . ucfirst($field)}();
+        }
+
+        if (empty(array_filter($values))) {
+            throw new InvalidArgumentException('Cannot find minimum of empty collection');
+        }
+
+        return min($values);
+    }
+
+    public function max(string $field): float|int
+    {
+        $values = [];
+        foreach ($this->getArrayCopy() as $item) {
+            $values[] = $item->{'get' . ucfirst($field)}();
+        }
+
+        if (empty(array_filter($values))) {
+            throw new InvalidArgumentException('Cannot find minimum of empty collection');
+        }
+
+        return max($values);
+    }
 }
