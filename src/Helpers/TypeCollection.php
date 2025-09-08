@@ -3,7 +3,6 @@
 namespace Ocpi\Helpers;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 abstract class TypeCollection extends \ArrayIterator implements Arrayable
