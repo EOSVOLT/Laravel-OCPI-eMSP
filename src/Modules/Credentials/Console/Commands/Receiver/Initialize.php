@@ -1,11 +1,13 @@
 <?php
 
-namespace Ocpi\Modules\Credentials\Console\Commands\CPO;
+namespace Ocpi\Modules\Credentials\Console\Commands\Receiver;
 
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyRole;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 
 class Initialize extends Command
@@ -36,14 +38,26 @@ class Initialize extends Command
 
             return Command::FAILURE;
         }
+        $countryCode = $this->ask('Country code');
         $input['version'] = $this->ask('OCPI version');
-        $partyId = GeneratorHelper::generateUniquePartyId();
-        $input['code'] = $partyId;
+        $businessName = $this->ask('Company Name');
+        $businessWebsite = $this->ask('Company Website');
+
+        $partyCode = GeneratorHelper::generateUniquePartyCode($countryCode);
+        $input['code'] = $partyCode->getCodeFormatted();
         $input['url'] = config('ocpi.client.server.url') . '/cpo/versions';
         $input['server_token'] = Str::random(32);
         try {
             /** @var Party $party */
             $party = Party::query()->create($input);
+            $partyRole = new PartyRole;
+            $partyRole->fill([
+                'code' => $partyCode->getCode(),
+                'role' => Role::CPO,
+                'country_code' => $partyCode->getCountryCode(),
+                'business_details' => ['name' => $businessName, 'website' => $businessWebsite],
+            ]);
+            $party->roles()->save($partyRole);
         } catch (Exception $e) {
             $this->error('Error creating Party.');
             $this->newLine(2);

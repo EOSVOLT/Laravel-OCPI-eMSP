@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
-use Ocpi\Support\Client\EMSPClient;
+use Ocpi\Support\Client\Client;
 
 class Synchronize extends Command
 {
@@ -58,23 +58,25 @@ class Synchronize extends Command
         $hasError = false;
 
         foreach ($partyList as $party) {
-            $this->info('  - Processing Party '.$party->code);
+            $this->info('  - Processing Party ' . $party->code);
 
-            $ocpiClient = new EMSPClient($party, 'locations');
+            $ocpiClient = new Client($party, 'locations');
 
             if (empty($ocpiClient->resolveBaseUrl())) {
-                $this->warn('Party '.$party->code.' is not configured to use the Locations module.');
+                $this->warn('Party ' . $party->code . ' is not configured to use the Locations module.');
 
                 continue;
             }
 
             foreach ($party->roles as $partyRole) {
-                $this->info('    - Call '.$partyRole->code.' / '.$partyRole->country_code.' - OCPI - Locations GET');
+                $this->info(
+                    '    - Call ' . $partyRole->code . ' / ' . $partyRole->country_code . ' - OCPI - Locations GET'
+                );
                 $ocpiLocationList = $ocpiClient->locations()->all();
 
                 $locationProcessedList = [];
 
-                $this->info('    - '.count($ocpiLocationList).' Location(s) retrieved');
+                $this->info('    - ' . count($ocpiLocationList) . ' Location(s) retrieved');
 
                 foreach ($ocpiLocationList as $ocpiLocation) {
                     $ocpiLocationId = $ocpiLocation['id'] ?? null;
@@ -87,17 +89,19 @@ class Synchronize extends Command
                         withTrashed: true,
                     );
 
-                    $this->info('      > Processing '.($location === null ? 'new' : 'existing').' Location '.$ocpiLocationId);
+                    $this->info(
+                        '      > Processing ' . ($location === null ? 'new' : 'existing') . ' Location ' . $ocpiLocationId
+                    );
 
                     // New Location.
                     if ($location === null) {
-                        if (! $this->locationCreate(
+                        if (!$this->locationCreate(
                             payload: $ocpiLocation,
                             party_role_id: $partyRole->id,
                             location_id: $ocpiLocationId,
                         )) {
                             $hasError = true;
-                            $this->error('Error creating Location '.$ocpiLocationId.'.');
+                            $this->error('Error creating Location ' . $ocpiLocationId . '.');
 
                             DB::connection(config('ocpi.database.connection'))->rollback();
 
@@ -105,12 +109,12 @@ class Synchronize extends Command
                         }
                     } else {
                         // Replaced Location.
-                        if (! $this->locationReplace(
+                        if (!$this->locationReplace(
                             payload: $ocpiLocation,
                             location: $location,
                         )) {
                             $hasError = true;
-                            $this->error('Error replacing Location '.$ocpiLocationId.'.');
+                            $this->error('Error replacing Location ' . $ocpiLocationId . '.');
 
                             DB::connection(config('ocpi.database.connection'))->rollback();
 
@@ -121,10 +125,9 @@ class Synchronize extends Command
                     $locationProcessedList[] = $ocpiLocationId;
 
                     DB::connection(config('ocpi.database.connection'))->commit();
-
                 }
 
-                $this->info('    - '.count($locationProcessedList).' Location(s) synchronized');
+                $this->info('    - ' . count($locationProcessedList) . ' Location(s) synchronized');
             }
 
             return $hasError

@@ -22,22 +22,22 @@ class IdentifySenderParty
     public function handle(Request $request, Closure $next): Response
     {
         // Retrieve Authorization Token from header.
-        $clientToken = $this->token($request, 'Token');
-        if ($clientToken === null) {
+        $serverToken = $this->token($request, 'Token');
+        if ($serverToken === null) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::NotEnoughInformation,
                 statusMessage: 'Authorization is missing.',
             );
         }
-        $clientToken = Str::rtrim($clientToken);
+        $serverToken = Str::rtrim($serverToken);
 
         // Decode Token (OCPI version >= 2.2).
-        $clientTokenDecoded = Party::decodeToken($clientToken);
+        $clientTokenDecoded = Party::decodeToken($serverToken);
 
         // Retrieve Party from Token.
-        $party = Party::where('server_token', $clientToken)
+        $party = Party::where('client_token', $serverToken)
             ->when($clientTokenDecoded !== false, function (Builder $query) use ($clientTokenDecoded) {
-                $query->orWhere('server_token', $clientTokenDecoded);
+                $query->orWhere('client_token', $clientTokenDecoded);
             })
             ->first();
 

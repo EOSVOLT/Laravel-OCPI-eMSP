@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Credentials\Console\Commands\EMSP;
+namespace Ocpi\Modules\Credentials\Console\Commands\Sender;
 
 use Exception;
 use Illuminate\Console\Command;

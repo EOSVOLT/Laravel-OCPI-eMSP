@@ -1,12 +1,12 @@
 <?php
 
-namespace Ocpi\Modules\Versions\Actions\CPO;
+namespace Ocpi\Modules\Versions\Actions;
 
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
-use Ocpi\Support\Client\CPOClient;
+use Ocpi\Support\Client\Client;
 
 class PartyInformationAndDetailsSynchronizeAction
 {
@@ -14,7 +14,7 @@ class PartyInformationAndDetailsSynchronizeAction
     {
         // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
         Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Information of the Party on '.$party->url);
-        $ocpiClient = new CPOClient($party, 'versions.information');
+        $ocpiClient = new Client($party, 'versions.information');
         $versionList = $ocpiClient->versions()->information();
         throw_if(
             ! is_array($versionList),

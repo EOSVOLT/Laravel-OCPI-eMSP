@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
-use Ocpi\Modules\Versions\Actions\EMSP\PartyInformationAndDetailsSynchronizeAction as VersionsPartyInformationAndDetailsSynchronizeAction;
+use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 
 class Update extends Command implements PromptsForMissingInput
 {
@@ -29,7 +29,7 @@ class Update extends Command implements PromptsForMissingInput
      * Execute the console command.
      */
     public function handle(
-        VersionsPartyInformationAndDetailsSynchronizeAction $versionsPartyInformationAndDetailsSynchronizeAction,
+        PartyInformationAndDetailsSynchronizeAction $versionsPartyInformationAndDetailsSynchronizeAction,
     ) {
         $partyCode = $this->argument('party_code');
         $this->info('Starting versions update with '.$partyCode);

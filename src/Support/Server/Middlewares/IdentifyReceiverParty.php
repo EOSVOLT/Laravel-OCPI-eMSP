@@ -35,9 +35,9 @@ class IdentifyReceiverParty
         $clientTokenDecoded = Party::decodeToken($clientToken);
 
         // Retrieve Party from Token.
-        $party = Party::where('client_token', $clientToken)
+        $party = Party::where('server_token', $clientToken)
             ->when($clientTokenDecoded !== false, function (Builder $query) use ($clientTokenDecoded) {
-                $query->orWhere('client_token', $clientTokenDecoded);
+                $query->orWhere('server_token', $clientTokenDecoded);
             })
             ->first();
 
