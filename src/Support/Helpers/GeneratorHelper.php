@@ -15,9 +15,9 @@ class GeneratorHelper
     public static function generateUniquePartyCode(string $countryCode): PartyCode
     {
         do {
-            $rand = strtoupper(Str::random(3));
-            $partyCode = $countryCode . '*' . $rand;
-        } while (true === Party::query()->where('code', $partyCode)->exists());
+            $partyCode = strtoupper(Str::random(3));
+            $code = $countryCode . '*' . $partyCode;
+        } while (true === Party::query()->where('code', $code)->exists());
 
         return new PartyCode($partyCode, $countryCode);
     }
