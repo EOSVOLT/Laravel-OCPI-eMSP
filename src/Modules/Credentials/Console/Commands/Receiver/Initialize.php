@@ -50,7 +50,7 @@ class Initialize extends Command
         try {
             /** @var Party $party */
             $party = Party::query()->create($input);
-            $partyRole = new PartyRole;
+            $partyRole = new PartyRole();
             $partyRole->fill([
                 'code' => $partyCode->getCode(),
                 'role' => Role::CPO,
