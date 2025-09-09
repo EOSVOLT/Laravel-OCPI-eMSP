@@ -30,6 +30,6 @@ readonly class PartyCode
 
     public function getCodeFormatted(): string
     {
-        return $this->code . '*' . $this->countryCode;
+        return  $this->countryCode. '*' . $this->code;
     }
 }
