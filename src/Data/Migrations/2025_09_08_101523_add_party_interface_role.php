@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
-            $table->bigIncrements('parent_id')->nullable()->after('id');
+            $table->unsignedBigInteger('parent_id')->nullable()->after('id');
         });
     }
 
