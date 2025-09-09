@@ -15,67 +15,67 @@ class Locations implements Arrayable
     /**
      * @var string|null
      */
-    private ?string $name = null;
+    protected ?string $name = null;
     /**
      * @var string|null
      */
-    private ?string $postalCode = null;
+    protected ?string $postalCode = null;
     /**
      * @var string|null
      */
-    private ?string $state = null;
+    protected ?string $state = null;
     /**
      * @var PublishTokenTypeCollection|null
      */
-    private ?PublishTokenTypeCollection $publishAllowedTo = null;
+    protected ?PublishTokenTypeCollection $publishAllowedTo = null;
     /**
      * @var AdditionalGeoLocationCollection|null
      */
-    private ?AdditionalGeoLocationCollection $relatedLocations = null;
+    protected ?AdditionalGeoLocationCollection $relatedLocations = null;
     /**
      * @var ParkingType|null
      */
-    private ?ParkingType $parkingType = null;
+    protected ?ParkingType $parkingType = null;
     /**
      * @var EvseCollection|null
      */
-    private ?EvseCollection $evses = null;
+    protected ?EvseCollection $evses = null;
     /**
      * @var DisplayTextCollection|null
      */
-    private ?DisplayTextCollection $directions = null;
+    protected ?DisplayTextCollection $directions = null;
     /**
      * @var BusinessDetails|null
      */
-    private ?BusinessDetails $operator = null;
+    protected ?BusinessDetails $operator = null;
     /**
      * @var BusinessDetails|null
      */
-    private ?BusinessDetails $suboperator = null;
+    protected ?BusinessDetails $suboperator = null;
     /**
      * @var BusinessDetails|null
      */
-    private ?BusinessDetails $owner = null;
+    protected ?BusinessDetails $owner = null;
     /**
      * @var array
      */
-    private array $facilities = [];
+    protected array $facilities = [];
     /**
      * @var Hours|null
      */
-    private ?Hours $openingTimes = null;
+    protected ?Hours $openingTimes = null;
     /**
      * @var bool
      */
-    private bool $chargingWhenClosed = true;
+    protected bool $chargingWhenClosed = true;
     /**
      * @var ImageCollection|null
      */
-    private ?ImageCollection $images = null;
+    protected ?ImageCollection $images = null;
     /**
      * @var EnergyMix|null
      */
-    private ?EnergyMix $energyMix = null;
+    protected ?EnergyMix $energyMix = null;
 
     /**
      * @param string $countryCode
