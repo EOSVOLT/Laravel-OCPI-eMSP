@@ -13,15 +13,15 @@ class Connector implements Arrayable
     /**
      * @var int|null
      */
-    private ?int $maxElectricPower = null;
+    protected ?int $maxElectricPower = null;
     /**
      * @var array
      */
-    private array $tariffIds = [];
+    protected array $tariffIds = [];
     /**
      * @var string|null
      */
-    private ?string $termsAndConditions = null;
+    protected ?string $termsAndConditions = null;
 
     /**
      * @param string $id

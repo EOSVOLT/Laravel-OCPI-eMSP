@@ -15,39 +15,39 @@ class Evse implements Arrayable
     /**
      * @var string|null
      */
-    private ?string $evseId = null;
+    protected ?string $evseId = null;
     /**
      * @var StatusScheduleCollection|null
      */
-    private ?StatusScheduleCollection $statusScheduleCollection = null;
+    protected ?StatusScheduleCollection $statusScheduleCollection = null;
     /**
      * @var EvseCapability|null
      */
-    private ?EvseCapability $capabilities = null;
+    protected ?EvseCapability $capabilities = null;
     /**
      * @var string|null
      */
-    private ?string $floorLevel = null;
+    protected ?string $floorLevel = null;
     /**
      * @var GeoLocation|null
      */
-    private ?GeoLocation $coordinates = null;
+    protected ?GeoLocation $coordinates = null;
     /**
      * @var string|null
      */
-    private ?string $physicalReference = null;
+    protected ?string $physicalReference = null;
     /**
      * @var DisplayTextCollection|null
      */
-    private ?DisplayTextCollection $directions = null;
+    protected ?DisplayTextCollection $directions = null;
     /**
      * @var array
      */
-    private array $parkingRestrictions = [];
+    protected array $parkingRestrictions = [];
     /**
      * @var ImageCollection|null
      */
-    private ?ImageCollection $images = null;
+    protected ?ImageCollection $images = null;
 
     /**
      * @param string $uid
