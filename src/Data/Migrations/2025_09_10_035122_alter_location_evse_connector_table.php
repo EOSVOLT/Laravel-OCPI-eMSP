@@ -42,6 +42,14 @@ return new class extends Migration {
             $table->foreignId('evse_id')->after('id')->constrained('ocpi_location_evses');
             $table->unique(['evse_id', 'connector_id'], 'evse_id_connector_id_unique');
         });
+        Schema::table(config('ocpi.database.table.prefix').'locations', function (Blueprint $table) {
+            $table->boolean('publish')->after('object');
+        });
+
+        Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
+            $table->string('status')->after('object');
+        });
+
         Schema::enableForeignKeyConstraints();
     }
 
@@ -90,18 +98,14 @@ return new class extends Migration {
                 ->references('emsp_id')->on('ocpi_location_evses')
                 ->onDelete('cascade');
         });
-        $this->extractObjectColumn();
-        Schema::enableForeignKeyConstraints();
-    }
 
-    private function extractObjectColumn(): void
-    {
         Schema::table(config('ocpi.database.table.prefix').'locations', function (Blueprint $table) {
-            $table->boolean('publish')->after('object');
+            $table->dropColumn('publish');
         });
 
         Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
-            $table->string('status')->after('object');
+            $table->dropColumn('status');
         });
+        Schema::enableForeignKeyConstraints();
     }
 };
