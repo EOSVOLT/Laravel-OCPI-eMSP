@@ -50,6 +50,7 @@ class Evse implements Arrayable
     protected ?ImageCollection $images = null;
 
     /**
+     * @param int $locationId
      * @param string $uid
      * @param EvseStatus $status
      * @param ConnectorCollection $connectors
@@ -57,6 +58,7 @@ class Evse implements Arrayable
      * @param string|null $id
      */
     public function __construct(
+        private readonly int $locationId,
         private readonly string $uid,
         private readonly EvseStatus $status,
         private readonly ConnectorCollection $connectors,

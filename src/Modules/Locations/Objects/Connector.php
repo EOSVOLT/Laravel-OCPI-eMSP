@@ -24,6 +24,7 @@ class Connector implements Arrayable
     protected ?string $termsAndConditions = null;
 
     /**
+     * @param int $evseId
      * @param string $connector_id
      * @param ConnectorType $standard
      * @param ConnectorFormat $format
