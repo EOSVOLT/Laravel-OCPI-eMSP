@@ -11,4 +11,6 @@ enum EvseStatus: string
     case OUTOFORDER = 'OUTOFORDER';
     case PLANNED = 'PLANNED';
     case REMOVED = 'REMOVED';
+    case RESERVED = 'RESERVED';
+    case UNKNOWN = 'UNKNOWN';
 }
