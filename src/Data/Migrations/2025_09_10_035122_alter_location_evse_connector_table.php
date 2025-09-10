@@ -9,25 +9,33 @@ return new class extends Migration {
     {
         Schema::table('ocpi_locations', function (Blueprint $table) {
             $table->renameColumn('id', 'external_id');
-            $table->removeColumn('emsp_id');
-            $table->id();
+            $table->renameColumn('emsp_id', 'id');
         });
         Schema::table('ocpi_location_evses', function (Blueprint $table) {
-            $table->removeColumn('emsp_id');
-            $table->id();
-            $table->removeColumn('location_emsp_id');
-            $table->foreignId('location_id')->constrained('ocpi_locations');
+            $table->renameColumn('emsp_id', 'id');
+            $table->renameColumn('location_emsp_id', 'location_id');
         });
         Schema::table('ocpi_location_connectors', function (Blueprint $table) {
-            $table->removeColumn('emsp_id');
-            $table->id();
-            $table->removeColumn('location_evse_emsp_id');
-            $table->foreignId('evse_id')->constrained('ocpi_location_evses');
+            $table->renameColumn('id', 'connector_id');
+            $table->renameColumn('emsp_id', 'id');
+            $table->renameColumn('location_evse_emsp_id', 'evse_id');
         });
     }
 
     public function down(): void
     {
-
+        Schema::table('ocpi_location_connectors', function (Blueprint $table) {
+            $table->renameColumn('id', 'emsp_id');
+            $table->renameColumn('connector_id', 'id');
+            $table->renameColumn('evse_id', 'location_evse_emsp_id');
+        });
+        Schema::table('ocpi_location_evses', function (Blueprint $table) {
+            $table->renameColumn('id', 'emsp_id');
+            $table->renameColumn('location_id', 'location_emsp_id');
+        });
+        Schema::table('ocpi_locations', function (Blueprint $table) {
+            $table->renameColumn('id', 'emsp_id');
+            $table->renameColumn('external_id', 'id');
+        });
     }
 };
