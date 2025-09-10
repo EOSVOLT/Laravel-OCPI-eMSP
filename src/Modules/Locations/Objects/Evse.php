@@ -56,10 +56,11 @@ class Evse implements Arrayable
      * @param Carbon $lastUpdated
      */
     public function __construct(
-        private string $uid,
-        private EvseStatus $status,
-        private ConnectorCollection $connectors,
-        private Carbon $lastUpdated,
+        private readonly string $uid,
+        private readonly EvseStatus $status,
+        private readonly ConnectorCollection $connectors,
+        private readonly Carbon $lastUpdated,
+        private readonly ?int $id = null,
     ) {
     }
 
@@ -309,6 +310,11 @@ class Evse implements Arrayable
         self::validateArrayEnum($parkingRestrictions, ParkingRestriction::cases());
         $this->parkingRestrictions = $parkingRestrictions;
         return $this;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     /**
