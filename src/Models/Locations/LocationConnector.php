@@ -3,7 +3,6 @@
 namespace Ocpi\Models\Locations;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Support\Models\Model;
@@ -12,11 +11,11 @@ class LocationConnector extends Model
 {
     use SoftDeletes;
 
-    protected $primaryKey = 'emsp_id';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
-        'location_evse_emsp_id',
-        'id',
+        'evse_id',
+        'connector_id',
         'object',
     ];
 
@@ -33,6 +32,6 @@ class LocationConnector extends Model
 
     public function evse(): BelongsTo
     {
-        return $this->belongsTo(LocationEvse::class, 'location_evse_emsp_id', 'emsp_id');
+        return $this->belongsTo(LocationEvse::class, 'evse_id', 'id');
     }
 }

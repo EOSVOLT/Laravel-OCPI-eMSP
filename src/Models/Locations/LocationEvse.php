@@ -3,7 +3,6 @@
 namespace Ocpi\Models\Locations;
 
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,12 +12,13 @@ class LocationEvse extends Model
 {
     use SoftDeletes;
 
-    protected $primaryKey = 'emsp_id';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
-        'location_emsp_id',
+        'location_id',
         'uid',
         'object',
+        'status',
     ];
 
     protected function casts(): array
@@ -34,23 +34,23 @@ class LocationEvse extends Model
 
     public function connectors(): HasMany
     {
-        return $this->hasMany(LocationConnector::class, 'location_evse_emsp_id', 'emsp_id');
+        return $this->hasMany(LocationConnector::class, 'evse_id', 'id');
     }
 
     public function connectorsWithTrashed(): HasMany
     {
-        return $this->hasMany(LocationConnector::class, 'location_evse_emsp_id', 'emsp_id')
+        return $this->hasMany(LocationConnector::class, 'evse_id', 'id')
             ->withTrashed();
     }
 
     public function location(): BelongsTo
     {
-        return $this->belongsTo(Location::class, 'location_emsp_id', 'emsp_id');
+        return $this->belongsTo(Location::class, 'location_id', 'id');
     }
 
     public function locationWithTrashed(): BelongsTo
     {
-        return $this->belongsTo(Location::class, 'location_emsp_id', 'emsp_id')
+        return $this->belongsTo(Location::class, 'location_id', 'id')
             ->withTrashed();
     }
 }

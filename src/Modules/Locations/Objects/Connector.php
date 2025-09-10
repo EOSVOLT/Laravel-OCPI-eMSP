@@ -34,6 +34,7 @@ class Connector implements Arrayable
      * @param string|null $id
      */
     public function __construct(
+        private readonly int $evseId,
         private readonly string $connector_id,
         private readonly ConnectorType $standard,
         private readonly ConnectorFormat $format,
@@ -163,6 +164,11 @@ class Connector implements Arrayable
         return $this->id;
     }
 
+    public function getEvseId(): int
+    {
+        return $this->evseId;
+    }
+
     /**
      * @return array
      */
@@ -170,6 +176,7 @@ class Connector implements Arrayable
     {
         return [
             'id' => $this->getId(),
+            'evse_id' => $this->getEvseId(),
             'connector_id' => $this->getConnectorId(),
             'standard' => $this->getStandard()->name,
             'format' => $this->getFormat()->name,
