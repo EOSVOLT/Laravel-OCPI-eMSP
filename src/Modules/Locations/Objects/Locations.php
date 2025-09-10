@@ -88,6 +88,7 @@ class Locations implements Arrayable
      * @param GeoLocation $coordinates
      * @param string $timeZone
      * @param Carbon $lastUpdated
+     * @param string|null $id
      */
     public function __construct(
         private readonly string $countryCode,
@@ -100,7 +101,7 @@ class Locations implements Arrayable
         private readonly GeoLocation $coordinates,
         private readonly string $timeZone,
         private readonly Carbon $lastUpdated,
-        private readonly ?int $id = null,
+        private readonly ?string $id = null,
     ) {
     }
 
@@ -489,7 +490,7 @@ class Locations implements Arrayable
         return $this;
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -500,9 +501,10 @@ class Locations implements Arrayable
     public function toArray(): array
     {
         return [
+            'id' => $this->getId(),
             'country_code' => $this->getCountryCode(),
             'party_id' => $this->getPartyId(),
-            'id' => $this->getExternalId(),
+            'external_id' => $this->getExternalId(),
             'publish' => $this->isPublish(),
             'publish_allowed_to' => $this->getPublishAllowedTo()?->toArray(),
             'name' => $this->getName(),

@@ -54,13 +54,14 @@ class Evse implements Arrayable
      * @param EvseStatus $status
      * @param ConnectorCollection $connectors
      * @param Carbon $lastUpdated
+     * @param string|null $id
      */
     public function __construct(
         private readonly string $uid,
         private readonly EvseStatus $status,
         private readonly ConnectorCollection $connectors,
         private readonly Carbon $lastUpdated,
-        private readonly ?int $id = null,
+        private readonly ?string $id = null,
     ) {
     }
 
@@ -224,16 +225,6 @@ class Evse implements Arrayable
         return $this->uid;
     }
 
-    /**
-     * @param string $uid
-     *
-     * @return $this
-     */
-    public function setUid(string $uid): self
-    {
-        $this->uid = $uid;
-        return $this;
-    }
 
     /**
      * @return EvseStatus
@@ -243,16 +234,6 @@ class Evse implements Arrayable
         return $this->status;
     }
 
-    /**
-     * @param EvseStatus $status
-     *
-     * @return $this
-     */
-    public function setStatus(EvseStatus $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
 
     /**
      * @return ConnectorCollection
@@ -262,16 +243,6 @@ class Evse implements Arrayable
         return $this->connectors;
     }
 
-    /**
-     * @param ConnectorCollection $connectors
-     *
-     * @return $this
-     */
-    public function setConnectors(ConnectorCollection $connectors): self
-    {
-        $this->connectors = $connectors;
-        return $this;
-    }
 
     /**
      * @return Carbon
@@ -281,16 +252,6 @@ class Evse implements Arrayable
         return $this->lastUpdated;
     }
 
-    /**
-     * @param Carbon $lastUpdated
-     *
-     * @return $this
-     */
-    public function setLastUpdated(Carbon $lastUpdated): self
-    {
-        $this->lastUpdated = $lastUpdated;
-        return $this;
-    }
 
     /**
      * @return array|null
@@ -312,7 +273,7 @@ class Evse implements Arrayable
         return $this;
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -323,6 +284,7 @@ class Evse implements Arrayable
     public function toArray(): array
     {
         return [
+            'id' => $this->getId(),
             'uid' => $this->getUid(),
             'evse_id' => $this->getEvseId(),
             'status' => $this->getStatus()->value,

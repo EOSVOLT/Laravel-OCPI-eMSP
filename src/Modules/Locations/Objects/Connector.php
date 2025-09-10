@@ -24,22 +24,24 @@ class Connector implements Arrayable
     protected ?string $termsAndConditions = null;
 
     /**
-     * @param string $id
+     * @param string $connector_id
      * @param ConnectorType $standard
      * @param ConnectorFormat $format
      * @param PowerType $powerType
      * @param int $maxVoltage
      * @param int $maxAmperage
      * @param Carbon $lastUpdated
+     * @param string|null $id
      */
     public function __construct(
-        private readonly string $id,
+        private readonly string $connector_id,
         private readonly ConnectorType $standard,
         private readonly ConnectorFormat $format,
         private readonly PowerType $powerType,
         private readonly int $maxVoltage,
         private readonly int $maxAmperage,
         private readonly Carbon $lastUpdated,
+        private readonly ?string $id = null,
     ) {
     }
 
@@ -103,9 +105,9 @@ class Connector implements Arrayable
     /**
      * @return string
      */
-    public function getId(): string
+    public function getConnectorId(): string
     {
-        return $this->id;
+        return $this->connector_id;
     }
 
     /**
@@ -156,6 +158,11 @@ class Connector implements Arrayable
         return $this->lastUpdated;
     }
 
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
     /**
      * @return array
      */
@@ -163,6 +170,7 @@ class Connector implements Arrayable
     {
         return [
             'id' => $this->getId(),
+            'connector_id' => $this->getConnectorId(),
             'standard' => $this->getStandard()->name,
             'format' => $this->getFormat()->name,
             'power_type' => $this->getPowerType()->name,
