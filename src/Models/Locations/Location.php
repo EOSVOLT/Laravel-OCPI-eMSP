@@ -43,12 +43,12 @@ class Location extends Model
 
     public function evses(): HasMany
     {
-        return $this->hasMany(LocationEvse::class, 'evse_id', 'id');
+        return $this->hasMany(LocationEvse::class, 'location_id', 'id');
     }
 
     public function evsesWithTrashed(): HasMany
     {
-        return $this->hasMany(LocationEvse::class, 'evse_id', 'id')
+        return $this->hasMany(LocationEvse::class, 'location_id', 'id')
             ->withTrashed();
     }
 
