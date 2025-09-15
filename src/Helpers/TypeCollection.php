@@ -15,7 +15,7 @@ abstract class TypeCollection extends \ArrayIterator implements Arrayable
         'array',
     ];
 
-    public function __construct(mixed $array = [])
+    public function __construct(array $array = [])
     {
         if ('' === $this->type) {
             throw new InvalidArgumentException(sprintf('Collection type for %s is not specified!', get_class($this)));
