@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
+use Ocpi\Support\Client\Client;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
