@@ -10,6 +10,9 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Traits\Server\Response as ServerResponse;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @todo, revisit when doing an EMSP role
+ */
 class IdentifyPartyRole
 {
     use ServerResponse;

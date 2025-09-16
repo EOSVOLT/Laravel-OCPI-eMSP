@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Ocpi;
 
 use Illuminate\Support\ServiceProvider;
-use Ocpi\Modules\Credentials\Console\Commands\CPO\Initialize as ModuleCPOCredentialsInitialize;
-use Ocpi\Modules\Credentials\Console\Commands\EMSP\Initialize as ModuleCredentialsInitialize;
-use Ocpi\Modules\Credentials\Console\Commands\EMSP\Register as ModuleCredentialsRegister;
-use Ocpi\Modules\Credentials\Console\Commands\EMSP\Update as ModuleCredentialsUpdate;
+use Ocpi\Modules\Credentials\Console\Commands\Receiver\Initialize as ModuleCPOCredentialsInitialize;
+use Ocpi\Modules\Credentials\Console\Commands\Sender\Initialize as ModuleCredentialsInitialize;
+use Ocpi\Modules\Credentials\Console\Commands\Sender\Register as ModuleCredentialsRegister;
+use Ocpi\Modules\Credentials\Console\Commands\Sender\Update as ModuleCredentialsUpdate;
 use Ocpi\Modules\Locations\Console\Commands\Synchronize as ModuleLocationsSynchronize;
 use Ocpi\Modules\Versions\Console\Commands\Update as ModuleVersionsUpdate;
 

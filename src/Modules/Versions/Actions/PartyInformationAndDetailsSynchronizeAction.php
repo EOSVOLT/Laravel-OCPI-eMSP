@@ -1,21 +1,22 @@
 <?php
 
-namespace Ocpi\Modules\Versions\Actions\CPO;
+namespace Ocpi\Modules\Versions\Actions;
 
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
-use Ocpi\Support\Client\CPOClient as OcpiClient;
+use Ocpi\Models\PartyToken;
+use Ocpi\Support\Client\Client;
 
 class PartyInformationAndDetailsSynchronizeAction
 {
-    public function handle(Party $party): Party
+    public function handle(Party $party, PartyToken $partyToken): Party
     {
         // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
         Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Information of the Party on '.$party->url);
-        $ocpiClient = new OcpiClient($party, 'versions.information');
-        $versionList = $ocpiClient->versions()->information();
+        $client = new Client($party, $partyToken, 'versions.information');
+        $versionList = $client->versions()->information();
         throw_if(
             ! is_array($versionList),
             new Exception('Party '.$party->code.' - Empty or invalid response for Versions Information.')
@@ -64,8 +65,8 @@ class PartyInformationAndDetailsSynchronizeAction
 
         // OCPI GET call for Versions Details of the Party, store OCPI endpoints.
         Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Details of the Party for version '.$party->version);
-        $ocpiClient->module('versions.details');
-        $versionDetails = $ocpiClient->versions()->details();
+        $client->module('versions.details');
+        $versionDetails = $client->versions()->details();
         throw_if(
             ! is_array($versionDetails) || ! isset($versionDetails['version']) || ! is_array($versionDetails['endpoints'] ?? null),
             new Exception('Party '.$party->code.' - Empty or invalid response for Versions Details.')

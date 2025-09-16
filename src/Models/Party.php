@@ -2,9 +2,11 @@
 
 namespace Ocpi\Models;
 
+use App\Models\Company;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
@@ -26,6 +28,8 @@ use Ocpi\Support\Models\Model;
  * @property bool $registered
  * @property Collection|PartyRole[] $roles
  * @property array|null $endpoints
+ * @property Party|null $parent
+ * @property Collection|Party[] $children
  */
 class Party extends Model
 {
@@ -91,6 +95,21 @@ class Party extends Model
     public function roles(): HasMany
     {
         return $this->hasMany(PartyRole::class);
+    }
+
+    public function tokens(): HasMany
+    {
+        return $this->hasMany(PartyToken::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Party::class, 'parent_id');
+    }
+
+    public function children(): hasMany
+    {
+        return $this->hasMany(Party::class, 'parent_id');
     }
 
     /***
