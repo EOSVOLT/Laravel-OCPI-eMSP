@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
+use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Events;
 use Ocpi\Modules\Credentials\Object\PartyCode;
@@ -30,8 +31,9 @@ class PutController extends Controller
     ): JsonResponse {
         try {
             $input = CredentialsValidator::validate($request->all());
-            /** @var Party $parentParty */
-            $parentParty = Party::with(['roles'])->where('code', Context::get('party_code'))->first();
+            /** @var PartyToken $partyToken */
+            $partyToken = PartyToken::query()->find(Context::get('token_id'));
+            $parentParty = $partyToken->party;
             if ($parentParty === null) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
@@ -40,7 +42,7 @@ class PutController extends Controller
                 );
             }
 
-            if ($parentParty->registered === false) {
+            if (false === $parentParty->registered) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
                     statusMessage: 'Client not registered.',
@@ -54,13 +56,14 @@ class PutController extends Controller
                         $parentParty,
                         $request,
                         $input,
-                        $versionsPartyInformationAndDetailsSynchronizeAction
+                        $versionsPartyInformationAndDetailsSynchronizeAction,
+                        $partyToken
                     ) {
                         //remove all current children roles and recreate from payload.
                         $parentParty->children->each(function (Party $child) {
                             $child->roles()->delete();
                         });
-                        $newServerToken = GeneratorHelper::decodeToken($input['token'], $parentParty->version);
+                        $newTokenC = GeneratorHelper::decodeToken($input['token'], $parentParty->version);
                         $newUrl = $input['url'];
                         // update children parties from payload
                         foreach ($request->input('roles') as $role) {
@@ -71,27 +74,33 @@ class PutController extends Controller
                                 'code',
                                 $partyCode->getCodeFormatted()
                             )->first();
-                            if ($childrenParty === null) {
+                            $childrenPartyToken = new PartyToken();
+                            $childrenPartyToken->fill([
+                                'token' => $newTokenC,
+                                'registered' => true,
+                            ]);
+                            if (null === $childrenParty) {
                                 $childrenParty = Party::query()->create(
                                     [
                                         'code' => $partyCode->getCodeFormatted(),
                                         'parent_id' => $parentParty->id,
                                         'name' => $parentParty->name . '_' . $partyCode->getCodeFormatted(),
-                                        'server_token' => $newServerToken,
                                         'url' => $newUrl,
                                         'version' => $parentParty->version,
-                                        'registered' => true,
                                     ]
                                 );
+                                $childrenParty->tokens()->save($childrenPartyToken);
                             } else {
                                 $childrenParty->update([
-                                    'server_token' => $newServerToken,
                                     'url' => $newUrl,
                                 ]);
+                                $childrenParty->tokens()->delete();
+                                $childrenParty->tokens()->save($childrenPartyToken);
                             }
                             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
                             $childrenParty = $versionsPartyInformationAndDetailsSynchronizeAction->handle(
-                                $childrenParty
+                                $childrenParty,
+                                $childrenPartyToken
                             );
 
                             $partyRole = new PartyRole;
@@ -104,8 +113,9 @@ class PutController extends Controller
                             $childrenParty->roles()->save($partyRole);
                         }
                         // regenerate a new Token C for the client Party.
-                        $parentParty->server_token = $parentParty->generateToken();
-                        $parentParty->save();
+                        $partyToken->token = GeneratorHelper::generateToken($parentParty->code);
+                        $partyToken->save();
+                        $partyToken->refresh();
                         $parentParty->refresh();
                         return $parentParty;
                     }
@@ -114,7 +124,7 @@ class PutController extends Controller
             Events\CredentialsUpdated::dispatch($parentParty->id, $request->json()->all());
 
             return $this->ocpiSuccessResponse(
-                $selfCredentialsGetAction->handle($parentParty)
+                $selfCredentialsGetAction->handle($parentParty, $partyToken)
             );
         } catch (ValidationException $e) {
             Log::channel('ocpi')->error($e->getMessage());

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyToken;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Traits\Server\Response as ServerResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,26 +23,26 @@ class IdentifySenderParty
     public function handle(Request $request, Closure $next): Response
     {
         // Retrieve Authorization Token from header.
-        $serverToken = $this->token($request, 'Token');
-        if ($serverToken === null) {
+        $tokenB = $this->token($request, 'Token');
+        if ($tokenB === null) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::NotEnoughInformation,
                 statusMessage: 'Authorization is missing.',
             );
         }
-        $serverToken = Str::rtrim($serverToken);
+        $tokenB = Str::rtrim($tokenB);
 
         // Decode Token (OCPI version >= 2.2).
-        $clientTokenDecoded = Party::decodeToken($serverToken);
+        $decodedTokenB = Party::decodeToken($tokenB);
 
-        // Retrieve Party from Token.
-        $party = Party::where('client_token', $serverToken)
-            ->when($clientTokenDecoded !== false, function (Builder $query) use ($clientTokenDecoded) {
-                $query->orWhere('client_token', $clientTokenDecoded);
+        /** @var PartyToken $token */
+        $token = PartyToken::query()->where('token', $tokenB)
+            ->when(false !== $decodedTokenB, function (Builder $query) use ($decodedTokenB) {
+                $query->orWhere('token', $decodedTokenB);
             })
             ->first();
 
-        if ($party === null) {
+        if (null === $token) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::InvalidParameters,
                 statusMessage: 'Invalid Authorization Token or Party.',
@@ -50,8 +51,9 @@ class IdentifySenderParty
 
         // Add information to Context.
         Context::add('trace_id', Str::uuid()->toString());
-        Context::add('party_code', $party->code);
-        Context::addHidden('party', $party);
+        Context::add('party_code', $token->party->code);
+        Context::add('token_id', $token->id);
+        Context::addHidden('party', $token->party);
 
         return $next($request);
     }

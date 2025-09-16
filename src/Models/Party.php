@@ -97,6 +97,11 @@ class Party extends Model
         return $this->hasMany(PartyRole::class);
     }
 
+    public function tokens(): HasMany
+    {
+        return $this->hasMany(PartyToken::class);
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'parent_id');

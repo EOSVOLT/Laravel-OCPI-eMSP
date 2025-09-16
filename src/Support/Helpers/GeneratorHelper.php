@@ -39,4 +39,18 @@ class GeneratorHelper
         }
         return $token;
     }
+
+    public static function encodeToken(string $token, string $version = '2.2.1'): string
+    {
+        if (version_compare($version, '2.2', '<')) {
+            return $token;
+        }
+
+        return base64_encode($token);
+    }
+
+    public function generateToken(string $baseString): string
+    {
+        return $baseString . '_' . Str::uuid();
+    }
 }

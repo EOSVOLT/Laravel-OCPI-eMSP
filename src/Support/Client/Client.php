@@ -5,6 +5,7 @@ namespace Ocpi\Support\Client;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Client\Resource as CdrsResource;
 use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
 use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
@@ -13,6 +14,7 @@ use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;
 use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
+use Ocpi\Support\Helpers\GeneratorHelper;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Response;
@@ -24,6 +26,7 @@ class Client extends Connector
 
     public function __construct(
         protected readonly Party $party,
+        protected readonly PartyToken $partyToken,
         protected string $module,
     ) {
         Context::add('trace_id', Str::uuid()->toString());
@@ -31,19 +34,6 @@ class Client extends Connector
 
         $this->middleware()->onRequest(new LogRequest);
         $this->middleware()->onResponse(new LogResponse);
-    }
-
-    protected function defaultHeaders(): array
-    {
-        return [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ];
-    }
-
-    protected function defaultConfig(): array
-    {
-        return [];
     }
 
     public function hasRequestFailed(Response $response): ?bool
@@ -113,8 +103,22 @@ class Client extends Connector
         return new VersionsResource($this);
     }
 
+    protected function defaultHeaders(): array
+    {
+        return [
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ];
+    }
+
+    protected function defaultConfig(): array
+    {
+        return [];
+    }
+
     protected function defaultAuth(): TokenAuthenticator
     {
-        return new TokenAuthenticator($this->party?->encoded_server_token, 'Token');
+        $token = GeneratorHelper::encodeToken($this->partyToken->token, $this->party->version);
+        return new TokenAuthenticator($token, 'Token');
     }
 }

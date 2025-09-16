@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
+use Ocpi\Models\PartyToken;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 
@@ -46,10 +47,14 @@ class Initialize extends Command
         $partyCode = GeneratorHelper::generateUniquePartyCode($countryCode);
         $input['code'] = $partyCode->getCodeFormatted();
         $input['url'] = config('ocpi.client.server.url') . '/cpo/versions';
-        $input['server_token'] = Str::random(32);
         try {
             /** @var Party $party */
             $party = Party::query()->create($input);
+            $partyToken = new PartyToken();
+            $partyToken->fill([
+                'token' => Str::random(32),
+                'registered' => false,
+            ]);
             $partyRole = new PartyRole();
             $partyRole->fill([
                 'code' => $partyCode->getCode(),
@@ -58,6 +63,7 @@ class Initialize extends Command
                 'business_details' => ['name' => $businessName, 'website' => $businessWebsite],
             ]);
             $party->roles()->save($partyRole);
+            $party->tokens()->save($partyToken);
         } catch (Exception $e) {
             $this->error('Error creating Party.');
             $this->newLine(2);

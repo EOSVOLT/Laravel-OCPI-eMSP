@@ -6,6 +6,9 @@ use Exception;
 use Illuminate\Console\Command;
 use Ocpi\Models\Party;
 
+/**
+ * @todo revisit again when doing a EMSP role.
+ */
 class Initialize extends Command
 {
     /**
