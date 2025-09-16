@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Object;
+namespace Ocpi\Modules\Locations\Objects;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
@@ -15,51 +15,55 @@ class Evse implements Arrayable
     /**
      * @var string|null
      */
-    private ?string $evseId = null;
+    protected ?string $evseId = null;
     /**
      * @var StatusScheduleCollection|null
      */
-    private ?StatusScheduleCollection $statusScheduleCollection = null;
+    protected ?StatusScheduleCollection $statusScheduleCollection = null;
     /**
      * @var EvseCapability|null
      */
-    private ?EvseCapability $capabilities = null;
+    protected ?EvseCapability $capabilities = null;
     /**
      * @var string|null
      */
-    private ?string $floorLevel = null;
+    protected ?string $floorLevel = null;
     /**
      * @var GeoLocation|null
      */
-    private ?GeoLocation $coordinates = null;
+    protected ?GeoLocation $coordinates = null;
     /**
      * @var string|null
      */
-    private ?string $physicalReference = null;
+    protected ?string $physicalReference = null;
     /**
      * @var DisplayTextCollection|null
      */
-    private ?DisplayTextCollection $directions = null;
+    protected ?DisplayTextCollection $directions = null;
     /**
      * @var array
      */
-    private array $parkingRestrictions = [];
+    protected array $parkingRestrictions = [];
     /**
      * @var ImageCollection|null
      */
-    private ?ImageCollection $images = null;
+    protected ?ImageCollection $images = null;
 
     /**
+     * @param int $locationId
      * @param string $uid
      * @param EvseStatus $status
      * @param ConnectorCollection $connectors
      * @param Carbon $lastUpdated
+     * @param string|null $id
      */
     public function __construct(
-        private string $uid,
-        private EvseStatus $status,
-        private ConnectorCollection $connectors,
-        private Carbon $lastUpdated,
+        private readonly int $locationId,
+        private readonly string $uid,
+        private readonly EvseStatus $status,
+        private readonly ConnectorCollection $connectors,
+        private readonly Carbon $lastUpdated,
+        private readonly ?string $id = null,
     ) {
     }
 
@@ -223,16 +227,6 @@ class Evse implements Arrayable
         return $this->uid;
     }
 
-    /**
-     * @param string $uid
-     *
-     * @return $this
-     */
-    public function setUid(string $uid): self
-    {
-        $this->uid = $uid;
-        return $this;
-    }
 
     /**
      * @return EvseStatus
@@ -242,16 +236,6 @@ class Evse implements Arrayable
         return $this->status;
     }
 
-    /**
-     * @param EvseStatus $status
-     *
-     * @return $this
-     */
-    public function setStatus(EvseStatus $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
 
     /**
      * @return ConnectorCollection
@@ -261,16 +245,6 @@ class Evse implements Arrayable
         return $this->connectors;
     }
 
-    /**
-     * @param ConnectorCollection $connectors
-     *
-     * @return $this
-     */
-    public function setConnectors(ConnectorCollection $connectors): self
-    {
-        $this->connectors = $connectors;
-        return $this;
-    }
 
     /**
      * @return Carbon
@@ -280,16 +254,6 @@ class Evse implements Arrayable
         return $this->lastUpdated;
     }
 
-    /**
-     * @param Carbon $lastUpdated
-     *
-     * @return $this
-     */
-    public function setLastUpdated(Carbon $lastUpdated): self
-    {
-        $this->lastUpdated = $lastUpdated;
-        return $this;
-    }
 
     /**
      * @return array|null
@@ -311,12 +275,18 @@ class Evse implements Arrayable
         return $this;
     }
 
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
     /**
      * @return array
      */
     public function toArray(): array
     {
         return [
+            'id' => $this->getId(),
             'uid' => $this->getUid(),
             'evse_id' => $this->getEvseId(),
             'status' => $this->getStatus()->value,

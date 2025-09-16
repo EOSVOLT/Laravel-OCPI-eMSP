@@ -4,7 +4,6 @@ namespace Ocpi\Models\Locations;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
-use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,15 +12,13 @@ use Ocpi\Support\Models\Model;
 
 class Location extends Model
 {
-    use HasVersion7Uuids,
-        SoftDeletes;
-
-    protected $primaryKey = 'emsp_id';
+    use SoftDeletes;
 
     protected $fillable = [
-        'party_role_id',
-        'id',
         'object',
+        'party_id',
+        'external_id',
+        'publish'
     ];
 
     protected function casts(): array
@@ -46,17 +43,17 @@ class Location extends Model
 
     public function evses(): HasMany
     {
-        return $this->hasMany(LocationEvse::class, 'location_emsp_id', 'emsp_id');
+        return $this->hasMany(LocationEvse::class, 'location_id', 'id');
     }
 
     public function evsesWithTrashed(): HasMany
     {
-        return $this->hasMany(LocationEvse::class, 'location_emsp_id', 'emsp_id')
+        return $this->hasMany(LocationEvse::class, 'location_id', 'id')
             ->withTrashed();
     }
 
-    public function party_role(): BelongsTo
+    public function party(): BelongsTo
     {
-        return $this->belongsTo(PartyRole::class);
+        return $this->belongsTo(PartyRole::class, 'party_id', 'id');
     }
 }
