@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
             $table->dropColumn('name');
+            $table->dropColumn('registered');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
             $table->string('name');
+            $table->boolean('registered')->default(false);
         });
     }
 };
