@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Object;
+namespace Ocpi\Modules\Locations\Objects;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
@@ -15,72 +15,72 @@ class Locations implements Arrayable
     /**
      * @var string|null
      */
-    private ?string $name = null;
+    protected ?string $name = null;
     /**
      * @var string|null
      */
-    private ?string $postalCode = null;
+    protected ?string $postalCode = null;
     /**
      * @var string|null
      */
-    private ?string $state = null;
+    protected ?string $state = null;
     /**
      * @var PublishTokenTypeCollection|null
      */
-    private ?PublishTokenTypeCollection $publishAllowedTo = null;
+    protected ?PublishTokenTypeCollection $publishAllowedTo = null;
     /**
      * @var AdditionalGeoLocationCollection|null
      */
-    private ?AdditionalGeoLocationCollection $relatedLocations = null;
+    protected ?AdditionalGeoLocationCollection $relatedLocations = null;
     /**
      * @var ParkingType|null
      */
-    private ?ParkingType $parkingType = null;
+    protected ?ParkingType $parkingType = null;
     /**
      * @var EvseCollection|null
      */
-    private ?EvseCollection $evses = null;
+    protected ?EvseCollection $evses = null;
     /**
      * @var DisplayTextCollection|null
      */
-    private ?DisplayTextCollection $directions = null;
+    protected ?DisplayTextCollection $directions = null;
     /**
      * @var BusinessDetails|null
      */
-    private ?BusinessDetails $operator = null;
+    protected ?BusinessDetails $operator = null;
     /**
      * @var BusinessDetails|null
      */
-    private ?BusinessDetails $suboperator = null;
+    protected ?BusinessDetails $suboperator = null;
     /**
      * @var BusinessDetails|null
      */
-    private ?BusinessDetails $owner = null;
+    protected ?BusinessDetails $owner = null;
     /**
      * @var array
      */
-    private array $facilities = [];
+    protected array $facilities = [];
     /**
      * @var Hours|null
      */
-    private ?Hours $openingTimes = null;
+    protected ?Hours $openingTimes = null;
     /**
      * @var bool
      */
-    private bool $chargingWhenClosed = true;
+    protected bool $chargingWhenClosed = true;
     /**
      * @var ImageCollection|null
      */
-    private ?ImageCollection $images = null;
+    protected ?ImageCollection $images = null;
     /**
      * @var EnergyMix|null
      */
-    private ?EnergyMix $energyMix = null;
+    protected ?EnergyMix $energyMix = null;
 
     /**
      * @param string $countryCode
      * @param string $partyId
-     * @param string $id
+     * @param string $externalId
      * @param bool $publish
      * @param string $address
      * @param string $city
@@ -88,11 +88,12 @@ class Locations implements Arrayable
      * @param GeoLocation $coordinates
      * @param string $timeZone
      * @param Carbon $lastUpdated
+     * @param string|null $id
      */
     public function __construct(
         private readonly string $countryCode,
         private readonly string $partyId,
-        private readonly string $id,
+        private readonly string $externalId,
         private readonly bool $publish,
         private readonly string $address,
         private readonly string $city,
@@ -100,6 +101,7 @@ class Locations implements Arrayable
         private readonly GeoLocation $coordinates,
         private readonly string $timeZone,
         private readonly Carbon $lastUpdated,
+        private readonly ?string $id = null,
     ) {
     }
 
@@ -122,9 +124,9 @@ class Locations implements Arrayable
     /**
      * @return string
      */
-    public function getId(): string
+    public function getExternalId(): string
     {
-        return $this->id;
+        return $this->externalId;
     }
 
     /**
@@ -488,15 +490,21 @@ class Locations implements Arrayable
         return $this;
     }
 
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
     /**
      * @return array
      */
     public function toArray(): array
     {
         return [
+            'id' => $this->getId(),
             'country_code' => $this->getCountryCode(),
             'party_id' => $this->getPartyId(),
-            'id' => $this->getId(),
+            'external_id' => $this->getExternalId(),
             'publish' => $this->isPublish(),
             'publish_allowed_to' => $this->getPublishAllowedTo()?->toArray(),
             'name' => $this->getName(),
