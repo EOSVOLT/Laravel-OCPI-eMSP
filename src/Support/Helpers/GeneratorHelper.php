@@ -49,7 +49,7 @@ class GeneratorHelper
         return base64_encode($token);
     }
 
-    public function generateToken(string $baseString): string
+    public static function generateToken(string $baseString): string
     {
         return $baseString . '_' . Str::uuid();
     }
