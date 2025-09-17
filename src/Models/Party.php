@@ -30,6 +30,7 @@ use Ocpi\Support\Models\Model;
  * @property array|null $endpoints
  * @property Party|null $parent
  * @property Collection|Party[] $children
+ * @property Collection|PartyToken[] $tokens
  */
 class Party extends Model
 {

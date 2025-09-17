@@ -10,6 +10,7 @@ use Ocpi\Support\Models\Model;
  * @property int $id
  * @property Party $party
  * @property int $party_id
+ * @property string $name
  * @property string $token
  * @property bool $registered
  */
@@ -19,6 +20,7 @@ class PartyToken extends Model
 
     protected $fillable = [
         'party_id',
+        'name',
         'token',
         'registered',
     ];
