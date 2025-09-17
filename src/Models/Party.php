@@ -22,7 +22,6 @@ use Ocpi\Support\Models\Model;
  * @property string|null $encoded_server_token
  * @property string $code
  * @property string|null $url
- * @property string $name
  * @property string|null $version
  * @property string|null $version_url
  * @property bool $registered
@@ -38,7 +37,6 @@ class Party extends Model
 
     protected $fillable = [
         'code',
-        'name',
         'server_token',
         'url',
         'version',

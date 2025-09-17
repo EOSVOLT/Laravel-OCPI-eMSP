@@ -59,7 +59,6 @@ class PostController extends Controller
                             [
                                 'code' => $partyCode->getCodeFormatted(),
                                 'parent_id' => $parentParty->id,
-                                'name' => $parentParty->name . '_' . $partyCode->getCodeFormatted(),
                                 'server_token' => $serverToken,
                                 'url' => $url,
                                 'version' => $parentParty->version,
