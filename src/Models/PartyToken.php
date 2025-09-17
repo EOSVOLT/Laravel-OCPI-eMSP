@@ -19,9 +19,7 @@ class PartyToken extends Model
 
     protected $fillable = [
         'party_id',
-        'token_a',
-        'token_b',
-        'token_c',
+        'token',
         'registered',
     ];
 
