@@ -11,7 +11,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table(config('ocpi.database.table.prefix') . 'token', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'party_tokens', function (Blueprint $table) {
             $table->string('name')->after('party_id');
         });
         PartyToken::all()->each(function (PartyToken $token) {
@@ -25,7 +25,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table(config('ocpi.database.table.prefix') . 'token', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'party_tokens', function (Blueprint $table) {
             $table->removeColumn('label');
         });
     }
