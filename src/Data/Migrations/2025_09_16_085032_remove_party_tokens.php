@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
-            $table->removeColumn('server_token');
-            $table->removeColumn('client_token');
+            $table->dropColumn('server_token');
+            $table->dropColumn('client_token');
         });
     }
 
