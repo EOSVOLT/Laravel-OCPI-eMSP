@@ -37,17 +37,10 @@ class Party extends Model
 
     protected $fillable = [
         'code',
-        'server_token',
         'url',
         'version',
         'version_url',
         'endpoints',
-        'client_token',
-        'registered',
-    ];
-
-    protected $attributes = [
-        'registered' => false,
     ];
 
     /**
