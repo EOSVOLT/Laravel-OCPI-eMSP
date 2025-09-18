@@ -10,10 +10,13 @@ use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Models\Model;
 
 /**
+ * @property int $id
  * @property string $code
+ * @property string $party_id
+ * @property Party $party
  * @property Role $role
  * @property string $country_code
- * @property array $business_details
+ * @property array|null $business_details
  */
 class PartyRole extends Model
 {
