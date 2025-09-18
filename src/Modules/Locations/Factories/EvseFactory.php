@@ -14,14 +14,14 @@ class EvseFactory
     {
         $evse->load('connectors');
         $connectors = ConnectorFactory::fromModels($evse->connectors);
-        return new Evse(
+        return (new Evse(
             $evse->location_id,
             $evse->uid,
-            EvseStatus::tryFrom($evse->status),
+            $evse->status,
             $connectors,
             $evse->updated_at,
             $evse->id
-        )->setEvseId($evse->object['evse_id'] ?? null);
+        ))->setEvseId($evse->object['evse_id'] ?? null);
     }
 
     public static function fromModels(Collection $evses): EvseCollection

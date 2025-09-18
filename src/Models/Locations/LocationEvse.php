@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Support\Models\Model;
 
 class LocationEvse extends Model
@@ -25,6 +26,9 @@ class LocationEvse extends Model
     {
         return [
             'object' => AsArrayObject::class,
+            'status' => EvseStatus::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 
