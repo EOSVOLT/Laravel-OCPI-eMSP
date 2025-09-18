@@ -36,8 +36,6 @@ class LocationFactory
             ->setName($object['name'] ?? null)
             ->setPostalCode($object['postal_code'] ?? null)
             ->setOpeningTimes(HourFactory::fromArray($object['opening_times'] ?? []))
-            ->setDirections($object['directions'] ?? [])
-            ->setEnergyMix($object['energy_mix'] ?? [])
             ->setFacilities($object['facilities'] ?? [])
             ->setParkingType(ParkingType::tryFrom($object['parking_type'] ?? ""));
         return $locationObj;
