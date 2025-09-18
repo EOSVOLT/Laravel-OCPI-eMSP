@@ -12,17 +12,11 @@ class LocationEvseReplaced implements ShouldDispatchAfterCommit
     use Dispatchable;
 
     public function __construct(
-        private readonly Locations $location,
         private readonly Evse $evse,
     ) {}
 
     public function getEvse(): Evse
     {
         return $this->evse;
-    }
-
-    public function getLocation(): Locations
-    {
-        return $this->location;
     }
 }
