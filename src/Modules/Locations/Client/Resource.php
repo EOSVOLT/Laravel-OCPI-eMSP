@@ -67,6 +67,7 @@ class Resource extends OcpiResource
      * @param string $partyId
      * @param string $locationId
      * @param array $data
+     * @param string $baseEndpoint
      * @param string|null $evseUid
      * @param string|null $connectorId
      *
@@ -80,12 +81,13 @@ class Resource extends OcpiResource
         string $partyId,
         string $locationId,
         array $data,
+        string $baseEndpoint,
         ?string $evseUid = null,
         ?string $connectorId = null
     ): ?array {
         return $this->requestPutSend(
             $data,
-            implode('/', array_filter([$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
+            implode('/', array_filter([$baseEndpoint,$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
         );
     }
 
@@ -94,6 +96,7 @@ class Resource extends OcpiResource
      * @param string $partyId
      * @param string $locationId
      * @param array $data
+     * @param string $baseEndpoint
      * @param string|null $evseUid
      * @param string|null $connectorId
      *
@@ -106,12 +109,13 @@ class Resource extends OcpiResource
         string $partyId,
         string $locationId,
         array $data,
+        string $baseEndpoint,
         ?string $evseUid = null,
         ?string $connectorId = null
     ): ?array {
         return $this->requestPatchSend(
             $data,
-            implode('/', array_filter([$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
+            implode('/', array_filter([$baseEndpoint,$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
         );
     }
 }

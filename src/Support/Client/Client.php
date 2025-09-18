@@ -2,6 +2,7 @@
 
 namespace Ocpi\Support\Client;
 
+use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
