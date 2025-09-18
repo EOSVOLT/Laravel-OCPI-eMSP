@@ -35,7 +35,7 @@ class LocationFactory
             ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
             ->setName($object['name'] ?? null)
             ->setPostalCode($object['postal_code'] ?? null)
-            ->setOpeningTimes($object['opening_times'] ?? [])
+            ->setOpeningTimes(HourFactory::fromArray($object['opening_times'] ?? []))
             ->setDirections($object['directions'] ?? [])
             ->setEnergyMix($object['energy_mix'] ?? [])
             ->setFacilities($object['facilities'] ?? [])
