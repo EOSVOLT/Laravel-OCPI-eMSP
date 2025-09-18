@@ -2,15 +2,16 @@
 
 namespace Ocpi\Models;
 
-use App\Models\Company;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\Base64Helper;
 use Ocpi\Support\Models\Model;
 
@@ -90,6 +91,11 @@ class Party extends Model
     {
         return $this->hasMany(PartyRole::class);
     }
+    public function role_cpo(): HasOne
+    {
+        return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::CPO->value);
+    }
+
 
     public function tokens(): HasMany
     {
