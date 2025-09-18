@@ -29,7 +29,7 @@ class GetController extends Controller
         $page = $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
         $location = Location::query()
             ->with(['evses.connectors'])
-            ->where('party_id', $party->id)
+            ->where('party_id', $party->getId())
             ->where('updated_at', '>=', $dateFrom->toDateTimeString()) //inclusive
             ->where('updated_at', '<', $dateTo->toDateTimeString()) //exclusive
             ->where('publish', true)
