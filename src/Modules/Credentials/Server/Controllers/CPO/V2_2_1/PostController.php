@@ -78,9 +78,11 @@ class PostController extends Controller
                                     ]
                                 );
                                 $childrenPartyToken = new PartyToken();
+                                $tokenName = $role['business_details']['name'] ?? '';
                                 $childrenPartyToken->fill([
                                     'token' => $tokenB,
                                     'registered' => true,
+                                    'name' => $tokenName.'_'.$partyCode->getCodeFormatted()
                                 ]);
                                 $childrenParty->tokens()->save($childrenPartyToken);
                                 // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
