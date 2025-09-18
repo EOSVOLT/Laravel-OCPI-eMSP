@@ -12,6 +12,7 @@ use Ocpi\Trait\ValidateArrayEnum;
 class Evse implements Arrayable
 {
     use ValidateArrayEnum;
+
     /**
      * @var string|null
      */
@@ -280,6 +281,11 @@ class Evse implements Arrayable
         return $this->id;
     }
 
+    public function getLocationId(): int
+    {
+        return $this->locationId;
+    }
+
     /**
      * @return array
      */
@@ -287,6 +293,7 @@ class Evse implements Arrayable
     {
         return [
             'id' => $this->getId(),
+            'location_id' => $this->getLocationId(),
             'uid' => $this->getUid(),
             'evse_id' => $this->getEvseId(),
             'status' => $this->getStatus()->value,
