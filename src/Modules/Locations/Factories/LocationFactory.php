@@ -31,7 +31,7 @@ class LocationFactory
             $location->id,
         ))->setParty(PartyFactory::fromModel($location->party))
             ->setEvses(EvseFactory::fromModels($location->evses))
-            ->setImages($object['images'] ?? [])
+            ->setImages(ImageFactory::fromModelArray($object['images'] ?? []))
             ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
             ->setName($object['name'] ?? null)
             ->setPostalCode($object['postal_code'] ?? null)
