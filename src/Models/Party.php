@@ -27,6 +27,7 @@ use Ocpi\Support\Models\Model;
  * @property bool $registered
  * @property Collection|PartyRole[] $roles
  * @property array|null $endpoints
+ * @property int|null $parent_id
  * @property Party|null $parent
  * @property Collection|Party[] $children
  * @property Collection|PartyToken[] $tokens
@@ -41,6 +42,7 @@ class Party extends Model
         'version',
         'version_url',
         'endpoints',
+        'parent_id',
     ];
 
     /**
