@@ -23,6 +23,8 @@ class LocationConnector extends Model
     {
         return [
             'object' => AsArrayObject::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 

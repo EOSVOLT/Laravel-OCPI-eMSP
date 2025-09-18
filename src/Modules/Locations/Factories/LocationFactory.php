@@ -4,9 +4,9 @@ namespace Ocpi\Modules\Locations\Factories;
 
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Context;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
+use Ocpi\Modules\Locations\Enums\ParkingType;
 use Ocpi\Modules\Locations\Objects\GeoLocation;
 use Ocpi\Modules\Locations\Objects\Locations;
 use Ocpi\Modules\Locations\Objects\LocationsCollection;
@@ -29,10 +29,17 @@ class LocationFactory
             $object['time_zone'],
             Carbon::parse($location->updated_at),
             $location->id,
-        ))->setParty(PartyFactory::fromModel($location->party));
-        if ($location->relationLoaded('evses')) {
-            $locationObj->setEvses(EvseFactory::fromModels($location->evses));
-        }
+        ))->setParty(PartyFactory::fromModel($location->party))
+            ->setEvses(EvseFactory::fromModels($location->evses))
+            ->setImages($object['images'] ?? [])
+            ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
+            ->setName($object['name'] ?? null)
+            ->setPostalCode($object['postal_code'] ?? null)
+            ->setOpeningTimes($object['opening_times'] ?? [])
+            ->setDirections($object['directions'] ?? [])
+            ->setEnergyMix($object['energy_mix'] ?? [])
+            ->setFacilities($object['facilities'] ?? [])
+            ->setParkingType(ParkingType::tryFrom($object['parking_type'] ?? ""));
         return $locationObj;
     }
 
