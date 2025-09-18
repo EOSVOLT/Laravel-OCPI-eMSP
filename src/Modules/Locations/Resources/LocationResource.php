@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Locations\Objects\Locations;
 
 /** @property Locations $resource */
-class CPOGetLocationResource extends JsonResource
+class LocationResource extends JsonResource
 {
     public function __construct(Locations $location)
     {
@@ -32,7 +32,7 @@ class CPOGetLocationResource extends JsonResource
             'coordinates' => $this->resource->getCoordinates()->toArray(),
             'related_locations' => $this->resource->getRelatedLocations()?->toArray(),
             'parking_type' => $this->resource->getParkingType()?->value,
-            'evses' => (new CPOGetEvseResourceList($this->resource->getEvses()))->toArray(),
+            'evses' => (new EvseResourceList($this->resource->getEvses()))->toArray(),
             'directions' => $this->resource->getDirections()?->toArray(),
             'operator' => $this->resource->getOperator()?->toArray(),
             'suboperator' => $this->resource->getSuboperator()?->toArray(),

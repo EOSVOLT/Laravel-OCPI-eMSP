@@ -9,7 +9,7 @@ use Ocpi\Modules\Locations\Objects\Connector;
 /**
  * @property Connector $resource
  */
-class CPOGetConnectorResource extends JsonResource
+class ConnectorResource extends JsonResource
 {
     public function __construct(Connector $resource)
     {

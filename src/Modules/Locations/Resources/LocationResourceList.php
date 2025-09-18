@@ -9,7 +9,7 @@ use Ocpi\Modules\Locations\Objects\LocationsCollection;
 /**
  * @property LocationsCollection $resource
  */
-class CPOGetLocationResourceList extends JsonResource
+class LocationResourceList extends JsonResource
 {
     public function __construct(LocationsCollection $resource)
     {
@@ -20,7 +20,7 @@ class CPOGetLocationResourceList extends JsonResource
     {
         $data = [];
         foreach ($this->resource as $location) {
-            $data[] = (new CPOGetLocationResource($location))->toArray();
+            $data[] = (new LocationResource($location))->toArray();
         }
         return $data;
     }

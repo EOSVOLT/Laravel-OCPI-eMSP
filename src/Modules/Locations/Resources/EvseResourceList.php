@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Locations\Objects\EvseCollection;
 
-class CPOGetEvseResourceList extends JsonResource
+class EvseResourceList extends JsonResource
 {
     public function __construct(EvseCollection $resource)
     {
@@ -17,7 +17,7 @@ class CPOGetEvseResourceList extends JsonResource
     {
         $data = [];
         foreach ($this->resource as $evse) {
-            $data[] = (new CPOGetEvseResource($evse))->toArray();
+            $data[] = (new EvseResource($evse))->toArray();
         }
         return $data;
     }

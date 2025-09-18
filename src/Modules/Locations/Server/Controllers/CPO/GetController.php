@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Context;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Modules\Locations\Factories\LocationFactory;
-use Ocpi\Modules\Locations\Resources\CPOGetLocationResourceList;
+use Ocpi\Modules\Locations\Resources\LocationResourceList;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -43,7 +43,7 @@ class GetController extends Controller
         $locationObj = LocationFactory::fromPaginator($location);
         return $location->count() > 0
             ? $this->ocpiSuccessPaginateResponse(
-                (new CPOGetLocationResourceList($locationObj))->toArray(),
+                (new LocationResourceList($locationObj))->toArray(),
                 $location->currentPage(),
                 $location->perPage(),
                 $location->total(),
