@@ -4,12 +4,41 @@ declare(strict_types=1);
 
 namespace Ocpi\Support\Traits\Server;
 
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 
 trait Response
 {
+    protected function ocpiSuccessPaginateResponse(
+        array $data,
+        int $page,
+        int $perPage,
+        int $total,
+        string $endpoint,
+        $statusMessage = 'Success'
+    ): JsonResponse {
+        $isNextPage = !(($page * $perPage) >= ($total - $perPage));
+        return $this->ocpiResponse(
+            data: $data,
+            httpCode: 200,
+            statusCode: 1000,
+            statusMessage: $statusMessage,
+            paginator: [
+                'link' => $isNextPage ? $this->generateNextPageLink(
+                    $page,
+                    $perPage,
+                    $total,
+                    $endpoint,
+                ) : null,
+                'total' => $total,
+                'limit' => $perPage,
+            ]
+        );
+    }
+
     protected function ocpiSuccessResponse(mixed $data = null, $statusMessage = 'Success'): JsonResponse
     {
         return $this->ocpiResponse(data: $data, httpCode: 200, statusCode: 1000, statusMessage: $statusMessage);
@@ -20,18 +49,29 @@ trait Response
         return $this->ocpiResponse(data: $data, httpCode: 201, statusCode: 1000, statusMessage: $statusMessage);
     }
 
-    protected function ocpiClientErrorResponse(OcpiClientErrorCode $statusCode = OcpiClientErrorCode::Generic, $statusMessage = 'Error', int $httpCode = 400): JsonResponse
-    {
+    protected function ocpiClientErrorResponse(
+        OcpiClientErrorCode $statusCode = OcpiClientErrorCode::Generic,
+        $statusMessage = 'Error',
+        int $httpCode = 400
+    ): JsonResponse {
         return $this->ocpiResponse(httpCode: $httpCode, statusCode: $statusCode, statusMessage: $statusMessage);
     }
 
-    protected function ocpiServerErrorResponse(OcpiServerErrorCode $statusCode = OcpiServerErrorCode::Generic, $statusMessage = 'Error', int $httpCode = 400): JsonResponse
-    {
+    protected function ocpiServerErrorResponse(
+        OcpiServerErrorCode $statusCode = OcpiServerErrorCode::Generic,
+        $statusMessage = 'Error',
+        int $httpCode = 400
+    ): JsonResponse {
         return $this->ocpiResponse(httpCode: $httpCode, statusCode: 3000, statusMessage: $statusMessage);
     }
 
-    protected function ocpiResponse(mixed $data = null, $httpCode = null, $statusCode = null, $statusMessage = null): JsonResponse
-    {
+    protected function ocpiResponse(
+        mixed $data = null,
+        $httpCode = null,
+        $statusCode = null,
+        $statusMessage = null,
+        array $paginator = []
+    ): JsonResponse {
         $payload = collect([])
             ->when($data !== null, function ($payload) use ($data) {
                 return $payload->put('data', $data);
@@ -40,10 +80,35 @@ trait Response
             ->when($statusMessage !== null, function ($payload) use ($statusMessage) {
                 return $payload->put('status_message', $statusMessage);
             })
-            ->put('timestamp', now()->toIso8601ZuluString());
+            ->put('timestamp', Carbon::now()->toISOString());
 
+        $headers = [
+            'Content-Type' => 'application/json',
+        ];
+        if (!empty($paginator)) {
+            $headers = array_merge($headers, [
+                'Link' => $paginator['link'],
+                'X-Total-Count' => $paginator['total'],
+                'X-Limit' => $paginator['limit'],
+            ]);
+        }
         return response()
             ->json($payload, $httpCode)
-            ->header('Content-Type', 'application/json');
+            ->withHeaders($headers);
+    }
+
+    private function generateNextPageLink(
+        int $page,
+        int $perPage,
+        int $total,
+        string $endpoint,
+    ): string {
+        $nextOffset = (($page - 1) * $perPage) + $perPage;
+        $query = [];
+        $query['offset'] = $nextOffset;
+        $query['limit'] = $perPage;
+        array_merge($query, Request::capture()->query->all());
+        $basePath = config('app.url') . '/' . $endpoint;
+        return $basePath . '?' . http_build_query($query);
     }
 }

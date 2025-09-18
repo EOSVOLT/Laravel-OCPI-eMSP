@@ -4,6 +4,7 @@ namespace Ocpi\Modules\Locations\Objects;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
+use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Locations\Enums\Facility;
 use Ocpi\Modules\Locations\Enums\ParkingType;
 use Ocpi\Trait\ValidateArrayEnum;
@@ -76,6 +77,11 @@ class Locations implements Arrayable
      * @var EnergyMix|null
      */
     protected ?EnergyMix $energyMix = null;
+
+    /**
+     * @var Party|null
+     */
+    private ?Party $party = null;
 
     /**
      * @param string $countryCode
@@ -490,9 +496,32 @@ class Locations implements Arrayable
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    /**
+     * @return Party|null
+     */
+    public function getParty(): ?Party
+    {
+        return $this->party;
+    }
+
+
+    /**
+     * @param Party $party
+     *
+     * @return $this
+     */
+    public function setParty(Party $party): self
+    {
+        $this->party = $party;
+        return $this;
     }
 
     /**

@@ -60,6 +60,7 @@ class Client extends Connector
         };
     }
 
+
     /***
      * Methods.
      ***/
