@@ -17,7 +17,7 @@ class LocationFactory
     {
         $location->load(['evses', 'party.roles']);
         $object = $location->object;
-        $locationObj = new Locations(
+        $locationObj = (new Locations(
             $object['country_code'],
             $location->party_id,
             $location->external_id,
@@ -29,7 +29,7 @@ class LocationFactory
             $object['time_zone'],
             Carbon::parse($location->updated_at),
             $location->id,
-        )->setParty(Context::getHidden('party'));
+        ))->setParty(PartyFactory::fromModel($location->party));
         if ($location->relationLoaded('evses')) {
             $locationObj->setEvses(EvseFactory::fromModels($location->evses));
         }
