@@ -22,7 +22,7 @@ class CPOGetEvseResource extends JsonResource
             'status' => $this->resource->getStatus()->value,
             'status_schedule' => $this->resource->getStatusScheduleCollection()?->toArray(),
             'capabilities' => $this->resource->getCapabilities()?->value,
-            'connectors' => new CPOGetConnectorResourceList($this->resource->getConnectors())->toArray(),
+            'connectors' => (new CPOGetConnectorResourceList($this->resource->getConnectors()))->toArray(),
             'floor_level' => $this->resource->getFloorLevel(),
             'coordinates' => $this->resource->getCoordinates()?->toArray(),
             'physical_reference' => $this->resource->getPhysicalReference(),

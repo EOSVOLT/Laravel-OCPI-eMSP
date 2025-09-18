@@ -17,7 +17,7 @@ class CPOGetEvseResourceList extends JsonResource
     {
         $data = [];
         foreach ($this->resource as $evse) {
-            $data[] = new CPOGetEvseResource($evse);
+            $data[] = (new CPOGetEvseResource($evse))->toArray();
         }
         return $data;
     }

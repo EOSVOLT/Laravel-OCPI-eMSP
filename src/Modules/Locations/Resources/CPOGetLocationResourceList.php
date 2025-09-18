@@ -20,7 +20,7 @@ class CPOGetLocationResourceList extends JsonResource
     {
         $data = [];
         foreach ($this->resource as $location) {
-            $data[] = new CPOGetLocationResource($location);
+            $data[] = (new CPOGetLocationResource($location))->toArray();
         }
         return $data;
     }

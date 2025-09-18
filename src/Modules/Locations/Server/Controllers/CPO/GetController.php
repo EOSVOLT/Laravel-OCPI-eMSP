@@ -23,15 +23,15 @@ class GetController extends Controller
     ): JsonResponse {
         $offset = $request->input('offset', 0);
         $limit = $request->input('limit', 20);
-        $dateFrom = $request->input('date_from', Carbon::now()->startOfDay());
-        $dateTo = $request->input('date_to', Carbon::now());
+        $dateFrom = $request->input('date_from') ? Carbon::parse($request->input('date_from')) : Carbon::now()->startOfDay();
+        $dateTo = $request->input('date_to') ? Carbon::parse($request->input('date_to')) : Carbon::now();
         $party = Context::getHidden('party');
         $page = $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
         $location = Location::query()
             ->with(['evses.connectors'])
             ->where('party_id', $party->id)
-            ->where('updated_at', '>=', $dateFrom) //inclusive
-            ->where('updated_at', '<', $dateTo) //exclusive
+            ->where('updated_at', '>=', $dateFrom->toDateTimeString()) //inclusive
+            ->where('updated_at', '<', $dateTo->toDateTimeString()) //exclusive
             ->where('publish', true)
             ->whereHas('evses', function (Builder $query) {
                 $query->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
@@ -43,13 +43,16 @@ class GetController extends Controller
         $locationObj = LocationFactory::fromPaginator($location);
         return $location->count() > 0
             ? $this->ocpiSuccessPaginateResponse(
-                new CPOGetLocationResourceList($locationObj)->toArray(),
+                (new CPOGetLocationResourceList($locationObj))->toArray(),
                 $location->currentPage(),
                 $location->perPage(),
                 $location->total(),
                 self::LOCATION_PATH
             )
-            : $this->ocpiServerErrorResponse();
+            : $this->ocpiServerErrorResponse(
+                statusMessage: 'Location not found',
+                httpCode: 404,
+            );
     }
 
     private function locationFormat()

@@ -32,7 +32,7 @@ class CPOGetLocationResource extends JsonResource
             'coordinates' => $this->resource->getCoordinates()->toArray(),
             'related_locations' => $this->resource->getRelatedLocations()?->toArray(),
             'parking_type' => $this->resource->getParkingType()?->value,
-            'evses' => new CPOGetEvseResourceList($this->resource->getEvses())->toArray(),
+            'evses' => (new CPOGetEvseResourceList($this->resource->getEvses()))->toArray(),
             'directions' => $this->resource->getDirections()?->toArray(),
             'operator' => $this->resource->getOperator()?->toArray(),
             'suboperator' => $this->resource->getSuboperator()?->toArray(),
