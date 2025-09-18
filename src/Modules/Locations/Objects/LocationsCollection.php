@@ -2,9 +2,10 @@
 
 namespace Ocpi\Modules\Locations\Objects;
 
-use Ocpi\Helpers\TypeCollection;
 
-class LocationsCollection extends TypeCollection
+use Ocpi\Helpers\PaginatedCollection;
+
+class LocationsCollection extends PaginatedCollection
 {
     protected string $type = Locations::class;
 }

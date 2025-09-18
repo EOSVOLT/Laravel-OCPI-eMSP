@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Ocpi\Models\PartyRole;
+use Ocpi\Models\Party;
 use Ocpi\Support\Models\Model;
 
+/**
+ * @property Party $party
+ */
 class Location extends Model
 {
     use SoftDeletes;
@@ -54,6 +57,6 @@ class Location extends Model
 
     public function party(): BelongsTo
     {
-        return $this->belongsTo(PartyRole::class, 'party_id', 'id');
+        return $this->belongsTo(Party::class, 'party_id', 'id');
     }
 }

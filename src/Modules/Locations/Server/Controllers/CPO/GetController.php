@@ -2,98 +2,57 @@
 
 namespace Ocpi\Modules\Locations\Server\Controllers\CPO;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
+use Ocpi\Models\Locations\Location;
+use Ocpi\Modules\Locations\Enums\EvseStatus;
+use Ocpi\Modules\Locations\Factories\LocationFactory;
+use Ocpi\Modules\Locations\Resources\CPOGetLocationResourceList;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
-use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class GetController extends Controller
 {
     use HandlesLocation;
-
+    public CONST LOCATION_PATH = 'ocpi/cpo/2.2.1/locations';
     public function __invoke(
         Request $request,
-        ?string $country_code = null,
-        ?string $party_id = null,
-        ?string $location_id = null,
-        ?string $evse_uid = null,
-        ?string $connector_id = null,
     ): JsonResponse {
-        if ($location_id === null) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::NotEnoughInformation,
-                statusMessage: 'Location ID is missing.',
+        $offset = $request->input('offset', 0);
+        $limit = $request->input('limit', 20);
+        $dateFrom = $request->input('date_from', Carbon::now()->startOfDay());
+        $dateTo = $request->input('date_to', Carbon::now());
+        $party = Context::getHidden('party');
+        $page = $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
+        $location = Location::query()
+            ->with(['evses.connectors'])
+            ->where('party_id', $party->id)
+            ->where('updated_at', '>=', $dateFrom) //inclusive
+            ->where('updated_at', '<', $dateTo) //exclusive
+            ->where('publish', true)
+            ->whereHas('evses', function (Builder $query) {
+                $query->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
+            })
+            ->paginate(
+                perPage: $limit,
+                page: $page
             );
-        }
-
-        $location = $this->locationSearch(
-            party_role_id: Context::get('party_role_id'),
-            location_id: $location_id,
-        );
-
-        if ($location === null) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::UnknownLocation,
-                statusMessage: 'Unknown Location.',
-            );
-        }
-
-        $data = null;
-
-        if ($evse_uid === null && $connector_id === null) {
-            $data = $location->object;
-            $data['evses'] = $location
-                ->evses
-                ->map(function ($evse) {
-                    $evse->object['connectors'] = $evse
-                        ->connectors
-                        ->map(function ($connector) {
-                            return $connector->object;
-                        });
-
-                    return $evse->object;
-                });
-        } elseif ($evse_uid !== null) {
-            $locationEvse = $location
-                ->evses
-                ->where('uid', $evse_uid)
-                ->first();
-
-            if ($locationEvse === null) {
-                return $this->ocpiClientErrorResponse(
-                    statusCode: OcpiClientErrorCode::UnknownLocation,
-                    statusMessage: 'Unknown EVSE.',
-                );
-            }
-
-            if ($connector_id === null) {
-                $data = $locationEvse->object;
-                $data['connectors'] = $locationEvse
-                    ->connectors
-                    ->map(function ($connector) {
-                        return $connector->object;
-                    });
-            } else {
-                $locationConnector = $locationEvse
-                    ->connectors
-                    ->where('id', $connector_id)
-                    ->first();
-
-                if ($locationConnector === null) {
-                    return $this->ocpiClientErrorResponse(
-                        statusCode: OcpiClientErrorCode::UnknownLocation,
-                        statusMessage: 'Unknown Connector.',
-                    );
-                }
-
-                $data = $locationConnector->object;
-            }
-        }
-
-        return $data
-            ? $this->ocpiSuccessResponse($data)
+        $locationObj = LocationFactory::fromPaginator($location);
+        return $location->count() > 0
+            ? $this->ocpiSuccessPaginateResponse(
+                new CPOGetLocationResourceList($locationObj)->toArray(),
+                $location->currentPage(),
+                $location->perPage(),
+                $location->total(),
+                self::LOCATION_PATH
+            )
             : $this->ocpiServerErrorResponse();
+    }
+
+    private function locationFormat()
+    {
     }
 }
