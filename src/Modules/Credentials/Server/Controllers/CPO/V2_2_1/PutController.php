@@ -63,7 +63,7 @@ class PutController extends Controller
                         $parentParty->children->each(function (Party $child) {
                             $child->roles()->delete();
                         });
-                        $newTokenC = GeneratorHelper::decodeToken($input['token'], $parentParty->version);
+                        $newTokenB = GeneratorHelper::decodeToken($input['token'], $parentParty->version);
                         $newUrl = $input['url'];
                         // update children parties from payload
                         foreach ($request->input('roles') as $role) {
@@ -75,9 +75,11 @@ class PutController extends Controller
                                 $partyCode->getCodeFormatted()
                             )->first();
                             $childrenPartyToken = new PartyToken();
+                            $tokenName = $role['business_details']['name'] ?? '';
                             $childrenPartyToken->fill([
-                                'token' => $newTokenC,
+                                'token' => $newTokenB,
                                 'registered' => true,
+                                'name' => $tokenName . "_" . $partyCode->getCodeFormatted()
                             ]);
                             if (null === $childrenParty) {
                                 $childrenParty = Party::query()->create(
