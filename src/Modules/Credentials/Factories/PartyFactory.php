@@ -2,7 +2,6 @@
 
 namespace Ocpi\Modules\Credentials\Factories;
 
-
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Ocpi\Models\PartyToken;
