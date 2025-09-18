@@ -33,12 +33,7 @@ class Initialize extends Command
     public function handle()
     {
         $input = [];
-        $input['name'] = $this->ask('Party name');
-        if (Party::where('name', $input['name'])->exists()) {
-            $this->error('Party name already exists.');
-
-            return Command::FAILURE;
-        }
+        $tokenName = $this->ask('Handshake alias');
         $countryCode = $this->ask('Country code');
         $input['version'] = $this->ask('OCPI version');
         $businessName = $this->ask('Company Name');
@@ -54,6 +49,7 @@ class Initialize extends Command
             $partyToken->fill([
                 'token' => Str::random(32),
                 'registered' => false,
+                'name' => $tokenName
             ]);
             $partyRole = new PartyRole();
             $partyRole->fill([

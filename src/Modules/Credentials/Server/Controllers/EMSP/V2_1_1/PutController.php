@@ -74,7 +74,6 @@ class PutController extends Controller
                                 [
                                     'code' => $partyCode->getCodeFormatted(),
                                     'parent_id' => $parentParty->id,
-                                    'name' => $parentParty->name . '_' . $partyCode->getCodeFormatted(),
                                     'server_token' => $newServerToken,
                                     'url' => $newUrl,
                                     'version' => $parentParty->version,

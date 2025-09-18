@@ -4,6 +4,7 @@ namespace Ocpi\Modules\Locations\Factories;
 
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Context;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Ocpi\Modules\Locations\Objects\GeoLocation;
@@ -28,7 +29,7 @@ class LocationFactory
             $object['time_zone'],
             Carbon::parse($location->updated_at),
             $location->id,
-        )->setParty(PartyFactory::fromModel($location->party));
+        )->setParty(Context::getHidden('party'));
         if ($location->relationLoaded('evses')) {
             $locationObj->setEvses(EvseFactory::fromModels($location->evses));
         }

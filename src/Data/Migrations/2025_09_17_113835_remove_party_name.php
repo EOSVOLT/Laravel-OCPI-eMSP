@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
-            $table->dropColumn('server_token');
-            $table->dropColumn('client_token');
+            $table->dropColumn('name');
+            $table->dropColumn('registered');
         });
     }
 
@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
-            $table->string('server_token')->nullable()->comment('Token when the Party acts as a Server / Receiver');
-            $table->string('client_token')->nullable()->comment('Token when the Party acts as a Client / Sender');
+            $table->string('name');
+            $table->boolean('registered')->default(false);
         });
     }
 };

@@ -2,34 +2,36 @@
 
 namespace Ocpi\Modules\Credentials\Factories;
 
-
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Object\Party;
+use Ocpi\Modules\Credentials\Object\PartyCollection;
 use Ocpi\Modules\Credentials\Object\PartyRoleCollection;
 
 class PartyFactory
 {
     /**
      * @param \Ocpi\Models\Party $model
-     *
+     * @param PartyToken|null $partyToken
      * @return Party
      */
-    public static function fromModel(\Ocpi\Models\Party $model): Party
+    public static function fromModel(\Ocpi\Models\Party $model, ?PartyToken $partyToken = null): Party
     {
+        if (null === $partyToken) {
+            $partyToken = $model->tokens->first();
+        }
+
         $roles = self::roleRelation($model);
         return new Party(
             $model->id,
-            $model->name,
             $model->code,
-            $model->server_token,
+            $partyToken->token,
             $model->url,
             $model->version,
             $model->version_url,
-            (array)$model->endpoints,
-            $model->client_token,
-            $model->registered,
-            $model->cpo_id,
+            $model->endpoints ?? [],
+            $partyToken->registered,
             $roles,
         );
     }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyToken;
+use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Traits\Server\Response as ServerResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,7 +54,8 @@ class IdentifySenderParty
         Context::add('trace_id', Str::uuid()->toString());
         Context::add('party_code', $token->party->code);
         Context::add('token_id', $token->id);
-        Context::addHidden('party', $token->party);
+        $party = PartyFactory::fromModel($token->party, $token);
+        Context::addHidden('party', $party);
 
         return $next($request);
     }
