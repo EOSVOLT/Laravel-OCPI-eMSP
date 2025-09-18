@@ -19,7 +19,7 @@ class LocationResource extends JsonResource
     {
         return [
             'country_code' => $this->resource->getCountryCode(),
-            'party_id' => $this->resource->getPartyId(),
+            'party_id' => $this->resource->getParty()->getCode(),
             'id' => $this->resource->getExternalId(),
             'publish' => $this->resource->isPublish(),
             'publish_allowed_to ' => $this->resource->getPublishAllowedTo()?->toArray(),
