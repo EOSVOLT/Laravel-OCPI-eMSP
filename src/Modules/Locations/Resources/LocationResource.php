@@ -6,14 +6,14 @@ namespace Ocpi\Modules\Locations\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Credentials\Object\PartyRole;
-use Ocpi\Modules\Locations\Objects\Locations;
+use Ocpi\Modules\Locations\Objects\Location;
 use Ocpi\Support\Traits\RemoveEmptyField;
 
-/** @property Locations $resource */
+/** @property Location $resource */
 class LocationResource extends JsonResource
 {
     use RemoveEmptyField;
-    public function __construct(Locations $location)
+    public function __construct(Location $location)
     {
         parent::__construct($location);
     }

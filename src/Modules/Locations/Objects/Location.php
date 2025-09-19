@@ -9,7 +9,7 @@ use Ocpi\Modules\Locations\Enums\Facility;
 use Ocpi\Modules\Locations\Enums\ParkingType;
 use Ocpi\Trait\ValidateArrayEnum;
 
-class Locations implements Arrayable
+class Location implements Arrayable
 {
     use ValidateArrayEnum;
 
@@ -85,7 +85,7 @@ class Locations implements Arrayable
 
     /**
      * @param string $countryCode
-     * @param string $partyId
+     * @param int $partyId
      * @param string $externalId
      * @param bool $publish
      * @param string $address
@@ -94,11 +94,11 @@ class Locations implements Arrayable
      * @param GeoLocation $coordinates
      * @param string $timeZone
      * @param Carbon $lastUpdated
-     * @param string|null $id
+     * @param int|null $id
      */
     public function __construct(
         private readonly string $countryCode,
-        private readonly string $partyId,
+        private readonly int $partyId,
         private readonly string $externalId,
         private readonly bool $publish,
         private readonly string $address,
@@ -107,7 +107,7 @@ class Locations implements Arrayable
         private readonly GeoLocation $coordinates,
         private readonly string $timeZone,
         private readonly Carbon $lastUpdated,
-        private readonly ?string $id = null,
+        private readonly ?int $id = null,
     ) {
     }
 
@@ -120,9 +120,9 @@ class Locations implements Arrayable
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getPartyId(): string
+    public function getPartyId(): int
     {
         return $this->partyId;
     }
@@ -497,9 +497,9 @@ class Locations implements Arrayable
     }
 
     /**
-     * @return string|null
+     * @return int|null
      */
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }

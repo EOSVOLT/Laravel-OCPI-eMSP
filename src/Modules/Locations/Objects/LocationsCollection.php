@@ -7,5 +7,5 @@ use Ocpi\Helpers\PaginatedCollection;
 
 class LocationsCollection extends PaginatedCollection
 {
-    protected string $type = Locations::class;
+    protected string $type = Location::class;
 }

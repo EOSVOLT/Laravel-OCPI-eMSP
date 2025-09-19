@@ -4,19 +4,19 @@ namespace Ocpi\Modules\Locations\Factories;
 
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Ocpi\Models\Locations\Location;
+use Ocpi\Models\Locations\Location as LocationModel;
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Ocpi\Modules\Locations\Enums\ParkingType;
 use Ocpi\Modules\Locations\Objects\GeoLocation;
-use Ocpi\Modules\Locations\Objects\Locations;
+use Ocpi\Modules\Locations\Objects\Location;
 use Ocpi\Modules\Locations\Objects\LocationsCollection;
 
 class LocationFactory
 {
-    public static function fromModel(Location $location): Locations
+    public static function fromModel(LocationModel $location): Location
     {
         $object = $location->object;
-        return (new Locations(
+        return (new Location(
             $object['country_code'],
             $location->party_id,
             $location->external_id,
@@ -28,7 +28,7 @@ class LocationFactory
             $object['time_zone'],
             Carbon::parse($location->updated_at),
             $location->id,
-        ))->setParty(PartyFactory::fromModel($location->party))
+        ))->setParty($location->party ? PartyFactory::fromModel($location->party) : null)
             ->setEvses($location->evses ? EvseFactory::fromModels($location->evses) : null)
             ->setImages(ImageFactory::fromModelArray($object['images'] ?? []))
             ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
