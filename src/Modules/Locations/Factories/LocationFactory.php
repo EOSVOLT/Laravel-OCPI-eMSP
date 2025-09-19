@@ -15,9 +15,8 @@ class LocationFactory
 {
     public static function fromModel(Location $location): Locations
     {
-        $location->load(['evses', 'party.roles']);
         $object = $location->object;
-        $locationObj = (new Locations(
+        return (new Locations(
             $object['country_code'],
             $location->party_id,
             $location->external_id,
@@ -30,7 +29,7 @@ class LocationFactory
             Carbon::parse($location->updated_at),
             $location->id,
         ))->setParty(PartyFactory::fromModel($location->party))
-            ->setEvses(EvseFactory::fromModels($location->evses))
+            ->setEvses($location->evses ? EvseFactory::fromModels($location->evses) : null)
             ->setImages(ImageFactory::fromModelArray($object['images'] ?? []))
             ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
             ->setName($object['name'] ?? null)
@@ -38,7 +37,6 @@ class LocationFactory
             ->setOpeningTimes(HourFactory::fromArray($object['opening_times'] ?? []))
             ->setFacilities($object['facilities'] ?? [])
             ->setParkingType(ParkingType::tryFrom($object['parking_type'] ?? ""));
-        return $locationObj;
     }
 
     public static function fromPaginator(LengthAwarePaginator $paginator): LocationsCollection

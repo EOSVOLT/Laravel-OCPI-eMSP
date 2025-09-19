@@ -4,7 +4,6 @@ namespace Ocpi\Modules\Locations\Factories;
 
 use Illuminate\Support\Collection;
 use Ocpi\Models\Locations\LocationEvse;
-use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Modules\Locations\Objects\Evse;
 use Ocpi\Modules\Locations\Objects\EvseCollection;
 

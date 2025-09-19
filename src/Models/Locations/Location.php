@@ -12,6 +12,7 @@ use Ocpi\Support\Models\Model;
 
 /**
  * @property Party $party
+ * @property AsArrayObject $object
  */
 class Location extends Model
 {
