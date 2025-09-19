@@ -87,7 +87,7 @@ class Resource extends OcpiResource
     ): ?array {
         return $this->requestPutSend(
             $data,
-            implode('/', array_filter([$baseEndpoint,$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
+            implode('/', array_filter([str_replace('sender', 'receiver', $baseEndpoint),$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
         );
     }
 
