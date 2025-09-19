@@ -5,11 +5,14 @@ namespace Ocpi\Modules\Locations\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Ocpi\Modules\Credentials\Object\PartyRole;
 use Ocpi\Modules\Locations\Objects\Locations;
+use Ocpi\Support\Traits\RemoveEmptyField;
 
 /** @property Locations $resource */
 class LocationResource extends JsonResource
 {
+    use RemoveEmptyField;
     public function __construct(Locations $location)
     {
         parent::__construct($location);
@@ -17,9 +20,11 @@ class LocationResource extends JsonResource
 
     public function toArray(?Request $request = null): array
     {
-        return [
-            'country_code' => $this->resource->getCountryCode(),
-            'party_id' => $this->resource->getParty()->getRoles()->first()?->getCode(),
+        /** @var PartyRole $partyRole */
+        $partyRole = $this->resource->getParty()->getRoles()->first();
+        return self::removeEmptyField([
+            'country_code' => $partyRole?->getCountryCode(),
+            'party_id' => $partyRole?->getCode(),
             'id' => $this->resource->getExternalId(),
             'publish' => $this->resource->isPublish(),
             'publish_allowed_to ' => $this->resource->getPublishAllowedTo()?->toArray(),
@@ -44,6 +49,6 @@ class LocationResource extends JsonResource
             'images' => $this->resource->getImages()?->toArray(),
             'energy_mix' => $this->resource->getEnergyMix()?->toArray(),
             'last_updated' => $this->resource->getLastUpdated()->toISOString(),
-        ];
+        ]);
     }
 }
