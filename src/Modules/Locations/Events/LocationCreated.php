@@ -4,7 +4,7 @@ namespace Ocpi\Modules\Locations\Events;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
-use Ocpi\Models\Locations\Location;
+use Ocpi\Modules\Locations\Objects\Location;
 
 class LocationCreated implements ShouldDispatchAfterCommit
 {
