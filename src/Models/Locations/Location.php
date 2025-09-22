@@ -31,7 +31,8 @@ class Location extends Model
         'object',
         'party_id',
         'external_id',
-        'publish'
+        'publish',
+        'updated_at'
     ];
 
     protected function casts(): array
