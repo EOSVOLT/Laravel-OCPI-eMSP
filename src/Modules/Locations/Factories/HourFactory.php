@@ -15,7 +15,7 @@ class HourFactory
         }
         $regularHours = RegularHourFactory::fromModelArray($hour['regular_hours'] ?? []);
 
-        return (new Hours(false))->setRegularHours($regularHours);
+        return new Hours(false)->setRegularHours($regularHours);
     }
 
 }

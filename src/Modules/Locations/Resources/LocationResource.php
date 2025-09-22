@@ -37,7 +37,7 @@ class LocationResource extends JsonResource
             'coordinates' => $this->resource->getCoordinates()->toArray(),
             'related_locations' => $this->resource->getRelatedLocations()?->toArray(),
             'parking_type' => $this->resource->getParkingType()?->value,
-            'evses' => $this->resource->getEvses() ? (new EvseResourceList($this->resource->getEvses()))->toArray() : null,
+            'evses' => $this->resource->getEvses() ? new EvseResourceList($this->resource->getEvses())->toArray() : null,
             'directions' => $this->resource->getDirections()?->toArray(),
             'operator' => $this->resource->getOperator()?->toArray(),
             'suboperator' => $this->resource->getSuboperator()?->toArray(),

@@ -13,17 +13,17 @@ class EvseFactory
     {
         $evse->load('connectors');
         $connectors = ConnectorFactory::fromModels($evse->connectors);
-        return (new Evse(
+        return new Evse(
+            $evse->id,
             $evse->location_id,
             $evse->uid,
             $evse->status,
             $connectors,
             $evse->updated_at,
-            $evse->id
-        ))->setEvseId($evse->object['evse_id'] ?? null);
+        )->setEvseId($evse->object['evse_id'] ?? null);
     }
 
-    public static function fromModels(Collection $evses): EvseCollection
+    public static function fromCollection(Collection $evses): EvseCollection
     {
         $collection = new EvseCollection();
         foreach ($evses as $evse) {

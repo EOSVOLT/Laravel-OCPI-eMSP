@@ -43,7 +43,7 @@ class GetController extends Controller
         $locationObj = LocationFactory::fromPaginator($location);
         return $location->count() > 0
             ? $this->ocpiSuccessPaginateResponse(
-                (new LocationResourceList($locationObj))->toArray(),
+                new LocationResourceList($locationObj)->toArray(),
                 $location->currentPage(),
                 $location->perPage(),
                 $location->total(),

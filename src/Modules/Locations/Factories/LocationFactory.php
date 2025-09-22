@@ -13,10 +13,16 @@ use Ocpi\Modules\Locations\Objects\LocationsCollection;
 
 class LocationFactory
 {
+    /**
+     * @param LocationModel $location
+     *
+     * @return Location
+     */
     public static function fromModel(LocationModel $location): Location
     {
         $object = $location->object;
-        return (new Location(
+        return new Location(
+            $location->id,
             $object['country_code'],
             $location->party_id,
             $location->external_id,
@@ -27,9 +33,8 @@ class LocationFactory
             new GeoLocation($object['coordinates']['latitude'], $object['coordinates']['longitude']),
             $object['time_zone'],
             Carbon::parse($location->updated_at),
-            $location->id,
-        ))->setParty($location->party ? PartyFactory::fromModel($location->party) : null)
-            ->setEvses($location->evses ? EvseFactory::fromModels($location->evses) : null)
+        )->setParty($location->party ? PartyFactory::fromModel($location->party) : null)
+            ->setEvses($location->evses ? EvseFactory::fromCollection($location->evses) : null)
             ->setImages(ImageFactory::fromModelArray($object['images'] ?? []))
             ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
             ->setName($object['name'] ?? null)
@@ -39,6 +44,11 @@ class LocationFactory
             ->setParkingType(ParkingType::tryFrom($object['parking_type'] ?? ""));
     }
 
+    /**
+     * @param LengthAwarePaginator $paginator
+     *
+     * @return LocationsCollection
+     */
     public static function fromPaginator(LengthAwarePaginator $paginator): LocationsCollection
     {
         $collection = new LocationsCollection();

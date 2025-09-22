@@ -27,6 +27,7 @@ use Ocpi\Support\Models\Model;
  * @property string|null $version_url
  * @property bool $registered
  * @property Collection|PartyRole[] $roles
+ * @property PartyRole|null $role_cpo
  * @property array|null $endpoints
  * @property int|null $parent_id
  * @property Party|null $parent
@@ -43,11 +44,13 @@ class Party extends Model
         'version',
         'version_url',
         'endpoints',
+        'cpo_id',
         'parent_id',
     ];
 
     /**
      * @param string $token
+     *
      * @return string
      * @todo move to helper or static factory
      */
@@ -59,6 +62,7 @@ class Party extends Model
     /**
      * @param string $token
      * @param Party|null $party
+     *
      * @return false|string
      * @todo move to helper or static factory
      */
@@ -91,6 +95,7 @@ class Party extends Model
     {
         return $this->hasMany(PartyRole::class);
     }
+
     public function role_cpo(): HasOne
     {
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::CPO->value);

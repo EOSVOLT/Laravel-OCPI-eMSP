@@ -2,11 +2,22 @@
 
 namespace Ocpi\Models\Locations;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Support\Models\Model;
 
+/**
+ * @property int $id
+ * @property int $evse_id
+ * @property LocationEvse $evse
+ * @property AsArrayObject $object
+ * @property int $connector_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon|null $deleted_at
+ */
 class LocationConnector extends Model
 {
     use SoftDeletes;
@@ -25,6 +36,7 @@ class LocationConnector extends Model
             'object' => AsArrayObject::class,
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 
