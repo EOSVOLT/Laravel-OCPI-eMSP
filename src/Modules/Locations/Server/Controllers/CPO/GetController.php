@@ -16,7 +16,7 @@ use Ocpi\Support\Server\Controllers\Controller;
 
 class GetController extends Controller
 {
-    public CONST VERSION = '2.2.1';
+    public CONST string VERSION = '2.2.1';
     use HandlesLocation;
     public function __invoke(
         Request $request,

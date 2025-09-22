@@ -11,8 +11,6 @@ use Ocpi\Modules\Locations\Events;
 
 trait HandlesLocation
 {
-    public CONST LOCATION_PATH = '';
-
     public function getLocationPath(string $version): string
     {
         return 'ocpi/cpo/'.$version.'/locations';

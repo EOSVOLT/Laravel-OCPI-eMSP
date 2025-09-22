@@ -2,6 +2,7 @@
 
 namespace Ocpi\Modules\Locations\Client\V2_2_1;
 
+use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Client\Resource as OcpiResource;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
@@ -9,6 +10,7 @@ use Throwable;
 
 class Resource extends OcpiResource
 {
+    use HandlesLocation;
     /**
      * @return array|null
      * @throws FatalRequestException

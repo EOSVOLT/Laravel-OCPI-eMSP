@@ -8,4 +8,12 @@ use Ocpi\Support\Client\ReceiverClient;
 class EMSPClient extends ReceiverClient
 {
     use handlesLocation;
+
+    /**
+     * @return string
+     */
+    public function resolveBaseUrl(): string
+    {
+        return parent::resolveBaseUrl(). self::getLocationPath('2.2.1');
+    }
 }
