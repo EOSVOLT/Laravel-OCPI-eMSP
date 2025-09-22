@@ -15,6 +15,7 @@ use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;
 use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
+use Ocpi\Support\Enums\InterfaceRole;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
@@ -25,6 +26,7 @@ class Client extends Connector
 {
     use AcceptsJson;
 
+    protected InterfaceRole $interfaceRole;
     public function __construct(
         protected readonly Party $party,
         protected readonly PartyToken $partyToken,
@@ -57,7 +59,7 @@ class Client extends Connector
         return match ($this->module) {
             'versions.information' => $this->party?->url,
             'versions.details' => $this->party?->version_url,
-            default => $this->party?->endpoints[$this->module] ?? '',
+            default => $this->party?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
         };
     }
 

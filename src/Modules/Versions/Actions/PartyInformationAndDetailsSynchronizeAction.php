@@ -78,9 +78,13 @@ class PartyInformationAndDetailsSynchronizeAction
 
         // Set Party OCPI endpoints for version.
         Log::channel('ocpi')->info('Party '.$party->code.' - Set OCPI endpoints for version '.$party->version);
-        $party->endpoints = collect($versionDetails['endpoints'])
-            ->pluck('url', 'identifier')
-            ->toArray();
+        $endpoints = [];
+        foreach ($versionDetails['endpoints'] as $endpoint) {
+            $key = $endpoint['identifier'];
+            $innerKey = $endpoint['role'];
+            $endpoints[$key][$innerKey] = $endpoint['url'];
+        }
+        $party->endpoints = $endpoints;
         throw_if(
             ! Arr::has($party->endpoints, 'credentials'),
             new Exception('Party '.$party->code.' - Missing required `credentials` Module endpoint.')
