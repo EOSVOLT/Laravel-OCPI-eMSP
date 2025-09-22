@@ -4,6 +4,7 @@ namespace Ocpi\Modules\Locations\Factories;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Ocpi\Models\Locations\Location as LocationModel;
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Ocpi\Modules\Locations\Enums\ParkingType;
@@ -45,11 +46,11 @@ class LocationFactory
     }
 
     /**
-     * @param LocationsCollection $locations
+     * @param Collection $locations
      *
      * @return LocationsCollection
      */
-    public static function fromCollection(LocationsCollection $locations): LocationsCollection
+    public static function fromCollection(Collection $locations): LocationsCollection
     {
         $collection = new LocationsCollection();
         foreach ($locations as $location) {
