@@ -24,7 +24,7 @@ class LocationFactory
         $object = $location->object;
         return new Location(
             $location->id,
-            $object['country_code'],
+            $location->party->role_cpo->country_code,
             $location->party ? PartyFactory::fromModel($location->party) : null,
             $location->external_id,
             $location->publish,
