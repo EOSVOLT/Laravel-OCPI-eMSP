@@ -19,6 +19,10 @@ use Ocpi\Support\Models\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
+ * @property Location $location
+ * @property Location $locationWithTrashed
+ * @property LocationConnector[]|HasMany $connectorsWithTrashed
+ * @property LocationConnector[]|HasMany $connectors
  */
 class LocationEvse extends Model
 {
