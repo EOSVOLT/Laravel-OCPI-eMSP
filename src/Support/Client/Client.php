@@ -10,7 +10,7 @@ use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Client\Resource as CdrsResource;
 use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
 use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
-use Ocpi\Modules\Locations\Client\Resource as LocationsResource;
+use Ocpi\Modules\Locations\Client\V2_2_1\Resource as LocationsResource;
 use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;
 use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;

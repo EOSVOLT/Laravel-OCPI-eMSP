@@ -16,8 +16,8 @@ use Ocpi\Support\Server\Controllers\Controller;
 
 class GetController extends Controller
 {
+    public CONST VERSION = '2.2.1';
     use HandlesLocation;
-    public CONST LOCATION_PATH = 'ocpi/cpo/2.2.1/locations';
     public function __invoke(
         Request $request,
     ): JsonResponse {
@@ -28,7 +28,7 @@ class GetController extends Controller
         $party = Context::getHidden('party');
         $page = $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
         $location = Location::query()
-            ->with(['evses.connectors'])
+            ->with(['evses.connectors', 'party.role_cpo'])
             ->where('party_id', $party->getId())
             ->where('updated_at', '>=', $dateFrom->toDateTimeString()) //inclusive
             ->where('updated_at', '<', $dateTo->toDateTimeString()) //exclusive
@@ -47,7 +47,7 @@ class GetController extends Controller
                 $location->currentPage(),
                 $location->perPage(),
                 $location->total(),
-                self::LOCATION_PATH
+                self::getLocationPath(self::VERSION)
             )
             : $this->ocpiServerErrorResponse(
                 statusMessage: 'Location not found',

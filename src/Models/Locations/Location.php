@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Ocpi\Models\Party;
-use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Models\Model;
 
 /**
