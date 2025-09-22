@@ -12,6 +12,9 @@ use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\Client;
 
+/**
+ * @todo revisit again when we will doing as EMSP
+ */
 class Register extends Command implements PromptsForMissingInput
 {
     /**
