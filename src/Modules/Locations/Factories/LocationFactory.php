@@ -3,7 +3,7 @@
 namespace Ocpi\Modules\Locations\Factories;
 
 use Carbon\Carbon;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Ocpi\Models\Locations\Location as LocationModel;
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Ocpi\Modules\Locations\Enums\ParkingType;
@@ -42,6 +42,21 @@ class LocationFactory
             ->setOpeningTimes(HourFactory::fromArray($object['opening_times'] ?? []))
             ->setFacilities($object['facilities'] ?? [])
             ->setParkingType(ParkingType::tryFrom($object['parking_type'] ?? ""));
+    }
+
+    /**
+     * @param LocationsCollection $locations
+     *
+     * @return LocationsCollection
+     */
+    public static function fromCollection(LocationsCollection $locations): LocationsCollection
+    {
+        $collection = new LocationsCollection();
+        foreach ($locations as $location) {
+            $data = self::fromModel($location);
+            $collection->add($data);
+        }
+        return $collection;
     }
 
     /**

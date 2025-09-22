@@ -35,6 +35,7 @@ class LocationEvse extends Model
         'uid',
         'object',
         'status',
+        'updated_at'
     ];
 
     protected function casts(): array
