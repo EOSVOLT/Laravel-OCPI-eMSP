@@ -24,7 +24,7 @@ class LocationFactory
         return new Location(
             $location->id,
             $object['country_code'],
-            $location->party_id,
+            $location->party ? PartyFactory::fromModel($location->party) : null,
             $location->external_id,
             $location->publish,
             $object['address'],
@@ -33,7 +33,7 @@ class LocationFactory
             new GeoLocation($object['coordinates']['latitude'], $object['coordinates']['longitude']),
             $object['time_zone'],
             Carbon::parse($location->updated_at),
-        )->setParty($location->party ? PartyFactory::fromModel($location->party) : null)
+        )
             ->setEvses($location->evses ? EvseFactory::fromCollection($location->evses) : null)
             ->setImages(ImageFactory::fromModelArray($object['images'] ?? []))
             ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
