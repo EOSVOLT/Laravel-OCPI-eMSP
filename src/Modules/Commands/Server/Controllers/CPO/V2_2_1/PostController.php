@@ -7,56 +7,35 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 use Ocpi\Models\Commands\Command;
-use Ocpi\Models\Commands\Enums\CommandResultType;
 use Ocpi\Models\Commands\Enums\CommandType;
-use Ocpi\Modules\Commands\Events;
-use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Commands\Events\RemoteStartTransaction;
+use Ocpi\Modules\Commands\Factories\CommandTokenFactory;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
 {
-    public function __invoke(Request $request, CommandType $command): JsonResponse {
+    public function __invoke(Request $request, CommandType $commandType): JsonResponse
+    {
         try {
-            $allRequest = $request->toArray();
-//            $command = Command::query()->create([
-//
-//            ]);
-//                ->with(['party_role'])
-//                ->where('id', $id)
-//                ->where('type', $type)
-//                ->first();
-//
-//            if (! $command) {
-//                Log::channel('ocpi')->error('Unknown Command '.$type.':'.$id);
-//
-//                return $this->ocpiClientErrorResponse(
-//                    statusCode: OcpiClientErrorCode::InvalidParameters,
-//                    statusMessage: 'Unknown Command.',
-//                );
-//            }
-//
-//            $result = $request->input('result');
-//            $commandResultType = CommandResultType::fromName($result);
-//            if (! $commandResultType) {
-//                throw new Exception('Unknown CommandResultType '.$result.' for Command '.$type.':'.$id);
-//            }
-//
-//            $command->result = $commandResultType->name;
-//            $command->save();
+            //@todo request class with ocpi response
+            $token = CommandTokenFactory::fromArray($request->input('token'));
+            $partyRole = PartyRole::query()
+                ->where('code', $token->getPartyCode())
+                ->where('country_code', $token->getCountryCode())
+                ->first();
 
-//            if (
-//                $commandResultType === CommandResultType::ACCEPTED
-//                || $commandResultType === CommandResultType::CANCELED_RESERVATION
-//            ) {
-//                Events\CommandResultSucceeded::dispatch($command->party_role->id, $command->id, $command->type->name);
-//            } else {
-//                Events\CommandResultError::dispatch($command->party_role->id, $command->id, $command->type->name, $command->payload);
-//            }
+            $payload = $request->validated();
+            $commandType = Command::query()->create([
+                'party_role_id' => $partyRole->id,
+                'type' => $commandType,
+                'payload' => $payload,
+            ]);
+            RemoteStartTransaction::dispatch($partyRole->id, $commandType->id, $commandType->type->name);
 
             return $this->ocpiSuccessResponse();
         } catch (Exception $e) {
             Log::channel('ocpi')->error($e->getMessage());
-
             return $this->ocpiServerErrorResponse();
         }
     }
