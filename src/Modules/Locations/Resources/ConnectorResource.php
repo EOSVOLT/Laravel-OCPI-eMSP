@@ -5,12 +5,14 @@ namespace Ocpi\Modules\Locations\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Locations\Objects\Connector;
+use Ocpi\Support\Traits\RemoveEmptyField;
 
 /**
  * @property Connector $resource
  */
-class CPOGetConnectorResource extends JsonResource
+class ConnectorResource extends JsonResource
 {
+    use RemoveEmptyField;
     public function __construct(Connector $resource)
     {
         parent::__construct($resource);
@@ -18,7 +20,7 @@ class CPOGetConnectorResource extends JsonResource
 
     public function toArray(?Request $request = null): array
     {
-        return [
+        return self::removeEmptyField([
             'id' => $this->resource->getConnectorId(),
             'standard' => $this->resource->getStandard()->name,
             'format' => $this->resource->getFormat()->name,
@@ -29,6 +31,6 @@ class CPOGetConnectorResource extends JsonResource
             'tariff_ids' => $this->resource->getTariffIds(),
             'terms_and_conditions' => $this->resource->getTermsAndConditions(),
             'last_updated' => $this->resource->getLastUpdated()->toISOString(),
-        ];
+        ]);
     }
 }

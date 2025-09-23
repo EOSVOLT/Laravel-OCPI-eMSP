@@ -81,7 +81,7 @@ readonly class Party implements Arrayable
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->getId(),
             'code' => $this->getCode(),
             'token' => $this->getToken(),
             'url' => $this->getUrl(),

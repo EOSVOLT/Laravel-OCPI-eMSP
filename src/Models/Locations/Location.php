@@ -7,11 +7,20 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Ocpi\Models\Party;
 use Ocpi\Support\Models\Model;
 
 /**
  * @property Party $party
+ * @property AsArrayObject $object
+ * @property int $party_id
+ * @property string $external_id
+ * @property bool $publish
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon|null $deleted_at
+ * @property int $id
  */
 class Location extends Model
 {
@@ -21,13 +30,17 @@ class Location extends Model
         'object',
         'party_id',
         'external_id',
-        'publish'
+        'publish',
+        'updated_at'
     ];
 
     protected function casts(): array
     {
         return [
             'object' => AsArrayObject::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 

@@ -2,15 +2,16 @@
 
 namespace Ocpi\Models;
 
-use App\Models\Company;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\Base64Helper;
 use Ocpi\Support\Models\Model;
 
@@ -26,6 +27,7 @@ use Ocpi\Support\Models\Model;
  * @property string|null $version_url
  * @property bool $registered
  * @property Collection|PartyRole[] $roles
+ * @property PartyRole|null $role_cpo
  * @property array|null $endpoints
  * @property int|null $parent_id
  * @property Party|null $parent
@@ -42,11 +44,13 @@ class Party extends Model
         'version',
         'version_url',
         'endpoints',
+        'cpo_id',
         'parent_id',
     ];
 
     /**
      * @param string $token
+     *
      * @return string
      * @todo move to helper or static factory
      */
@@ -58,6 +62,7 @@ class Party extends Model
     /**
      * @param string $token
      * @param Party|null $party
+     *
      * @return false|string
      * @todo move to helper or static factory
      */
@@ -90,6 +95,12 @@ class Party extends Model
     {
         return $this->hasMany(PartyRole::class);
     }
+
+    public function role_cpo(): HasOne
+    {
+        return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::CPO->value);
+    }
+
 
     public function tokens(): HasMany
     {

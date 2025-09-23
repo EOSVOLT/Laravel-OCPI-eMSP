@@ -21,7 +21,7 @@ class PartyRoleFactory
             $role->code,
             $role->role,
             $role->country_code,
-            $role->business_details ?? [],
+            (array)$role->business_details ?? [],
         );
     }
 
