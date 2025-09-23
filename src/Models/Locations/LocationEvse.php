@@ -2,6 +2,8 @@
 
 namespace Ocpi\Models\Locations;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -47,6 +49,16 @@ class LocationEvse extends Model
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
+    }
+
+    /***
+     * Scopes.
+     ***/
+
+    #[Scope]
+    public function validEvse(Builder $query): void
+    {
+        $query->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
     }
 
     /***
