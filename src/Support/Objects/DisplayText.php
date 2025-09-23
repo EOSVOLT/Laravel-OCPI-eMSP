@@ -1,14 +1,14 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Objects;
+namespace Ocpi\Support\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 
-class DisplayText implements Arrayable
+readonly class DisplayText implements Arrayable
 {
     public function __construct(
-        private readonly string $language,
-        private readonly string $text,
+        private string $language,
+        private string $text,
     )
     {
     }

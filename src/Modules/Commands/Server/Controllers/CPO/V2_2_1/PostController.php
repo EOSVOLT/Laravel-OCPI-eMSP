@@ -33,7 +33,7 @@ class PostController extends Controller
             ]);
             RemoteStartTransaction::dispatch($partyRole->id, $commandType->id, $commandType->type->name);
 
-            return $this->ocpiSuccessResponse();
+            return $this->ocpiCommandAcceptedResponse();
         } catch (Exception $e) {
             Log::channel('ocpi')->error($e->getMessage());
             return $this->ocpiServerErrorResponse();

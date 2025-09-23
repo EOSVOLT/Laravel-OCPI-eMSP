@@ -4,13 +4,13 @@ namespace Ocpi\Models\Commands\Enums;
 
 use Ocpi\Support\Traits\Enums\FromName;
 
-enum CommandResponseType
+enum CommandResponseType: string
 {
     use FromName;
 
-    case NOT_SUPPORTED;
-    case REJECTED;
-    case ACCEPTED;
-    case TIMEOUT;
-    case UNKNOWN_SESSION;
+    case NOT_SUPPORTED = 'NOT_SUPPORTED';
+    case REJECTED = 'REJECTED';
+    case ACCEPTED = 'ACCEPTED';
+    case TIMEOUT = 'TIMEOUT';
+    case UNKNOWN_SESSION = 'UNKNOWN_SESSION';
 }
