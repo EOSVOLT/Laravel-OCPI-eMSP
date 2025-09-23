@@ -16,7 +16,6 @@ use Ocpi\Support\Server\Controllers\Controller;
 
 class GetController extends Controller
 {
-    public CONST string VERSION = '2.2.1';
     use HandlesLocation;
     public function __invoke(
         Request $request,
@@ -47,7 +46,7 @@ class GetController extends Controller
                 $location->currentPage(),
                 $location->perPage(),
                 $location->total(),
-                self::getLocationPath(self::VERSION)
+                self::getLocationPath(Context::get('ocpi_version'))
             )
             : $this->ocpiServerErrorResponse(
                 statusMessage: 'Location not found',
