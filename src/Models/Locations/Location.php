@@ -36,6 +36,16 @@ class Location extends Model
         'updated_at',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'object' => AsArrayObject::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
+    }
+
     /***
      * Scopes.
      ***/
@@ -51,7 +61,7 @@ class Location extends Model
     {
         $query->with('evses', function (HasMany $query) {
             $query->with('connectors')
-                 ->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
+                ->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
         })->whereHas('evses', function ($query) {
             $query->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
         });
@@ -75,16 +85,6 @@ class Location extends Model
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'object' => AsArrayObject::class,
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
     }
 
 
