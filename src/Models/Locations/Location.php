@@ -59,11 +59,11 @@ class Location extends Model
     #[Scope]
     public function withHasValidEvses(Builder $query): void
     {
-        $query->with('evses', function (HasMany $query) {
+        $query->with('evses', function (HasMany|LocationEvse $query) {
             $query->with('connectors')
-                ->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
+                ->validEvse();
         })->whereHas('evses', function ($query) {
-            $query->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
+            $query->validEvse();
         });
     }
 
