@@ -20,17 +20,13 @@ use Ocpi\Modules\Locations\Resources\LocationResourceList;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
+use Ocpi\Support\Traits\PageConvertor;
 
 class GetController extends Controller
 {
     use HandlesLocation;
-
-    /**
-     * @param Request $request
-     *
-     * @return JsonResponse
-     */
-    public function list(
+    use PageConvertor;
+    public function __invoke(
         Request $request,
     ): JsonResponse {
         $offset = $request->input('offset', 0);
@@ -39,7 +35,7 @@ class GetController extends Controller
         )->startOfDay();
         $dateTo = $request->input('date_to') ? Carbon::parse($request->input('date_to')) : Carbon::now();
         $party = Context::getHidden('party');
-        $page = $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
+        $page = self::fromOffset($offset, $limit);
         $location = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
