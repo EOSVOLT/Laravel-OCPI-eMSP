@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models\Locations;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Ocpi\Models\Party;
+use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Support\Models\Model;
 
 /**
@@ -31,7 +33,7 @@ class Location extends Model
         'party_id',
         'external_id',
         'publish',
-        'updated_at'
+        'updated_at',
     ];
 
     protected function casts(): array
@@ -48,9 +50,21 @@ class Location extends Model
      * Scopes.
      ***/
 
-    public function scopePartyRole(Builder $query, int $party_role_id): void
+    #[Scope]
+    public function partyRole(Builder $query, int $party_role_id): void
     {
         $query->where('party_role_id', $party_role_id);
+    }
+
+    #[Scope]
+    public function withHasValidEvses(Builder $query): void
+    {
+        $query->with('evses', function (HasMany|LocationEvse $query) {
+            $query->with('connectors')
+                ->validEvse();
+        })->whereHas('evses', function ($query) {
+            $query->validEvse();
+        });
     }
 
     /***
@@ -72,4 +86,6 @@ class Location extends Model
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');
     }
+
+
 }

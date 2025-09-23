@@ -2,6 +2,8 @@
 
 namespace Ocpi\Models\Locations;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -38,6 +40,9 @@ class LocationEvse extends Model
         'updated_at'
     ];
 
+    /**
+     * @return string[]
+     */
     protected function casts(): array
     {
         return [
@@ -50,6 +55,16 @@ class LocationEvse extends Model
     }
 
     /***
+     * Scopes.
+     ***/
+
+    #[Scope]
+    public function validEvse(Builder $query): void
+    {
+        $query->whereNotIn('status', [EvseStatus::REMOVED, EvseStatus::UNKNOWN]);
+    }
+
+    /***
      * Relations.
      ***/
 
@@ -58,17 +73,26 @@ class LocationEvse extends Model
         return $this->hasMany(LocationConnector::class, 'evse_id', 'id');
     }
 
+    /**
+     * @return HasMany
+     */
     public function connectorsWithTrashed(): HasMany
     {
         return $this->hasMany(LocationConnector::class, 'evse_id', 'id')
             ->withTrashed();
     }
 
+    /**
+     * @return BelongsTo
+     */
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'location_id', 'id');
     }
 
+    /**
+     * @return BelongsTo
+     */
     public function locationWithTrashed(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'location_id', 'id')

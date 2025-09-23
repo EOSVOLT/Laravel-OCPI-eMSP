@@ -10,5 +10,8 @@ Route::middleware([
     ->prefix('locations')
     ->name('locations')
     ->group(function () {
-        Route::get('', GetController::class);
+        Route::get('', [GetController::class, 'list']);
+        Route::get('{locationId}', [GetController::class, 'location']);
+        Route::get('{locationId}/{evseUid}', [GetController::class, 'evse']);
+        Route::get('{locationId}/{evseUid}/{connectorId}', [GetController::class, 'connector']);
     });
