@@ -2,9 +2,10 @@
 
 namespace Ocpi\Modules\Commands\Object;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Locations\Enums\TokenType;
 
-readonly class CommandToken
+readonly class CommandToken implements Arrayable
 {
 
     /**
@@ -71,5 +72,20 @@ readonly class CommandToken
     public function getVisualNumber(): string
     {
         return $this->visual_number;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'country_code' => $this->getCountryCode(),
+            'party_code' => $this->getPartyCode(),
+            'uid' => $this->getTokenUid(),
+            'type' => $this->getType()->value,
+            'contract_id' => $this->getContractId(),
+            'visual_number' => $this->getVisualNumber(),
+        ];
     }
 }
