@@ -12,23 +12,19 @@ class CommandRemoteStartTransaction implements ShouldDispatchAfterCommit, Receiv
     use Dispatchable;
 
     /**
-     * @param int $partyRoleId
      * @param string $id
      * @param CommandType $type
+     * @param string $locationId
+     * @param string|null $evseUid
+     * @param string|null $connectorId
      */
     public function __construct(
-        private readonly int $partyRoleId,
         private readonly string $id,
         private readonly CommandType $type,
+        private readonly string $locationId,
+        private readonly ?string $evseUid = null,
+        private readonly ?string $connectorId = null,
     ) {
-    }
-
-    /**
-     * @return int
-     */
-    public function getPartyRoleId(): int
-    {
-        return $this->partyRoleId;
     }
 
     /**
@@ -45,6 +41,30 @@ class CommandRemoteStartTransaction implements ShouldDispatchAfterCommit, Receiv
     public function getType(): CommandType
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocationId(): string
+    {
+        return $this->locationId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getEvseUid(): ?string
+    {
+        return $this->evseUid;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getConnectorId(): ?string
+    {
+        return $this->connectorId;
     }
 
 }

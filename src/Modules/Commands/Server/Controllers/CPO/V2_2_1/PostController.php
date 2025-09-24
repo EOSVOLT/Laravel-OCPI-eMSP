@@ -38,7 +38,13 @@ class PostController extends Controller
                 'payload' => $payload,
             ]);
             match ($commandType) {
-                CommandType::START_SESSION => CommandRemoteStartTransaction::dispatch($partyRole->id, $command->id, $command->type),
+                CommandType::START_SESSION => CommandRemoteStartTransaction::dispatch(
+                    $command->id,
+                    $command->type,
+                    $request->input('location_id'),
+                    $request->input('evse_uid'),
+                    $request->input('connector_id'),
+                ),
                 CommandType::STOP_SESSION => throw new \Exception('To be implemented'),
                 CommandType::CANCEL_RESERVATION => throw new \Exception('To be implemented'),
                 CommandType::RESERVE_NOW => throw new \Exception('To be implemented'),
