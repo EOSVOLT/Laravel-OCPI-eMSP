@@ -9,7 +9,17 @@ return new class extends Migration {
     {
         Schema::disableForeignKeyConstraints();
 
+        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
+            $table->dropForeign('ocpi_cdrs_location_evse_emsp_id_foreign');
+            $table->renameColumn('location_evse_emsp_id', 'location_id');
+            $table->foreign('location_id', 'ocpi_cdrs_location_id_foreign')->on(config('ocpi.database.table.prefix').'locations')->references('id')->onDelete('restrict');
+        });
 
+        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
+            $table->dropForeign('ocpi_sessions_location_evse_emsp_id_foreign');
+            $table->renameColumn('location_evse_emsp_id', 'location_id');
+            $table->foreign('location_id', 'ocpi_sessions_location_id_foreign')->on(config('ocpi.database.table.prefix').'locations')->references('id')->onDelete('restrict');
+        });
         Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
             $table->dropForeign('ocpi_location_connectors_location_evse_emsp_id_foreign');
             $table->dropUnique('ocpi_location_connectors_location_evse_emsp_id_id_unique');
