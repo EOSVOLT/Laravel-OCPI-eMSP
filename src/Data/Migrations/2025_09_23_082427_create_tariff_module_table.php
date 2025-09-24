@@ -128,5 +128,6 @@ return new class extends Migration {
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_restrictions');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_elements');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_element_price_components');
+        Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_parties');
     }
 };
