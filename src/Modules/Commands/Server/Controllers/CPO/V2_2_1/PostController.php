@@ -41,9 +41,6 @@ class PostController extends Controller
                 CommandType::START_SESSION => CommandRemoteStartTransaction::dispatch(
                     $command->id,
                     $command->type,
-                    $request->input('location_id'),
-                    $request->input('evse_uid'),
-                    $request->input('connector_id'),
                 ),
                 CommandType::STOP_SESSION => throw new \Exception('To be implemented'),
                 CommandType::CANCEL_RESERVATION => throw new \Exception('To be implemented'),
