@@ -86,11 +86,11 @@ return new class extends Migration {
             $table->foreignId('tariff_id')->constrained(
                 config('ocpi.database.table.prefix') . 'tariffs',
                 'id'
-            )->cascadeOnDelete();
+            )->restrictOnDelete();
             $table->foreignId('tariff_restriction_id')->nullable()->constrained(
                 config('ocpi.database.table.prefix') . 'tariff_restrictions',
                 'id'
-            )->cascadeOnDelete();
+            )->restrictOnDelete();
             $table->timestamps();
             $table->unique(['tariff_id', 'tariff_restriction_id'], 'tariff_elements_unique');
         });
@@ -102,19 +102,19 @@ return new class extends Migration {
                     config('ocpi.database.table.prefix') . 'tariff_elements',
                     'id',
                     'tariff_elements_id_foreign'
-                )->cascadeOnDelete();
+                )->restrictOnDelete();
                 $table->foreignId('tariff_price_component_id')->constrained(
                     config('ocpi.database.table.prefix') . 'tariff_price_components',
                     'id',
                     'tariff_price_component_id_foreign'
-                )->cascadeOnDelete();
+                )->restrictOnDelete();
                 $table->timestamps();
                 $table->unique(['tariff_element_id', 'tariff_price_component_id'],'tariff_element_price_components_unique');
             }
         );
         Schema::create(config('ocpi.database.table.prefix') . 'tariff_parties', function (Blueprint $table) {
-            $table->foreignId('tariff_id')->constrained(config('ocpi.database.table.prefix') . 'tariffs', 'id')->cascadeOnDelete();
-            $table->foreignId('party_id')->constrained(config('ocpi.database.table.prefix') . 'parties', 'id')->cascadeOnDelete();
+            $table->foreignId('tariff_id')->constrained(config('ocpi.database.table.prefix') . 'tariffs', 'id')->restrictOnDelete();
+            $table->foreignId('party_id')->constrained(config('ocpi.database.table.prefix') . 'parties', 'id')->restrictOnDelete();
             $table->unique(['tariff_id', 'party_id'], 'tariff_parties_unique');
         });
     }
