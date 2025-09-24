@@ -16,7 +16,7 @@ return new class extends Migration {
         });
         Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
             $table->dropForeign('ocpi_sessions_location_evse_emsp_id_foreign');
-            $table->unsignedBigInteger('location_id')->after('location_evse_emsp_id')->nullable();
+            $table->dropColumn('location_evse_emsp_id');
         });
 
         Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
