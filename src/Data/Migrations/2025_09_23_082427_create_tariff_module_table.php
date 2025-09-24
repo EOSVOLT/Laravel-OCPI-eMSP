@@ -100,15 +100,16 @@ return new class extends Migration {
                 $table->id();
                 $table->foreignId('tariff_element_id')->constrained(
                     config('ocpi.database.table.prefix') . 'tariff_elements',
-                    'id'
+                    'id',
+                    'tariff_elements_id_foreign'
                 )->cascadeOnDelete();
                 $table->foreignId('tariff_price_component_id')->constrained(
                     config('ocpi.database.table.prefix') . 'tariff_price_components',
-                    'id'
+                    'id',
+                    'tariff_price_component_id_foreign'
                 )->cascadeOnDelete();
                 $table->timestamps();
-                $table->unique(['tariff_element_id', 'tariff_price_component_id'],
-                    'tariff_element_price_components_unique');
+                $table->unique(['tariff_element_id', 'tariff_price_component_id'],'tariff_element_price_components_unique');
             }
         );
         Schema::create(config('ocpi.database.table.prefix') . 'tariff_parties', function (Blueprint $table) {
