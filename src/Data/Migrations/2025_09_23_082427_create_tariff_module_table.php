@@ -78,7 +78,7 @@ return new class extends Migration {
             $table->decimal('vat', 20, 5)->nullable();
             $table->integer('step_size')->default(1);
             $table->timestamps();
-            $table->unique(['tariff_id', 'dimension_type', 'vat', 'step_size'], 'tariff_price_components_unique');
+            $table->unique(['dimension_type', 'price', 'vat', 'step_size'], 'tariff_price_components_unique');
         });
 
         Schema::table(config('ocpi.database.table.prefix') . 'tariff_elements', function (Blueprint $table) {
