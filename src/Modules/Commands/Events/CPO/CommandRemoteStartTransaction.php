@@ -5,20 +5,21 @@ namespace Ocpi\Modules\Commands\Events\CPO;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Ocpi\Models\Commands\Enums\CommandType;
 
-class CommandRemoteStartTransactionInterface implements ShouldDispatchAfterCommit, ReceiverCommandEventInterface
+class CommandRemoteStartTransaction implements ShouldDispatchAfterCommit, ReceiverCommandEventInterface
 {
     use Dispatchable;
 
     /**
      * @param int $partyRoleId
      * @param string $id
-     * @param string $type
+     * @param CommandType $type
      */
     public function __construct(
         private readonly int $partyRoleId,
         private readonly string $id,
-        private readonly string $type,
+        private readonly CommandType $type,
     ) {
     }
 
@@ -39,9 +40,9 @@ class CommandRemoteStartTransactionInterface implements ShouldDispatchAfterCommi
     }
 
     /**
-     * @return string
+     * @return CommandType
      */
-    public function getType(): string
+    public function getType(): CommandType
     {
         return $this->type;
     }

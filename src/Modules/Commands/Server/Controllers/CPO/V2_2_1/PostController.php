@@ -9,7 +9,7 @@ use Log;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\Commands\Enums\CommandType;
 use Ocpi\Models\PartyRole;
-use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStartTransactionInterface;
+use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStartTransaction;
 use Ocpi\Modules\Commands\Factories\CommandTokenFactory;
 use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Support\Server\Controllers\Controller;
@@ -38,7 +38,7 @@ class PostController extends Controller
                 'payload' => $payload,
             ]);
             match ($commandType) {
-                CommandType::START_SESSION => CommandRemoteStartTransactionInterface::dispatch($partyRole->id, $command->id, $command->type->name),
+                CommandType::START_SESSION => CommandRemoteStartTransaction::dispatch($partyRole->id, $command->id, $command->type),
                 CommandType::STOP_SESSION => throw new \Exception('To be implemented'),
                 CommandType::CANCEL_RESERVATION => throw new \Exception('To be implemented'),
                 CommandType::RESERVE_NOW => throw new \Exception('To be implemented'),
