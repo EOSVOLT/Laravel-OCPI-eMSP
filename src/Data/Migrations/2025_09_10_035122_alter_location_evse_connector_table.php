@@ -11,17 +11,14 @@ return new class extends Migration {
 
         Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
             $table->dropForeign('ocpi_cdrs_location_evse_emsp_id_foreign');
-            $table->unsignedBigInteger('location_id')->after('location_evse_emsp_id')->nullable();
             $table->dropColumn('location_evse_emsp_id');
-            $table->foreign('location_id', 'ocpi_cdrs_location_id_foreign')->on(config('ocpi.database.table.prefix').'locations')->references('id')->onDelete('restrict');
-        });
 
+        });
         Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
             $table->dropForeign('ocpi_sessions_location_evse_emsp_id_foreign');
             $table->unsignedBigInteger('location_id')->after('location_evse_emsp_id')->nullable();
-            $table->dropColumn('location_evse_emsp_id');
-            $table->foreign('location_id', 'ocpi_sessions_location_id_foreign')->on(config('ocpi.database.table.prefix').'locations')->references('id')->onDelete('restrict');
         });
+
         Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
             $table->dropForeign('ocpi_location_connectors_location_evse_emsp_id_foreign');
             $table->dropUnique('ocpi_location_connectors_location_evse_emsp_id_id_unique');
@@ -61,6 +58,14 @@ return new class extends Migration {
         Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
             $table->string('status')->after('object');
         });
+
+        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
+            $table->foreignId('location_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+        });
+        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
+            $table->foreignId('location_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+        });
+
 
         Schema::enableForeignKeyConstraints();
     }
