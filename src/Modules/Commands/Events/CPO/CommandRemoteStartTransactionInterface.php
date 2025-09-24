@@ -1,12 +1,12 @@
 <?php
 
-namespace Ocpi\Modules\Commands\Events;
+namespace Ocpi\Modules\Commands\Events\CPO;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 
-class RemoteStartTransaction implements ShouldDispatchAfterCommit
+class CommandRemoteStartTransactionInterface implements ShouldDispatchAfterCommit, ReceiverCommandEventInterface
 {
     use Dispatchable;
 
