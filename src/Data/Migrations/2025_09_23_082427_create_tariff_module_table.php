@@ -81,7 +81,7 @@ return new class extends Migration {
             $table->unique(['dimension_type', 'price', 'vat', 'step_size'], 'tariff_price_components_unique');
         });
 
-        Schema::table(config('ocpi.database.table.prefix') . 'tariff_elements', function (Blueprint $table) {
+        Schema::create(config('ocpi.database.table.prefix') . 'tariff_elements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tariff_id')->constrained(
                 config('ocpi.database.table.prefix') . 'tariffs',
@@ -94,7 +94,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->unique(['tariff_id', 'tariff_restriction_id'], 'tariff_elements_unique');
         });
-        Schema::table(
+        Schema::create(
             config('ocpi.database.table.prefix') . 'tariff_element_price_components',
             function (Blueprint $table) {
                 $table->id();
@@ -111,7 +111,7 @@ return new class extends Migration {
                     'tariff_element_price_components_unique');
             }
         );
-        Schema::table(config('ocpi.database.table.prefix') . 'tariff_parties', function (Blueprint $table) {
+        Schema::create(config('ocpi.database.table.prefix') . 'tariff_parties', function (Blueprint $table) {
             $table->foreignId('tariff_id')->constrained(config('ocpi.database.table.prefix') . 'tariffs', 'id')->cascadeOnDelete();
             $table->foreignId('party_id')->constrained(config('ocpi.database.table.prefix') . 'parties', 'id')->cascadeOnDelete();
             $table->unique(['tariff_id', 'party_id'], 'tariff_parties_unique');
