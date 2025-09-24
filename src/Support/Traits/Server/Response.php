@@ -74,7 +74,7 @@ trait Response
         $statusMessage = 'Error',
         int $httpCode = 400
     ): JsonResponse {
-        return $this->ocpiResponse(httpCode: $httpCode, statusCode: 3000, statusMessage: $statusMessage);
+        return $this->ocpiResponse(httpCode: $httpCode, statusCode: $statusCode, statusMessage: $statusMessage);
     }
 
     protected function ocpiResponse(
