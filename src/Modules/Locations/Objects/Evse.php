@@ -12,6 +12,7 @@ use Ocpi\Trait\ValidateArrayEnum;
 class Evse implements Arrayable
 {
     use ValidateArrayEnum;
+
     /**
      * @var string|null
      */
@@ -50,20 +51,20 @@ class Evse implements Arrayable
     protected ?ImageCollection $images = null;
 
     /**
+     * @param int $id
      * @param int $locationId
      * @param string $uid
      * @param EvseStatus $status
      * @param ConnectorCollection $connectors
      * @param Carbon $lastUpdated
-     * @param string|null $id
      */
     public function __construct(
+        private readonly int $id,
         private readonly int $locationId,
         private readonly string $uid,
         private readonly EvseStatus $status,
         private readonly ConnectorCollection $connectors,
         private readonly Carbon $lastUpdated,
-        private readonly ?string $id = null,
     ) {
     }
 
@@ -280,6 +281,11 @@ class Evse implements Arrayable
         return $this->id;
     }
 
+    public function getLocationId(): int
+    {
+        return $this->locationId;
+    }
+
     /**
      * @return array
      */
@@ -287,6 +293,7 @@ class Evse implements Arrayable
     {
         return [
             'id' => $this->getId(),
+            'location_id' => $this->getLocationId(),
             'uid' => $this->getUid(),
             'evse_id' => $this->getEvseId(),
             'status' => $this->getStatus()->value,

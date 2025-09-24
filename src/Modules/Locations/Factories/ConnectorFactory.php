@@ -15,6 +15,7 @@ class ConnectorFactory
     public static function fromModel(LocationConnector $connector): Connector
     {
         return new Connector(
+            $connector->id,
             $connector->evse_id,
             $connector->connector_id,
             ConnectorType::from($connector->object['standard']),

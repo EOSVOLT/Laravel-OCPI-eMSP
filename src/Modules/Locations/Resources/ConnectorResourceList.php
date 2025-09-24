@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Locations\Objects\ConnectorCollection;
 
-class CPOGetConnectorResourceList extends JsonResource
+class ConnectorResourceList extends JsonResource
 {
     public function __construct(ConnectorCollection $resource)
     {
@@ -17,7 +17,7 @@ class CPOGetConnectorResourceList extends JsonResource
     {
         $data = [];
         foreach ($this->resource as $connector) {
-            $data[] = new CPOGetConnectorResource($connector)->toArray();
+            $data[] = new ConnectorResource($connector)->toArray();
         }
         return $data;
     }

@@ -5,21 +5,26 @@ namespace Ocpi\Modules\Locations\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Ocpi\Modules\Locations\Objects\Locations;
+use Ocpi\Modules\Credentials\Object\PartyRole;
+use Ocpi\Modules\Locations\Objects\Location;
+use Ocpi\Support\Traits\RemoveEmptyField;
 
-/** @property Locations $resource */
-class CPOGetLocationResource extends JsonResource
+/** @property Location $resource */
+class LocationResource extends JsonResource
 {
-    public function __construct(Locations $location)
+    use RemoveEmptyField;
+    public function __construct(Location $location)
     {
         parent::__construct($location);
     }
 
     public function toArray(?Request $request = null): array
     {
-        return [
-            'country_code' => $this->resource->getCountryCode(),
-            'party_id' => $this->resource->getPartyId(),
+        /** @var PartyRole $partyRole */
+        $partyRole = $this->resource->getParty()->getRoles()->first();
+        return self::removeEmptyField([
+            'country_code' => $partyRole?->getCountryCode(),
+            'party_id' => $partyRole?->getCode(),
             'id' => $this->resource->getExternalId(),
             'publish' => $this->resource->isPublish(),
             'publish_allowed_to ' => $this->resource->getPublishAllowedTo()?->toArray(),
@@ -32,7 +37,7 @@ class CPOGetLocationResource extends JsonResource
             'coordinates' => $this->resource->getCoordinates()->toArray(),
             'related_locations' => $this->resource->getRelatedLocations()?->toArray(),
             'parking_type' => $this->resource->getParkingType()?->value,
-            'evses' => new CPOGetEvseResourceList($this->resource->getEvses())->toArray(),
+            'evses' => $this->resource->getEvses() ? new EvseResourceList($this->resource->getEvses())->toArray() : null,
             'directions' => $this->resource->getDirections()?->toArray(),
             'operator' => $this->resource->getOperator()?->toArray(),
             'suboperator' => $this->resource->getSuboperator()?->toArray(),
@@ -44,6 +49,6 @@ class CPOGetLocationResource extends JsonResource
             'images' => $this->resource->getImages()?->toArray(),
             'energy_mix' => $this->resource->getEnergyMix()?->toArray(),
             'last_updated' => $this->resource->getLastUpdated()->toISOString(),
-        ];
+        ]);
     }
 }

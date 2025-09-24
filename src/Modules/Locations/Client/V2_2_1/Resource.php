@@ -1,7 +1,8 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Client;
+namespace Ocpi\Modules\Locations\Client\V2_2_1;
 
+use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Client\Resource as OcpiResource;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
@@ -9,6 +10,7 @@ use Throwable;
 
 class Resource extends OcpiResource
 {
+    use HandlesLocation;
     /**
      * @return array|null
      * @throws FatalRequestException
@@ -85,7 +87,7 @@ class Resource extends OcpiResource
     ): ?array {
         return $this->requestPutSend(
             $data,
-            implode('/', array_filter([$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
+            implode('/', array_filter([$this->connector->resolveBaseUrl(), $countryCode, $partyId, $locationId, $evseUid, $connectorId]))
         );
     }
 
@@ -111,7 +113,7 @@ class Resource extends OcpiResource
     ): ?array {
         return $this->requestPatchSend(
             $data,
-            implode('/', array_filter([$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
+            implode('/', array_filter([$this->connector->resolveBaseUrl(),$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
         );
     }
 }

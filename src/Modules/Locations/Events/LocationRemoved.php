@@ -4,13 +4,19 @@ namespace Ocpi\Modules\Locations\Events;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
+use Ocpi\Modules\Locations\Objects\Location;
 
 class LocationRemoved implements ShouldDispatchAfterCommit
 {
     use Dispatchable;
 
     public function __construct(
-        public int $party_role_id,
-        public string $id,
-    ) {}
+        private readonly Location $location,
+    ) {
+    }
+
+    public function getLocation(): Location
+    {
+        return $this->location;
+    }
 }

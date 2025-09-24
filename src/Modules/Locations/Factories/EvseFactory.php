@@ -4,7 +4,6 @@ namespace Ocpi\Modules\Locations\Factories;
 
 use Illuminate\Support\Collection;
 use Ocpi\Models\Locations\LocationEvse;
-use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Modules\Locations\Objects\Evse;
 use Ocpi\Modules\Locations\Objects\EvseCollection;
 
@@ -15,16 +14,16 @@ class EvseFactory
         $evse->load('connectors');
         $connectors = ConnectorFactory::fromModels($evse->connectors);
         return new Evse(
+            $evse->id,
             $evse->location_id,
             $evse->uid,
-            EvseStatus::tryFrom($evse->status),
+            $evse->status,
             $connectors,
             $evse->updated_at,
-            $evse->id
         )->setEvseId($evse->object['evse_id'] ?? null);
     }
 
-    public static function fromModels(Collection $evses): EvseCollection
+    public static function fromCollection(Collection $evses): EvseCollection
     {
         $collection = new EvseCollection();
         foreach ($evses as $evse) {

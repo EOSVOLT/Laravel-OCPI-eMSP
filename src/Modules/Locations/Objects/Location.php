@@ -9,7 +9,7 @@ use Ocpi\Modules\Locations\Enums\Facility;
 use Ocpi\Modules\Locations\Enums\ParkingType;
 use Ocpi\Trait\ValidateArrayEnum;
 
-class Locations implements Arrayable
+class Location implements Arrayable
 {
     use ValidateArrayEnum;
 
@@ -79,13 +79,9 @@ class Locations implements Arrayable
     protected ?EnergyMix $energyMix = null;
 
     /**
-     * @var Party|null
-     */
-    private ?Party $party = null;
-
-    /**
+     * @param int $id
      * @param string $countryCode
-     * @param string $partyId
+     * @param Party $party
      * @param string $externalId
      * @param bool $publish
      * @param string $address
@@ -94,11 +90,11 @@ class Locations implements Arrayable
      * @param GeoLocation $coordinates
      * @param string $timeZone
      * @param Carbon $lastUpdated
-     * @param string|null $id
      */
     public function __construct(
+        private readonly int $id,
         private readonly string $countryCode,
-        private readonly string $partyId,
+        private readonly Party $party,
         private readonly string $externalId,
         private readonly bool $publish,
         private readonly string $address,
@@ -107,7 +103,6 @@ class Locations implements Arrayable
         private readonly GeoLocation $coordinates,
         private readonly string $timeZone,
         private readonly Carbon $lastUpdated,
-        private readonly ?string $id = null,
     ) {
     }
 
@@ -119,13 +114,6 @@ class Locations implements Arrayable
         return $this->countryCode;
     }
 
-    /**
-     * @return string
-     */
-    public function getPartyId(): string
-    {
-        return $this->partyId;
-    }
 
     /**
      * @return string
@@ -497,32 +485,18 @@ class Locations implements Arrayable
     }
 
     /**
-     * @return string|null
+     * @return int
      */
-    public function getId(): ?string
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return Party|null
-     */
-    public function getParty(): ?Party
+    public function getParty(): Party
     {
         return $this->party;
     }
 
-
-    /**
-     * @param Party $party
-     *
-     * @return $this
-     */
-    public function setParty(Party $party): self
-    {
-        $this->party = $party;
-        return $this;
-    }
 
     /**
      * @return array
@@ -532,7 +506,7 @@ class Locations implements Arrayable
         return [
             'id' => $this->getId(),
             'country_code' => $this->getCountryCode(),
-            'party_id' => $this->getPartyId(),
+            'party_id' => $this->getParty()->getId(),
             'external_id' => $this->getExternalId(),
             'publish' => $this->isPublish(),
             'publish_allowed_to' => $this->getPublishAllowedTo()?->toArray(),

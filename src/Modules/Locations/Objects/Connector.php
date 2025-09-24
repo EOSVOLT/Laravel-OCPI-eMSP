@@ -24,6 +24,7 @@ class Connector implements Arrayable
     protected ?string $termsAndConditions = null;
 
     /**
+     * @param int $id
      * @param int $evseId
      * @param string $connector_id
      * @param ConnectorType $standard
@@ -32,9 +33,9 @@ class Connector implements Arrayable
      * @param int $maxVoltage
      * @param int $maxAmperage
      * @param Carbon $lastUpdated
-     * @param string|null $id
      */
     public function __construct(
+        private readonly int $id,
         private readonly int $evseId,
         private readonly string $connector_id,
         private readonly ConnectorType $standard,
@@ -43,7 +44,6 @@ class Connector implements Arrayable
         private readonly int $maxVoltage,
         private readonly int $maxAmperage,
         private readonly Carbon $lastUpdated,
-        private readonly ?string $id = null,
     ) {
     }
 
@@ -160,11 +160,17 @@ class Connector implements Arrayable
         return $this->lastUpdated;
     }
 
-    public function getId(): ?string
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
+    /**
+     * @return int
+     */
     public function getEvseId(): int
     {
         return $this->evseId;

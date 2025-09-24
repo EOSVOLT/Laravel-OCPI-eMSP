@@ -98,7 +98,7 @@ class Hours implements Arrayable
     public function toArray(): array
     {
         return [
-            'twenty_four_seven' => $this->isTwentyfourseven(),
+            'twentyfourseven' => $this->isTwentyfourseven(),
             'regular_hours' => $this->getRegularHours()?->toArray(),
             'exceptional_openings' => $this->getExceptionalOpenings()?->toArray(),
         ];
