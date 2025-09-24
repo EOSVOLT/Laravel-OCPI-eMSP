@@ -124,11 +124,13 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_price_components');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariffs');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_restrictions');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_elements');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_element_price_components');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_parties');
+        Schema::enableForeignKeyConstraints();
     }
 };
