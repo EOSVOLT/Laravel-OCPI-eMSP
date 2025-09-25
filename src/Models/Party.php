@@ -44,7 +44,6 @@ class Party extends Model
         'version',
         'version_url',
         'endpoints',
-        'cpo_id',
         'parent_id',
     ];
 
