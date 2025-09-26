@@ -32,7 +32,7 @@ class PostController extends Controller
                 ->where('country_code', $token->getCountryCode())
                 ->first();
 
-            $payload = $request->validated();
+            $payload = $request->toArray();
             $command = Command::query()->create([
                 'party_role_id' => $partyRole->id,
                 'type' => $commandType,
