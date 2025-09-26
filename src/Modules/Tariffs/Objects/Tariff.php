@@ -48,7 +48,7 @@ class Tariff implements Arrayable
      * @param string $party_code
      * @param string $external_id
      * @param string $currency
-     * @param TariffElement $elements
+     * @param TariffElementCollection $elements
      * @param Carbon $lastUpdated
      */
     public function __construct(
@@ -56,7 +56,7 @@ class Tariff implements Arrayable
         private readonly string $party_code,
         private readonly string $external_id,
         private readonly string $currency,
-        private readonly TariffElement $elements,
+        private readonly TariffElementCollection $elements,
         private readonly Carbon $lastUpdated,
     )
     {
@@ -247,9 +247,9 @@ class Tariff implements Arrayable
     }
 
     /**
-     * @return TariffElement
+     * @return TariffElementCollection
      */
-    public function getElements(): TariffElement
+    public function getElements(): TariffElementCollection
     {
         return $this->elements;
     }
