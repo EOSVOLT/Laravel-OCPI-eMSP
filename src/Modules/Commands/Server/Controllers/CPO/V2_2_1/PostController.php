@@ -16,8 +16,9 @@ use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
 {
-    public function __invoke(Request $request, CommandType $commandType): JsonResponse
+    public function __invoke(Request $request, string $commandType): JsonResponse
     {
+        $commandType = CommandType::tryFrom($commandType);
         try {
             //@todo request class with validation the request for each commandType
 
