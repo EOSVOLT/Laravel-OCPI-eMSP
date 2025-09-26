@@ -37,7 +37,7 @@ class Command extends Model
     {
         return [
             'type' => CommandType::class,
-            'payload' => AsArrayObject::class,
+            'payload' => 'array',
             'response' => CommandResponseType::class,
             'result' => CommandResultType::class,
         ];
