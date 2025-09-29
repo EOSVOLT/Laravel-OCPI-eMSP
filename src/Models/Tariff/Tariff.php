@@ -31,6 +31,19 @@ class Tariff extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'external_id',
+        'currency',
+        'type',
+        'tariff_alt_text',
+        'tariff_alt_url',
+        'min_price_excl_vat',
+        'min_price_incl_vat',
+        'max_price_excl_vat',
+        'max_price_incl_vat',
+        'updated_at',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -72,6 +85,6 @@ class Tariff extends Model
      */
     public function elements(): HasMany
     {
-        return $this->hasMany(TariffElement::class, 'tariff_id', 'id');
+        return $this->hasMany(TariffElements::class, 'tariff_id', 'id');
     }
 }
