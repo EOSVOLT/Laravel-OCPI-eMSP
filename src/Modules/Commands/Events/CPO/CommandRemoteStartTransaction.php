@@ -18,10 +18,11 @@ class CommandRemoteStartTransaction implements ShouldDispatchAfterCommit, Receiv
     }
 
     /**
-     * @return CommandType
+     * @return string
      */
-    public function getType(): CommandType
+    public function getCommandId(): string
     {
-        return $this->type;
+        return $this->commandId;
     }
+
 }
