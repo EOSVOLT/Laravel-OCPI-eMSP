@@ -10,10 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TariffElements extends Model
 {
-    protected $fillable = [
-        'tariff_id',
-        'tariff_restriction_id',
-    ];
+    protected $guarded = [];
     /**
      * @var string
      */

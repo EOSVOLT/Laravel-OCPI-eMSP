@@ -21,5 +21,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class TariffRestrictions extends Model
 {
+    protected $guarded = [];
     protected $table = 'tariff_restrictions';
 }

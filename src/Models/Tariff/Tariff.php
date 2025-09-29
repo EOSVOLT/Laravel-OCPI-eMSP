@@ -31,18 +31,7 @@ class Tariff extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = [
-        'external_id',
-        'currency',
-        'type',
-        'tariff_alt_text',
-        'tariff_alt_url',
-        'min_price_excl_vat',
-        'min_price_incl_vat',
-        'max_price_excl_vat',
-        'max_price_incl_vat',
-        'updated_at',
-    ];
+    protected $guarded = [];
 
     protected function casts(): array
     {

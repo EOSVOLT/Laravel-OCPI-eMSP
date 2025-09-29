@@ -14,12 +14,7 @@ use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
  */
 class TariffPriceComponents extends Model
 {
-    protected $fillable = [
-        'vat',
-        'step_size',
-        'price',
-        'dimension_type',
-    ];
+    protected $guarded = [];
     protected $table = 'tariff_price_components';
 
     protected function casts(): array
