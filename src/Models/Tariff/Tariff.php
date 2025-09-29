@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Ocpi\Models\Party;
-use Ocpi\Modules\Tariffs\Objects\TariffElement;
 
 /**
  * @property int $id
