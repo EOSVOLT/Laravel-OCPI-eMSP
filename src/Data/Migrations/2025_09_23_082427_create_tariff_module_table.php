@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('external_id', 36);
             $table->string('currency', 3);
-            $table->string('type');
+            $table->string('type')->nullable();
             $table->json('tariff_alt_text')->nullable();
             $table->string('tariff_alt_url')->nullable();
             $table->decimal('min_price_excl_vat', 20, 5)->nullable();
