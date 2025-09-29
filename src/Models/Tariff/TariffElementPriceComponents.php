@@ -9,6 +9,13 @@ class TariffElementPriceComponents extends Model
 {
     protected $table = 'tariff_element_price_components';
     protected $guarded = [];
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('ocpi.database.table.prefix').'tariff_element_price_components';
+    }
     public function element(): BelongsTo
     {
         return $this->belongsTo(TariffElement::class, 'tariff_element_id', 'id');

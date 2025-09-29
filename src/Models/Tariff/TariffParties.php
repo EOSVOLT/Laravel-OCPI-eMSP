@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Ocpi\Models\Party;
 
-class TariffsParty extends Model
+class TariffParties extends Model
 {
     /**
      * @var bool
@@ -14,6 +14,13 @@ class TariffsParty extends Model
     public $timestamps = false;
 
     protected $guarded = [];
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('ocpi.database.table.prefix').'tariffs_parties';
+    }
 
     /**
      * @return HasMany

@@ -15,6 +15,13 @@ use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
 class TariffPriceComponents extends Model
 {
     protected $guarded = [];
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('ocpi.database.table.prefix').'tariff_price_components';
+    }
 
     protected function casts(): array
     {
