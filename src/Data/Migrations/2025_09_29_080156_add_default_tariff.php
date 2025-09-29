@@ -17,7 +17,7 @@ return new class extends Migration {
             'currency' => Money::EUR(0)->getCurrency()->getCode(),
         ]);
         $priceComponents = TariffPriceComponents::query()->create([
-            'dimenstion_type' => TariffDimensionType::FLAT,
+            'dimension_type' => TariffDimensionType::FLAT,
             'price' => 0,
             'step_size' => 1
         ]);
