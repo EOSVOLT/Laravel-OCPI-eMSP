@@ -7,56 +7,61 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 use Ocpi\Models\Commands\Command;
-use Ocpi\Models\Commands\Enums\CommandResultType;
-use Ocpi\Modules\Commands\Events;
-use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Models\Commands\Enums\CommandType;
+use Ocpi\Models\PartyRole;
+use Ocpi\Models\Sessions\Session;
+use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStartTransaction;
+use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStopTransaction;
+use Ocpi\Modules\Commands\Factories\CommandTokenFactory;
+use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
 {
-    public function __invoke(
-        Request $request,
-        string $type,
-        ?string $id = null,
-    ): JsonResponse {
+    public function __invoke(Request $request, string $commandType): JsonResponse
+    {
+        $commandType = CommandType::tryFrom($commandType);
         try {
-            $command = Command::query()
-                ->with(['party_role'])
-                ->where('id', $id)
-                ->where('type', $type)
-                ->first();
-
-            if (! $command) {
-                Log::channel('ocpi')->error('Unknown Command '.$type.':'.$id);
-
-                return $this->ocpiClientErrorResponse(
-                    statusCode: OcpiClientErrorCode::InvalidParameters,
-                    statusMessage: 'Unknown Command.',
-                );
-            }
-
-            $result = $request->input('result');
-            $commandResultType = CommandResultType::fromName($result);
-            if (! $commandResultType) {
-                throw new Exception('Unknown CommandResultType '.$result.' for Command '.$type.':'.$id);
-            }
-
-            $command->result = $commandResultType->name;
-            $command->save();
-
-            if (
-                $commandResultType === CommandResultType::ACCEPTED
-                || $commandResultType === CommandResultType::CANCELED_RESERVATION
-            ) {
-                Events\CommandResultSucceeded::dispatch($command->party_role->id, $command->id, $command->type->name);
-            } else {
-                Events\CommandResultError::dispatch($command->party_role->id, $command->id, $command->type->name, $command->payload);
-            }
-
-            return $this->ocpiSuccessResponse();
+            return match ($commandType) {
+                CommandType::START_SESSION => $this->remoteStartTransaction($request),
+                CommandType::STOP_SESSION => $this->remoteStopTransaction(),
+                CommandType::CANCEL_RESERVATION,
+                CommandType::RESERVE_NOW,
+                CommandType::UNLOCK_CONNECTOR => $this->ocpiServerErrorResponse(statusMessage: 'To be implemented')
+            };
         } catch (Exception $e) {
             Log::channel('ocpi')->error($e->getMessage());
+            return $this->ocpiServerErrorResponse();
+        }
+    }
 
+    private function remoteStartTransaction(Request $request): JsonResponse
+    {
+        try {
+            //@todo request class with validation the request for each commandType
+            $session = Session::query()->findOrFail($request->get('session_id'));
+
+            $payload = $request->toArray();
+            $command = Command::query()->create([
+                'party_role_id' => $session->party_role_id,
+                'type' => CommandType::STOP_SESSION,
+                'payload' => $payload,
+            ]);
+
+            CommandRemoteStopTransaction::dispatch($command->id, $request->input('session_id'));
+            return $this->ocpiCommandAcceptedResponse();
+        } catch (Exception $e) {
+            Log::channel('ocpi')->error($e->getMessage());
+            return $this->ocpiServerErrorResponse();
+        }
+    }
+
+    private function remoteStopTransaction(): JsonResponse
+    {
+        try {
+
+        } catch (Exception $e) {
+            Log::channel('ocpi')->error($e->getMessage());
             return $this->ocpiServerErrorResponse();
         }
     }

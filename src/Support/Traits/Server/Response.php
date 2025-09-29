@@ -7,8 +7,11 @@ namespace Ocpi\Support\Traits\Server;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Ocpi\Models\Commands\Enums\CommandResponseType;
+use Ocpi\Modules\Commands\Object\CommandResponse;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
+use Ocpi\Support\Objects\DisplayText;
 
 trait Response
 {
@@ -39,6 +42,15 @@ trait Response
         );
     }
 
+    protected function ocpiCommandAcceptedResponse(): JsonResponse
+    {
+        $acceptedResponse = new CommandResponse(
+            CommandResponseType::ACCEPTED,
+            new DisplayText('en', 'Command Accepted')
+        );
+        return $this->ocpiSuccessResponse($acceptedResponse->toArray());
+    }
+
     protected function ocpiSuccessResponse(mixed $data = null, $statusMessage = 'Success'): JsonResponse
     {
         return $this->ocpiResponse(data: $data, httpCode: 200, statusCode: 1000, statusMessage: $statusMessage);
@@ -62,7 +74,7 @@ trait Response
         $statusMessage = 'Error',
         int $httpCode = 400
     ): JsonResponse {
-        return $this->ocpiResponse(httpCode: $httpCode, statusCode: 3000, statusMessage: $statusMessage);
+        return $this->ocpiResponse(httpCode: $httpCode, statusCode: $statusCode, statusMessage: $statusMessage);
     }
 
     protected function ocpiResponse(
