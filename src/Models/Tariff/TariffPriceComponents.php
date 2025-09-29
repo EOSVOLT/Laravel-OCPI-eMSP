@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
 
 /**
+ * @property int $id
  * @property TariffDimensionType $type
  * @property float $price
  * @property ?float $vat
