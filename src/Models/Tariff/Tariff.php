@@ -33,14 +33,6 @@ class Tariff extends Model
 
     protected $guarded = [];
 
-    /**
-     * @return string
-     */
-    public function getTable(): string
-    {
-        return config('ocpi.database.table.prefix') . 'tariffs';
-    }
-
 
     protected function casts(): array
     {
@@ -58,7 +50,7 @@ class Tariff extends Model
     {
         return $this->belongsToMany(
             Party::class,
-            TariffsParties::class,
+            TariffsParty::class,
             'tariff_id',
             'party_id',
             'id',
@@ -70,7 +62,7 @@ class Tariff extends Model
     {
         return $this->belongsToMany(
             Party::class,
-            TariffsParties::class,
+            TariffsParty::class,
             'tariff_id',
             'party_id',
             'id',
@@ -83,6 +75,6 @@ class Tariff extends Model
      */
     public function elements(): HasMany
     {
-        return $this->hasMany(TariffElements::class, 'tariff_id', 'id');
+        return $this->hasMany(TariffElement::class, 'tariff_id', 'id');
     }
 }

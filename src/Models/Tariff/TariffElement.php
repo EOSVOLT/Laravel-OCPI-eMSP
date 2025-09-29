@@ -7,22 +7,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-
-class TariffElements extends Model
+/**
+ * @property int $id
+ * @property int $tariff_id
+ * @property int $tariff_restriction_id
+ */
+class TariffElement extends Model
 {
     protected $guarded = [];
-    /**
-     * @var string
-     */
-    protected $table = 'tariff_elements';
-
-    /**
-     * @return string
-     */
-    public function getTable(): string
-    {
-        return config('ocpi.database.table.prefix') . 'tariff_elements';
-    }
 
     /**
      * @return BelongsTo
@@ -37,7 +29,7 @@ class TariffElements extends Model
      */
     public function restriction(): HasOne
     {
-        return $this->hasOne(TariffRestrictions::class, 'tariff_restriction_id', 'id');
+        return $this->hasOne(TariffRestriction::class, 'tariff_restriction_id', 'id');
     }
 
     /**

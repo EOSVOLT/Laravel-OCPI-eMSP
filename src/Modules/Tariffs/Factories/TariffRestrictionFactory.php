@@ -3,11 +3,11 @@
 namespace Ocpi\Modules\Tariffs\Factories;
 
 
-use Ocpi\Models\Tariff\TariffRestrictions;
+use Ocpi\Models\Tariff\TariffRestriction;
 
 class TariffRestrictionFactory
 {
-    public static function fromModel(TariffRestrictions $model): \Ocpi\Modules\Tariffs\Objects\TariffRestrictions
+    public static function fromModel(TariffRestriction $model): \Ocpi\Modules\Tariffs\Objects\TariffRestrictions
     {
         return new \Ocpi\Modules\Tariffs\Objects\TariffRestrictions()
             ->setStartTime($model->start_time)

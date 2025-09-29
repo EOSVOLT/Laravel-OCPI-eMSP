@@ -19,15 +19,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property ?int max_duration
  * @property ?array day_of_week
  */
-class TariffRestrictions extends Model
+class TariffRestriction extends Model
 {
     protected $guarded = [];
 
-    /**
-     * @return string
-     */
-    public function getTable(): string
-    {
-        return config('ocpi.database.table.prefix') . 'tariff_restrictions';
-    }
+
 }

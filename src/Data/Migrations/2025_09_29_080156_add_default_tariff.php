@@ -5,8 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Money\Money;
 use Ocpi\Models\Tariff\Tariff;
-use Ocpi\Models\Tariff\TariffElements;
+use Ocpi\Models\Tariff\TariffElement;
 use Ocpi\Models\Tariff\TariffPriceComponents;
+use Ocpi\Models\Tariff\TariffElementPriceComponents;
 use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
 
 return new class extends Migration {
@@ -21,9 +22,10 @@ return new class extends Migration {
             'price' => 0,
             'step_size' => 1
         ]);
-        /** @var TariffElements $element */
+        /** @var TariffElement $element */
         $element = $tariff->elements()->create();
-        $element->priceComponents()->create([
+        TariffElementPriceComponents::query()->create([
+            'tariff_element_id' => $element->id,
             'tariff_price_component_id' => $priceComponents->id,
         ]);
     }
