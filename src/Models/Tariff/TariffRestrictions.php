@@ -22,5 +22,12 @@ use Illuminate\Database\Eloquent\Model;
 class TariffRestrictions extends Model
 {
     protected $guarded = [];
-    protected $table = 'tariff_restrictions';
+
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('ocpi.database.table.prefix') . 'tariff_restrictions';
+    }
 }

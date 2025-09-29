@@ -13,6 +13,16 @@ class TariffsParties extends Model
      */
     public $timestamps = false;
 
+    protected $guarded = [];
+
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('ocpi.database.table.prefix') . 'tariffs_parties';
+    }
+
     /**
      * @return HasMany
      */

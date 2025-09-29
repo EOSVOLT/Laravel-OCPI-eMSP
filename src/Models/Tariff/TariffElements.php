@@ -17,6 +17,14 @@ class TariffElements extends Model
     protected $table = 'tariff_elements';
 
     /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('ocpi.database.table.prefix') . 'tariff_elements';
+    }
+
+    /**
      * @return BelongsTo
      */
     public function tariff(): BelongsTo

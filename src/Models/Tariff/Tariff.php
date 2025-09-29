@@ -33,6 +33,15 @@ class Tariff extends Model
 
     protected $guarded = [];
 
+    /**
+     * @return string
+     */
+    public function getTable(): string
+    {
+        return config('ocpi.database.table.prefix') . 'tariffs';
+    }
+
+
     protected function casts(): array
     {
         return [
