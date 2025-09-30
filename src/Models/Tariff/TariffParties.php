@@ -19,7 +19,7 @@ class TariffParties extends Model
      */
     public function getTable(): string
     {
-        return config('ocpi.database.table.prefix').'tariffs_parties';
+        return config('ocpi.database.table.prefix').'tariff_parties';
     }
 
     /**
