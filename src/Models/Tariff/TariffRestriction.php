@@ -5,6 +5,7 @@ namespace Ocpi\Models\Tariff;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @property int $id
  * @property ?string $start_time
  * @property ?string $end_time
  * @property ?string $start_date

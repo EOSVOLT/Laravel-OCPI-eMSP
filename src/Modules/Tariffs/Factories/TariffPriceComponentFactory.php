@@ -17,7 +17,7 @@ class TariffPriceComponentFactory
     public static function fromModel(TariffPriceComponents $model): PriceComponent
     {
         return new PriceComponent(
-            $model->type,
+            $model->dimension_type,
             $model->price,
             $model->step_size
         )->setVat($model->vat);
