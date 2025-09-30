@@ -11,8 +11,7 @@ class TariffFactory
 {
     public static function fromModel(Tariff $model): \Ocpi\Modules\Tariffs\Objects\Tariff
     {
-        $party = $model->parties->first();
-        $role = $party->roles->where('role', Role::CPO)->first();
+        $role = $model->party->role_cpo;
         return new \Ocpi\Modules\Tariffs\Objects\Tariff(
             $role->country_code,
             $role->code,

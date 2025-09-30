@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create(config('ocpi.database.table.prefix') . 'tariffs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('party_id')->constrained(config('ocpi.database.table.prefix') . 'parties')->cascadeOnDelete();
             $table->string('external_id', 36);
             $table->string('currency', 3);
             $table->string('type')->nullable();
@@ -119,11 +120,6 @@ return new class extends Migration {
                 $table->unique(['tariff_element_id', 'tariff_price_component_id'],'tariff_element_price_components_unique');
             }
         );
-        Schema::create(config('ocpi.database.table.prefix') . 'tariff_parties', function (Blueprint $table) {
-            $table->foreignId('tariff_id')->constrained(config('ocpi.database.table.prefix') . 'tariffs', 'id')->onDelete('restrict');
-            $table->foreignId('party_id')->constrained(config('ocpi.database.table.prefix') . 'parties', 'id')->onDelete('restrict');
-            $table->unique(['tariff_id', 'party_id'], 'tariff_parties_unique');
-        });
     }
 
     /**
@@ -137,7 +133,6 @@ return new class extends Migration {
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_restrictions');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_elements');
         Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_element_price_components');
-        Schema::dropIfExists(config('ocpi.database.table.prefix') . 'tariff_parties');
         Schema::enableForeignKeyConstraints();
     }
 };
