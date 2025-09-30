@@ -37,7 +37,7 @@ class TariffElement extends Model
      */
     public function restriction(): HasOne
     {
-        return $this->hasOne(TariffRestriction::class, 'tariff_restriction_id', 'id');
+        return $this->hasOne(TariffRestriction::class, 'id', 'tariff_restriction_id');
     }
 
     /**
@@ -48,10 +48,10 @@ class TariffElement extends Model
         return $this->hasManyThrough(
             TariffPriceComponents::class,
             TariffElementPriceComponents::class,
-            'tariff_element_id',
-            'tariff_price_component_id',
             'id',
-            'id'
+            'id',
+            'tariff_element_id',
+            'tariff_price_component_id'
         );
     }
 }
