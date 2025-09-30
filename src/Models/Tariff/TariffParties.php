@@ -27,7 +27,7 @@ class TariffParties extends Model
      */
     public function party(): HasMany
     {
-        return $this->hasMany(Party::class, 'id', 'party_id');
+        return $this->hasMany(Party::class, 'party_id', 'id');
     }
 
     /**
@@ -35,6 +35,6 @@ class TariffParties extends Model
      */
     public function tariff(): HasMany
     {
-        return $this->hasMany(Tariff::class, 'id', 'tariff_id');
+        return $this->hasMany(Tariff::class, 'tariff_id', 'id');
     }
 }
