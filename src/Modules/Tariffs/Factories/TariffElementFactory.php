@@ -2,6 +2,7 @@
 
 namespace Ocpi\Modules\Tariffs\Factories;
 
+use Illuminate\Support\Collection;
 use Ocpi\Models\Tariff\TariffElement as TariffElementModel;
 use Ocpi\Modules\Tariffs\Objects\TariffElement;
 use Ocpi\Modules\Tariffs\Objects\TariffElementCollection;
@@ -15,7 +16,7 @@ class TariffElementFactory
         )->setRestrictions(TariffRestrictionFactory::fromModel($model->restriction));
     }
 
-    public static function fromCollection(TariffElementModel $collection): TariffElementCollection
+    public static function fromCollection(Collection $collection): TariffElementCollection
     {
         $elements = new TariffElementCollection();
         foreach ($collection as $element) {
