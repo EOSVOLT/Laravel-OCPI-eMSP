@@ -6,7 +6,7 @@ use Ocpi\Modules\Tariffs\Objects\Price;
 
 class PriceFactory
 {
-    public static function fromData(float $priceExclVat, float $priceInclVat): Price
+    public static function fromData(float $priceExclVat, ?float $priceInclVat = null): Price
     {
         return new Price(
             $priceExclVat,
