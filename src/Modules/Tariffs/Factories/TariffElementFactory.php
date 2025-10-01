@@ -11,9 +11,11 @@ class TariffElementFactory
 {
     public static function fromModel(TariffElementModel $model): TariffElement
     {
-        return new TariffElement(
-            TariffPriceComponentFactory::fromCollection($model->priceComponents),
-        )->setRestrictions(null !== $model->restriction ? TariffRestrictionFactory::fromModel($model->restriction) : null);
+        $element = new TariffElement(TariffPriceComponentFactory::fromCollection($model->priceComponents));
+        if (null !== $model->restriction) {
+            $element->setRestrictions(TariffRestrictionFactory::fromModel($model->restriction));
+        }
+        return $element;
     }
 
     public static function fromCollection(Collection $collection): TariffElementCollection
