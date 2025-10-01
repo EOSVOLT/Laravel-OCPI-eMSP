@@ -4,7 +4,7 @@ namespace Ocpi\Modules\Tariffs\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 
-class TariffRestrictions implements Arrayable
+class TariffRestriction implements Arrayable
 {
     /**
      * @var string|null
@@ -58,6 +58,14 @@ class TariffRestrictions implements Arrayable
      * @var array
      */
     private array $dayOfWeek = [];
+
+    /**
+     * @param int $id
+     */
+    public function __construct(
+        private readonly int $id,
+    ) {
+    }
 
     /**
      * @return string|null
@@ -307,24 +315,33 @@ class TariffRestrictions implements Arrayable
     }
 
     /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
     {
         return [
-            'start_time' => $this->startTime,
-            'end_time' => $this->endTime,
-            'start_date' => $this->startDate,
-            'end_date' => $this->endDate,
-            'min_kwh' => $this->minKwh,
-            'max_kwh' => $this->maxKwh,
-            'min_current' => $this->minCurrent,
-            'max_current' => $this->maxCurrent,
-            'min_power' => $this->minPower,
-            'max_power' => $this->maxPower,
-            'min_duration' => $this->minDuration,
-            'max_duration' => $this->maxDuration,
-            'day_of_week' => $this->dayOfWeek,
+            'id' => $this->getId(),
+            'start_time' => $this->getStartTime(),
+            'end_time' => $this->getEndTime(),
+            'start_date' => $this->getStartDate(),
+            'end_date' => $this->getEndDate(),
+            'min_kwh' => $this->getMinKwh(),
+            'max_kwh' => $this->getMaxKwh(),
+            'min_current' => $this->getMinCurrent(),
+            'max_current' => $this->getMaxCurrent(),
+            'min_power' => $this->getMinPower(),
+            'max_power' => $this->getMaxPower(),
+            'min_duration' => $this->getMinDuration(),
+            'max_duration' => $this->getMaxDuration(),
+            'day_of_week' => $this->getDayOfWeek(),
         ];
     }
 }

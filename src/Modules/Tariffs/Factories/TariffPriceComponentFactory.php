@@ -4,19 +4,20 @@ namespace Ocpi\Modules\Tariffs\Factories;
 
 use Illuminate\Support\Collection;
 use Ocpi\Models\Tariff\TariffPriceComponents;
-use Ocpi\Modules\Tariffs\Objects\PriceComponent;
-use Ocpi\Modules\Tariffs\Objects\PriceComponentCollection;
+use Ocpi\Modules\Tariffs\Objects\TariffPriceComponent;
+use Ocpi\Modules\Tariffs\Objects\TariffPriceComponentCollection;
 
 class TariffPriceComponentFactory
 {
     /**
      * @param TariffPriceComponents $model
      *
-     * @return PriceComponent
+     * @return TariffPriceComponent
      */
-    public static function fromModel(TariffPriceComponents $model): PriceComponent
+    public static function fromModel(TariffPriceComponents $model): TariffPriceComponent
     {
-        return new PriceComponent(
+        return new TariffPriceComponent(
+            $model->id,
             $model->dimension_type,
             $model->price,
             $model->step_size
@@ -26,11 +27,11 @@ class TariffPriceComponentFactory
     /**
      * @param Collection $collection
      *
-     * @return PriceComponentCollection
+     * @return TariffPriceComponentCollection
      */
-    public static function fromCollection(Collection $collection): PriceComponentCollection
+    public static function fromCollection(Collection $collection): TariffPriceComponentCollection
     {
-        $priceComponents = new PriceComponentCollection();
+        $priceComponents = new TariffPriceComponentCollection();
         foreach ($collection as $component) {
             $priceComponents->add(self::fromModel($component));
         }

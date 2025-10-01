@@ -12,6 +12,7 @@ class TariffFactory
     {
         $role = $model->party->role_cpo;
         $tariff = new \Ocpi\Modules\Tariffs\Objects\Tariff(
+            $model->id,
             $role->country_code,
             $role->code,
             $model->external_id,

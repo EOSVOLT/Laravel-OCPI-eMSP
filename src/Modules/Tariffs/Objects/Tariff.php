@@ -44,6 +44,7 @@ class Tariff implements Arrayable
     private ?EnergyMix $energyMix = null;
 
     /**
+     * @param int $id
      * @param string $countryCode
      * @param string $party_code
      * @param string $external_id
@@ -52,6 +53,7 @@ class Tariff implements Arrayable
      * @param Carbon $lastUpdated
      */
     public function __construct(
+        private readonly int $id,
         private readonly string $countryCode,
         private readonly string $party_code,
         private readonly string $external_id,
@@ -262,26 +264,32 @@ class Tariff implements Arrayable
         return $this->lastUpdated;
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     /**
      * @return array
      */
     public function toArray(): array
     {
         return [
-            'country_code' => $this->countryCode,
-            'party_code' => $this->party_code,
-            'external_id' => $this->external_id,
-            'currency' => $this->currency,
-            'type' => $this->type->name,
-            'tariff_alt_text' => $this->tariff_alt_text?->toArray(),
-            'tariff_alt_url' => $this->tariff_alt_url,
-            'min_price' => $this->minPrice?->toArray(),
-            'max_price' => $this->maxPrice?->toArray(),
-            'elements' => $this->elements->toArray(),
-            'start_date_time' => $this->startDateTime?->toIso8601String(),
-            'end_date_time' => $this->endDateTime?->toIso8601String(),
-            'energy_mix' => $this->energyMix?->toArray(),
-            'last_updated' => $this->lastUpdated->toISOString(),
+            'id' => $this->getId(),
+            'country_code' => $this->getCountryCode(),
+            'party_code' => $this->getPartyCode(),
+            'external_id' => $this->getExternalId(),
+            'currency' => $this->getCurrency(),
+            'type' => $this->getType()?->value,
+            'tariff_alt_text' => $this->getTariffAltText()?->toArray(),
+            'tariff_alt_url' => $this->getTariffAltUrl(),
+            'min_price' => $this->getMinPrice()?->toArray(),
+            'max_price' => $this->getMaxPrice()?->toArray(),
+            'elements' => $this->getElements()->toArray(),
+            'start_date_time' => $this->getStartDateTime()?->toISOString(),
+            'end_date_time' => $this->getEndDateTime()?->toISOString(),
+            'energy_mix' => $this->getEnergyMix()?->toArray(),
+            'last_updated' => $this->getLastUpdated()->toISOString(),
         ];
     }
 }

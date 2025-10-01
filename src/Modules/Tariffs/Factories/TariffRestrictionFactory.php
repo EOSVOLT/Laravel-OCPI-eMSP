@@ -7,9 +7,9 @@ use Ocpi\Models\Tariff\TariffRestriction;
 
 class TariffRestrictionFactory
 {
-    public static function fromModel(TariffRestriction $model): \Ocpi\Modules\Tariffs\Objects\TariffRestrictions
+    public static function fromModel(TariffRestriction $model): \Ocpi\Modules\Tariffs\Objects\TariffRestriction
     {
-        return new \Ocpi\Modules\Tariffs\Objects\TariffRestrictions()
+        return new \Ocpi\Modules\Tariffs\Objects\TariffRestriction($model->id)
             ->setStartTime($model->start_time)
             ->setEndTime($model->end_time)
             ->setStartDate($model->start_date)

@@ -6,34 +6,62 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class TariffElement implements Arrayable
 {
-    private ?TariffRestrictions $restrictions = null;
+    private ?TariffRestriction $restrictions = null;
+
+    /**
+     * @param int $id
+     * @param TariffPriceComponentCollection $priceComponents
+     */
     public function __construct(
-        private readonly PriceComponentCollection $priceComponents,
-    )
-    {
+        private readonly int $id,
+        private readonly TariffPriceComponentCollection $priceComponents,
+    ) {
     }
 
-    public function getPriceComponents(): PriceComponentCollection
+    /**
+     * @return TariffPriceComponentCollection
+     */
+    public function getPriceComponents(): TariffPriceComponentCollection
     {
         return $this->priceComponents;
     }
 
-    public function getRestrictions(): ?TariffRestrictions
+    /**
+     * @return TariffRestriction|null
+     */
+    public function getRestrictions(): ?TariffRestriction
     {
         return $this->restrictions;
     }
 
-    public function setRestrictions(TariffRestrictions $restrictions): self
+    /**
+     * @param TariffRestriction $restrictions
+     *
+     * @return $this
+     */
+    public function setRestrictions(TariffRestriction $restrictions): self
     {
         $this->restrictions = $restrictions;
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return [
-            'price_components' => $this->priceComponents->toArray(),
-            'restrictions' => $this->restrictions?->toArray(),
+            'id' => $this->getId(),
+            'price_components' => $this->getPriceComponents()->toArray(),
+            'restrictions' => $this->getRestrictions()?->toArray(),
         ];
     }
 }

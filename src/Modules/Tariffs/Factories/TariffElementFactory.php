@@ -11,7 +11,7 @@ class TariffElementFactory
 {
     public static function fromModel(TariffElementModel $model): TariffElement
     {
-        $element = new TariffElement(TariffPriceComponentFactory::fromCollection($model->priceComponents));
+        $element = new TariffElement($model->id, TariffPriceComponentFactory::fromCollection($model->priceComponents));
         if (null !== $model->restriction) {
             $element->setRestrictions(TariffRestrictionFactory::fromModel($model->restriction));
         }
