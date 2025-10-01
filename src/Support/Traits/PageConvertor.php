@@ -6,6 +6,6 @@ trait PageConvertor
 {
     public static function fromOffset(int $offset, int $limit): int
     {
-        return $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
+        return (int)floor($offset / $limit) + 1;
     }
 }
