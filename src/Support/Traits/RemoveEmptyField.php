@@ -6,11 +6,21 @@ trait RemoveEmptyField
 {
     public static function removeEmptyField(array $data): array
     {
-        return array_filter($data, function ($value) {
-            if (null === $value || $value === []) {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = self::removeEmptyField($value);
+            }
+        }
+
+        // Then, filter out nulls and empty arrays
+        return array_filter($data, static function ($value) {
+            if ($value === null) {
                 return false;
             }
-            return true;
+            if (is_array($value)) {
+                return $value !== []; // keep only non-empty arrays
+            }
+            return true; // keep scalars
         });
     }
 }
