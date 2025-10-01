@@ -22,6 +22,6 @@ class TariffRestrictionFactory
             ->setMaxPower($model->max_power)
             ->setMinDuration($model->min_duration)
             ->setMaxDuration($model->max_duration)
-            ->setDayOfWeek($model->day_of_week);
+            ->setDayOfWeek($model->day_of_week ?? []);
     }
 }
