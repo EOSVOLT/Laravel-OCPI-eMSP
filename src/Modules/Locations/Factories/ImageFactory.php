@@ -2,6 +2,7 @@
 
 namespace Ocpi\Modules\Locations\Factories;
 
+use Ocpi\Modules\Locations\Enums\ImageCategory;
 use Ocpi\Modules\Locations\Objects\Image;
 use Ocpi\Modules\Locations\Objects\ImageCollection;
 
@@ -11,8 +12,8 @@ class ImageFactory
     {
         return new Image(
             $image['url'],
+            ImageCategory::tryFrom($image['category']),
             $image['type'],
-            $image['category'],
         );
     }
 

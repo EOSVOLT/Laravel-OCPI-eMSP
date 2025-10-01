@@ -59,7 +59,7 @@ class PostController extends Controller
                         $partyToken
                     ) {
                         // Create client parties from payload
-                        $tokenB = GeneratorHelper::decodeToken($input['token'], $parentParty->version);
+                        $tokenB = $input['token'];
                         $url = $input['url'];
                         foreach ($request->input('roles') as $role) {
                             $partyCode = new PartyCode($role['party_id'], $role['country_code']);
@@ -82,7 +82,7 @@ class PostController extends Controller
                                 $childrenPartyToken->fill([
                                     'token' => $tokenB,
                                     'registered' => true,
-                                    'name' => $tokenName.'_'.$partyCode->getCodeFormatted()
+                                    'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
                                 ]);
                                 $childrenParty->tokens()->save($childrenPartyToken);
                                 // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.

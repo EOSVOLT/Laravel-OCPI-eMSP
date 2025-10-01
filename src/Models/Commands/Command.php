@@ -11,6 +11,15 @@ use Ocpi\Models\Commands\Enums\CommandType;
 use Ocpi\Models\PartyRole;
 use Ocpi\Support\Models\Model;
 
+/**
+ * @property PartyRole $party_role
+ * @property int $party_role_id
+ * @property string $id
+ * @property CommandType $type
+ * @property array|null $payload
+ * @property CommandResponseType|null $response
+ * @property CommandResultType|null $result
+ */
 class Command extends Model
 {
     use HasUlids;
@@ -28,7 +37,7 @@ class Command extends Model
     {
         return [
             'type' => CommandType::class,
-            'payload' => AsArrayObject::class,
+            'payload' => 'array',
             'response' => CommandResponseType::class,
             'result' => CommandResultType::class,
         ];

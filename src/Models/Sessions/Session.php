@@ -6,10 +6,20 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\PartyRole;
 use Ocpi\Support\Models\Model;
 
+/**
+ * @property int $id
+ * @property string $session_id
+ * @property int $party_role_id
+ * @property PartyRole $party_role
+ * @property int $location_id
+ * @property Location $location
+ * @property array $object
+ */
 class Session extends Model
 {
     use HasVersion7Uuids,
@@ -27,7 +37,7 @@ class Session extends Model
     protected function casts(): array
     {
         return [
-            'object' => AsArrayObject::class,
+            'object' => 'array',
         ];
     }
 

@@ -61,7 +61,7 @@ class PutController extends Controller
                             $child->roles()->delete();
                         });
 
-                        $newServerToken = GeneratorHelper::decodeToken($input['token'], $parentParty->version);
+                        $newServerToken = $input['token'];
                         $newUrl = $input['url'];
                         // update children parties from payload
                         $partyCode = new PartyCode($request->input('party_id'), $request->input('country_code'));

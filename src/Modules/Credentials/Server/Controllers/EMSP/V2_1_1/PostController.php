@@ -50,7 +50,7 @@ class PostController extends Controller
 
             $parentParty = DB::connection(config('ocpi.database.connection'))
                 ->transaction(function () use ($parentParty, $request, $input, $versionsPartyInformationAndDetailsSynchronizeAction) {
-                    $serverToken = GeneratorHelper::decodeToken($input['token'], $parentParty->version);
+                    $serverToken = $input['token'];
                     $url = $input['url'];
                     $partyCode = new PartyCode($request->input('party_id'), $request->input('country_code'));
                     $childrenParty = $parentParty->children()->where('code', $partyCode->getCodeFormatted())->first();

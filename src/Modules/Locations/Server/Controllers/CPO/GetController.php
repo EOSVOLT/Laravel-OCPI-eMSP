@@ -70,8 +70,10 @@ class GetController extends Controller
      */
     public function location(string $locationId): JsonResponse
     {
+        $party = Context::getHidden('party');
         $location = Location::query()
             ->with(['party.role_cpo', 'evses.connectors'])
+            ->where('party_id', $party->getId())
             ->where('external_id', $locationId)
             ->first();
         if (null !== $location) {
@@ -92,10 +94,12 @@ class GetController extends Controller
      */
     public function evse(string $locationId, string $evseUid): JsonResponse
     {
+        $party = Context::getHidden('party');
         $evse = LocationEvse::query()
             ->with(['location.party.role_cpo', 'connectors'])
-            ->whereHas('location', function (Builder $query) use ($locationId) {
-                $query->where('external_id', $locationId);
+            ->whereHas('location', function (Builder $query) use ($locationId, $party) {
+                $query->where('external_id', $locationId)
+                    ->where('party_id', $party->getId());
             })
             ->where('uid', $evseUid)
             ->first();
@@ -117,10 +121,14 @@ class GetController extends Controller
      */
     public function connector(string $locationId, string $evseUid, string $connectorId): JsonResponse
     {
+        $party = Context::getHidden('party');
         $connector = LocationConnector::query()
-            ->with(['evse'])
-            ->whereHas('evse', function (Builder $query) use ($locationId, $evseUid) {
+            ->with(['evse.location'])
+            ->whereHas('evse', function (Builder $query) use ($locationId, $evseUid, $party) {
                 $query->validEvse();
+                $query->whereHas('location', function (Builder $query) use ($locationId, $party) {
+                    $query->where('party_id', $party->getId());
+                });
             })
             ->first();
         if (null !== $connector) {
