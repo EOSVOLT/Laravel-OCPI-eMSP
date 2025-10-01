@@ -39,7 +39,7 @@ class GetController extends Controller
         )->startOfDay();
         $dateTo = $request->input('date_to') ? Carbon::parse($request->input('date_to')) : Carbon::now();
         $party = Context::getHidden('party');
-        $page = $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
+        $page = (int)floor($offset / $limit) + 1;
         $location = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
