@@ -121,6 +121,6 @@ trait Response
         $query['limit'] = $perPage;
         array_merge($query, Request::capture()->query->all());
         $basePath = config('app.url') . '/' . $endpoint;
-        return $basePath . '?' . http_build_query($query);
+        return "<".$basePath . '?' . http_build_query($query).">; rel=\"next\"";
     }
 }
