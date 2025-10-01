@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property int $tariff_id
  * @property int $tariff_restriction_id
+ * @property null|TariffRestriction $restriction
  */
 class TariffElement extends Model
 {

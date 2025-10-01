@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class TariffElement implements Arrayable
 {
-    private TariffRestrictions $restrictions;
+    private ?TariffRestrictions $restrictions = null;
     public function __construct(
         private readonly PriceComponentCollection $priceComponents,
     )
@@ -18,7 +18,7 @@ class TariffElement implements Arrayable
         return $this->priceComponents;
     }
 
-    public function getRestrictions(): TariffRestrictions
+    public function getRestrictions(): ?TariffRestrictions
     {
         return $this->restrictions;
     }
@@ -33,7 +33,7 @@ class TariffElement implements Arrayable
     {
         return [
             'price_components' => $this->priceComponents->toArray(),
-            'restrictions' => $this->restrictions->toArray(),
+            'restrictions' => $this->restrictions?->toArray(),
         ];
     }
 }
