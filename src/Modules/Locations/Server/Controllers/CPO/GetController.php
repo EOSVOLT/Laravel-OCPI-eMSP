@@ -26,7 +26,7 @@ class GetController extends Controller
 {
     use HandlesLocation;
     use PageConvertor;
-    public function __invoke(
+    public function list(
         Request $request,
     ): JsonResponse {
         $offset = $request->input('offset', 0);
