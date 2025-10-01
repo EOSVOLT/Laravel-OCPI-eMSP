@@ -12,8 +12,8 @@ class ImageFactory
     {
         return new Image(
             $image['url'],
-            ImageCategory::tryFrom($image['type']),
-            $image['category'],
+            ImageCategory::tryFrom($image['category']),
+            $image['type'],
         );
     }
 
