@@ -49,9 +49,9 @@ class TariffElement extends Model
         return $this->hasManyThrough(
             TariffPriceComponents::class,
             TariffElementPriceComponents::class,
-            'id',
-            'id',
             'tariff_element_id',
+            'id',
+            'id',
             'tariff_price_component_id'
         );
     }
