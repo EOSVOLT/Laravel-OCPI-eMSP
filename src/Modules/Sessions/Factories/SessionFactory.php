@@ -48,7 +48,7 @@ class SessionFactory
             ChargingPeriodFactory::collectionFromArray($data['charging_periods']),
             PriceFactory::fromArray($data['total_cost']),
             SessionStatus::tryFrom($data['status']),
-            Carbon::createFromTimeString($data['last_updated ']),
+            Carbon::createFromTimeString($data['last_updated']),
         );
     }
 }
