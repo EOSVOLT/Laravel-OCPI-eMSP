@@ -24,7 +24,7 @@ class PostController extends Controller
         try {
             return match ($commandType) {
                 CommandType::START_SESSION => $this->remoteStartTransaction($request),
-                CommandType::STOP_SESSION => $this->remoteStopTransaction(),
+                CommandType::STOP_SESSION => $this->remoteStopTransaction($request),
                 CommandType::CANCEL_RESERVATION,
                 CommandType::RESERVE_NOW,
                 CommandType::UNLOCK_CONNECTOR => $this->ocpiServerErrorResponse(statusMessage: 'To be implemented')
@@ -36,6 +36,34 @@ class PostController extends Controller
     }
 
     private function remoteStartTransaction(Request $request): JsonResponse
+    {
+        $token = CommandTokenFactory::fromArray($request->input('token'));
+        if (TokenType::RFID === $token->getType()) {
+            return $this->ocpiServerErrorResponse(statusMessage: 'RFID is not support yet.');
+        }
+
+        try {
+            $partyRole = PartyRole::query()
+                ->where('code', $token->getPartyCode())
+                ->where('country_code', $token->getCountryCode())
+                ->first();
+
+            $payload = $request->toArray();
+            $command = Command::query()->create([
+                'party_role_id' => $partyRole->id,
+                'type' => CommandType::START_SESSION,
+                'payload' => $payload,
+            ]);
+
+            CommandRemoteStartTransaction::dispatch($command->id);
+            return $this->ocpiCommandAcceptedResponse();
+        } catch (Exception $e) {
+            Log::channel('ocpi')->error($e->getMessage());
+            return $this->ocpiServerErrorResponse();
+        }
+    }
+
+    private function remoteStopTransaction(Request $request): JsonResponse
     {
         try {
             //@todo request class with validation the request for each commandType
@@ -50,16 +78,6 @@ class PostController extends Controller
 
             CommandRemoteStopTransaction::dispatch($command->id, $request->input('session_id'));
             return $this->ocpiCommandAcceptedResponse();
-        } catch (Exception $e) {
-            Log::channel('ocpi')->error($e->getMessage());
-            return $this->ocpiServerErrorResponse();
-        }
-    }
-
-    private function remoteStopTransaction(): JsonResponse
-    {
-        try {
-
         } catch (Exception $e) {
             Log::channel('ocpi')->error($e->getMessage());
             return $this->ocpiServerErrorResponse();

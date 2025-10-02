@@ -2,13 +2,13 @@
 
 namespace Ocpi\Models\Sessions;
 
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\PartyRole;
+use Ocpi\Support\Enums\SessionStatus;
 use Ocpi\Support\Models\Model;
 
 /**
@@ -19,6 +19,7 @@ use Ocpi\Support\Models\Model;
  * @property int $location_id
  * @property Location $location
  * @property array $object
+ * @property SessionStatus $status
  */
 class Session extends Model
 {
@@ -32,12 +33,14 @@ class Session extends Model
         'location_evse_emsp_id',
         'id',
         'object',
+        'status',
     ];
 
     protected function casts(): array
     {
         return [
             'object' => 'array',
+            'status' => SessionStatus::class,
         ];
     }
 

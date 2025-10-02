@@ -4,6 +4,8 @@ namespace Ocpi\Modules\Sessions\Traits;
 
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Sessions\Events;
+use Ocpi\Support\Enums\Invoker;
+use Ocpi\Support\Enums\SessionStatus;
 
 trait HandlesSession
 {
@@ -15,25 +17,26 @@ trait HandlesSession
             ->first();
     }
 
-    private function sessionCreate(array $payload, int $party_role_id, string $session_id, ?string $location_evse_emsp_id): bool
+    private function sessionCreate(array $payload, int $party_role_id, string $session_id, ?string $location_id): bool
     {
         if (($payload['id'] ?? null) === null || $payload['id'] !== $session_id) {
             return false;
         }
-
+        $status = SessionStatus::tryFrom($payload['status']);
         $session = new Session;
         $session->fill([
             'party_role_id' => $party_role_id,
-            'location_evse_emsp_id' => $location_evse_emsp_id,
+            'location_id' => $location_id,
             'id' => $session_id,
             'object' => $payload,
+            'status' => $status,
         ]);
 
         if (! $session->save()) {
             return false;
         }
 
-        Events\SessionCreated::dispatch($party_role_id, $session->id, $payload);
+        Events\SessionCreated::dispatch($session->id);
 
         return true;
     }

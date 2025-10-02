@@ -9,9 +9,20 @@ class SessionCreated implements ShouldDispatchAfterCommit
 {
     use Dispatchable;
 
+    /**
+     * @param string $id
+     */
     public function __construct(
-        public int $party_role_id,
-        public string $id,
-        public mixed $payload,
-    ) {}
+        private readonly string $id,
+    ) {
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
 }
