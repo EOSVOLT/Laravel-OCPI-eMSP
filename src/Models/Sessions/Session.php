@@ -29,7 +29,7 @@ class Session extends Model
     protected $fillable = [
         'party_role_id',
         'location_id',
-        'id',
+        'session_id',
         'object',
         'status',
     ];
