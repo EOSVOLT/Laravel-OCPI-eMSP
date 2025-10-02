@@ -11,7 +11,7 @@ Route::middleware([
     ->name('locations')
     ->group(function () {
         Route::get('', [GetController::class, 'list']);
-        Route::get('{locationId}', [GetController::class, 'location']);
-        Route::get('{locationId}/{evseUid}', [GetController::class, 'evse']);
-        Route::get('{locationId}/{evseUid}/{connectorId}', [GetController::class, 'connector']);
+        Route::get('{locationId}', [GetController::class, 'location'])->name('.get-by-id');
+        Route::get('{locationId}/{evseUid}', [GetController::class, 'evse'])->name('.get-by-evse-id');
+        Route::get('{locationId}/{evseUid}/{connectorId}', [GetController::class, 'connector'])->name('.get-by-connector-id');
     });
