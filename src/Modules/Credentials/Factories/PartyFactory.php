@@ -36,21 +36,6 @@ class PartyFactory
         );
     }
 
-    private static function roleRelation(\Ocpi\Models\Party $party): ?PartyRoleCollection
-    {
-        $roleCollection = null;
-        if ($party->relationLoaded('roles')) {
-            $roleCollection = new PartyRoleCollection();
-            foreach ($party->roles as $role) {
-                $roleCollection->add(PartyRoleFactory::fromModel($role));
-            }
-        } elseif ($party->relationLoaded('role_cpo')) {
-            $roleCollection = new PartyRoleCollection();
-            $roleCollection->add(PartyRoleFactory::fromModel($party->role_cpo));
-        }
-        return $roleCollection;
-    }
-
     /**
      * @param Collection|LengthAwarePaginator $collection
      * @return PartyCollection
@@ -67,5 +52,22 @@ class PartyFactory
             $parties->append(self::fromModel($party));
         }
         return $parties;
+    }
+
+    private static function roleRelation(\Ocpi\Models\Party $party): ?PartyRoleCollection
+    {
+        $roleCollection = new PartyRoleCollection();
+        if ($party->relationLoaded('role_cpo')) {
+            $roleCollection->add(PartyRoleFactory::fromModel($party->role_cpo));
+        } else {
+            if (false === $party->relationLoaded('roles')) {
+                $party->load('roles');
+            }
+            foreach ($party->roles as $role) {
+                $roleCollection->add(PartyRoleFactory::fromModel($role));
+            }
+        }
+
+        return $roleCollection;
     }
 }

@@ -5,6 +5,7 @@ namespace Ocpi\Modules\Commands\Server\Controllers\CPO\V2_2_1;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Context;
 use Log;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\Commands\Enums\CommandType;
@@ -13,6 +14,7 @@ use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStartTransaction;
 use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStopTransaction;
 use Ocpi\Modules\Commands\Factories\CommandTokenFactory;
+use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -41,16 +43,15 @@ class PostController extends Controller
         if (TokenType::RFID === $token->getType()) {
             return $this->ocpiServerErrorResponse(statusMessage: 'RFID is not support yet.');
         }
-
+        /** @var Party $party */
+        $party = Context::get('party');
         try {
-            $partyRole = PartyRole::query()
-                ->where('code', $token->getPartyCode())
-                ->where('country_code', $token->getCountryCode())
-                ->first();
+            /** @var \Ocpi\Modules\Credentials\Object\PartyRole $partyRole */
+            $partyRole = $party->getRoles()->first();
 
             $payload = $request->toArray();
             $command = Command::query()->create([
-                'party_role_id' => $partyRole->id,
+                'party_role_id' => $partyRole->getId(),
                 'type' => CommandType::START_SESSION,
                 'payload' => $payload,
             ]);
