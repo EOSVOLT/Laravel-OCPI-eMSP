@@ -1,11 +1,11 @@
 <?php
 
-namespace Ocpi\Modules\Cdrs\Objects;
+namespace Ocpi\Modules\Cdrs\DTO;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Locations\Enums\TokenType;
 
-readonly class CdrToken implements Arrayable
+readonly class CdrTokenDTO implements Arrayable
 {
     /**
      * @param string $countryCode

@@ -1,21 +1,21 @@
 <?php
 
-namespace Ocpi\Modules\Cdrs\Objects;
+namespace Ocpi\Modules\Cdrs\DTO;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
 
-readonly class ChargingPeriod implements Arrayable
+readonly class ChargingPeriodDTO implements Arrayable
 {
 
     /**
      * @param Carbon $startDate
-     * @param CdrDimensionCollection $dimensions
+     * @param CdrDimensionDTOCollection $dimensions
      * @param string $tariffId
      */
     public function __construct(
         private Carbon $startDate,
-        private CdrDimensionCollection $dimensions,
+        private CdrDimensionDTOCollection $dimensions,
         private string $tariffId)
     {
     }
@@ -29,9 +29,9 @@ readonly class ChargingPeriod implements Arrayable
     }
 
     /**
-     * @return CdrDimensionCollection
+     * @return CdrDimensionDTOCollection
      */
-    public function getDimensions(): CdrDimensionCollection
+    public function getDimensions(): CdrDimensionDTOCollection
     {
         return $this->dimensions;
     }

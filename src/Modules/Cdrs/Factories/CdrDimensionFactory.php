@@ -2,19 +2,19 @@
 
 namespace Ocpi\Modules\Cdrs\Factories;
 
-use Ocpi\Modules\Cdrs\Objects\CdrDimension;
-use Ocpi\Modules\Cdrs\Objects\CdrDimensionCollection;
+use Ocpi\Modules\Cdrs\DTO\CdrDimensionDTO;
+use Ocpi\Modules\Cdrs\DTO\CdrDimensionDTOCollection;
 use Ocpi\Support\Enums\CdrDimensionType;
 
 class CdrDimensionFactory
 {
     /**
      * @param array $data
-     * @return CdrDimensionCollection
+     * @return CdrDimensionDTOCollection
      */
-    public static function collectionFromArray(array $data): CdrDimensionCollection
+    public static function collectionFromArray(array $data): CdrDimensionDTOCollection
     {
-        $collection = new CdrDimensionCollection();
+        $collection = new CdrDimensionDTOCollection();
         foreach ($data as $datum) {
             $collection->append(self::fromArray($datum));
         }
@@ -23,11 +23,11 @@ class CdrDimensionFactory
 
     /**
      * @param array $data
-     * @return CdrDimension
+     * @return CdrDimensionDTO
      */
-    public static function fromArray(array $data): CdrDimension
+    public static function fromArray(array $data): CdrDimensionDTO
     {
-        return new CdrDimension(
+        return new CdrDimensionDTO(
             CdrDimensionType::tryFrom($data['type']),
             $data['volume']
         );

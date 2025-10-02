@@ -3,19 +3,19 @@
 namespace Ocpi\Modules\Cdrs\Factories;
 
 use Illuminate\Support\Carbon;
-use Ocpi\Modules\Cdrs\Objects\CdrDimensionCollection;
-use Ocpi\Modules\Cdrs\Objects\ChargingPeriod;
-use Ocpi\Modules\Cdrs\Objects\ChargingPeriodCollection;
+use Ocpi\Modules\Cdrs\DTO\CdrDimensionDTOCollection;
+use Ocpi\Modules\Cdrs\DTO\ChargingPeriodDTO;
+use Ocpi\Modules\Cdrs\DTO\ChargingPeriodDTOCollection;
 
 class ChargingPeriodFactory
 {
     /**
      * @param array $data
-     * @return ChargingPeriodCollection
+     * @return ChargingPeriodDTOCollection
      */
-    public static function collectionFromArray(array $data): ChargingPeriodCollection
+    public static function collectionFromArray(array $data): ChargingPeriodDTOCollection
     {
-        $collection = new ChargingPeriodCollection();
+        $collection = new ChargingPeriodDTOCollection();
         foreach ($data as $datum) {
             $collection->append(self::fromArray($datum));
         }
@@ -24,11 +24,11 @@ class ChargingPeriodFactory
 
     /**
      * @param array $data
-     * @return ChargingPeriod
+     * @return ChargingPeriodDTO
      */
-    public static function fromArray(array $data): ChargingPeriod
+    public static function fromArray(array $data): ChargingPeriodDTO
     {
-        return new ChargingPeriod(
+        return new ChargingPeriodDTO(
             Carbon::createFromTimeString($data['start_date_time']),
             CdrDimensionFactory::collectionFromArray($data['dimensions']),
             $data['tariff_id']

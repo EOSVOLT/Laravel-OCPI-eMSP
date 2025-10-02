@@ -2,18 +2,18 @@
 
 namespace Ocpi\Modules\Cdrs\Factories;
 
-use Ocpi\Modules\Cdrs\Objects\CdrToken;
+use Ocpi\Modules\Cdrs\DTO\CdrTokenDTO;
 use Ocpi\Modules\Locations\Enums\TokenType;
 
 class CdrTokenFactory
 {
     /**
      * @param array $data
-     * @return CdrToken
+     * @return CdrTokenDTO
      */
-    public static function fromArray(array $data): CdrToken
+    public static function fromArray(array $data): CdrTokenDTO
     {
-        return new CdrToken(
+        return new CdrTokenDTO(
             $data['country_code'],
             $data['party_id'],
             $data['uid'],
