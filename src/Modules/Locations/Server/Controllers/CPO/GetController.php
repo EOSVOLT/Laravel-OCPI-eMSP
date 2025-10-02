@@ -26,21 +26,27 @@ class GetController extends Controller
 {
     use HandlesLocation;
     use PageConvertor;
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
     public function list(
         Request $request,
     ): JsonResponse {
         $offset = $request->input('offset', 0);
         $limit = $request->input('limit', 20);
-        $dateFrom = $request->input('date_from') ? Carbon::parse($request->input('date_from')) : Carbon::now(
-        )->startOfDay();
-        $dateTo = $request->input('date_to') ? Carbon::parse($request->input('date_to')) : Carbon::now();
         $party = Context::getHidden('party');
         $page = self::fromOffset($offset, $limit);
         $location = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
-            ->where('updated_at', '>=', $dateFrom->toDateTimeString()) //inclusive
-            ->where('updated_at', '<', $dateTo->toDateTimeString()) //exclusive
+            ->when($request->input('date_from'), function ($query) use ($request) {
+                $query->where('updated_at', '>=', Carbon::parse($request->input('date_from')));
+            })
+            ->when($request->input('date_to'), function ($query) use ($request) {
+                $query->where('updated_at', '<', Carbon::parse($request->input('date_to')));
+            })
             ->where('publish', true)
             ->withHasValidEvses()
             ->paginate(
