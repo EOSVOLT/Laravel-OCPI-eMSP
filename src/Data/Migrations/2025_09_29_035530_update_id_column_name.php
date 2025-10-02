@@ -36,6 +36,10 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . "sessions", function (Blueprint $table) {
+            $table->dropPrimary();
+            $table->renameColumn('id', 'emsp_id');
+            $table->primary('emsp_id');
+
             $table->dropIndex('ocpi_sessions_session_id_index');
             $table->dropForeign('ocpi_sessions_party_role_id_foreign');
             $table->dropUnique(['party_role_id', 'session_id']);
@@ -47,10 +51,6 @@ return new class extends Migration {
                 ->references('id')
                 ->on(config('ocpi.database.table.prefix') . "party_roles")
                 ->onDelete('cascade');
-
-            $table->dropPrimary();
-            $table->renameColumn('id', 'emsp_id');
-            $table->uuid('emsp_id')->primary();
         });
     }
 };
