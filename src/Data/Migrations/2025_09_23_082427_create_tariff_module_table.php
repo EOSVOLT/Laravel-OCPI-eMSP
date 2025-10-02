@@ -55,7 +55,6 @@ return new class extends Migration {
             $table->json('day_of_week')->nullable();
             $table->string('reservation')->nullable();
             $table->timestamps();
-            $table->softDeletes();
             $table->unique([
                 'start_time',
                 'end_time',
@@ -80,7 +79,6 @@ return new class extends Migration {
             $table->decimal('vat', 20, 5)->nullable();
             $table->integer('step_size')->default(1);
             $table->timestamps();
-            $table->softDeletes();
 
             $table->unique(['dimension_type', 'price', 'vat', 'step_size'], 'tariff_price_components_unique');
         });
@@ -90,13 +88,12 @@ return new class extends Migration {
             $table->foreignId('tariff_id')->constrained(
                 config('ocpi.database.table.prefix') . 'tariffs',
                 'id'
-            )->onDelete('restrict');
+            )->cascadeOnDelete();
             $table->foreignId('tariff_restriction_id')->nullable()->constrained(
                 config('ocpi.database.table.prefix') . 'tariff_restrictions',
                 'id'
-            )->onDelete('restrict');
+            )->cascadeOnDelete();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->unique(['tariff_id', 'tariff_restriction_id'], 'tariff_elements_unique');
         });
@@ -108,14 +105,13 @@ return new class extends Migration {
                     config('ocpi.database.table.prefix') . 'tariff_elements',
                     'id',
                     'tariff_elements_id_foreign'
-                )->onDelete('restrict');
+                )->cascadeOnDelete();
                 $table->foreignId('tariff_price_component_id')->constrained(
                     config('ocpi.database.table.prefix') . 'tariff_price_components',
                     'id',
                     'tariff_price_component_id_foreign'
-                )->onDelete('restrict');
+                )->cascadeOnDelete();
                 $table->timestamps();
-                $table->softDeletes();
 
                 $table->unique(['tariff_element_id', 'tariff_price_component_id'],'tariff_element_price_components_unique');
             }
