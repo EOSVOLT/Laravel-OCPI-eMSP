@@ -5,7 +5,7 @@ namespace Ocpi\Modules\Sessions\Events\CPO;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class SessionCreated implements ShouldDispatchAfterCommit, CPOSessionEventInterface
+class SessionCreated implements ShouldDispatchAfterCommit, SenderSessionEventInterface
 {
     use Dispatchable;
 

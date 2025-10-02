@@ -2,7 +2,7 @@
 
 namespace Ocpi\Modules\Sessions\Events\CPO;
 
-interface CPOSessionEventInterface
+interface SenderSessionEventInterface
 {
 
 }

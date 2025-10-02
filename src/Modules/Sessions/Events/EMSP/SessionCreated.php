@@ -5,7 +5,7 @@ namespace Ocpi\Modules\Sessions\Events\EMSP;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class SessionCreated implements ShouldDispatchAfterCommit, EMSPSessionEventInterface
+class SessionCreated implements ShouldDispatchAfterCommit, ReceiverSessionEventInterface
 {
     use Dispatchable;
 
