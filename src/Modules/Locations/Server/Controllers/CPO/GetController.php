@@ -20,11 +20,12 @@ use Ocpi\Modules\Locations\Resources\LocationResourceList;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
+use Ocpi\Support\Traits\PageConvertor;
 
 class GetController extends Controller
 {
     use HandlesLocation;
-
+    use PageConvertor;
     /**
      * @param Request $request
      *
@@ -35,16 +36,17 @@ class GetController extends Controller
     ): JsonResponse {
         $offset = $request->input('offset', 0);
         $limit = $request->input('limit', 20);
-        $dateFrom = $request->input('date_from') ? Carbon::parse($request->input('date_from')) : Carbon::now(
-        )->startOfDay();
-        $dateTo = $request->input('date_to') ? Carbon::parse($request->input('date_to')) : Carbon::now();
         $party = Context::getHidden('party');
-        $page = (int)floor($offset / $limit) + 1;
+        $page = self::fromOffset($offset, $limit);
         $location = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
-            ->where('updated_at', '>=', $dateFrom->toDateTimeString()) //inclusive
-            ->where('updated_at', '<', $dateTo->toDateTimeString()) //exclusive
+            ->when($request->input('date_from'), function ($query) use ($request) {
+                $query->where('updated_at', '>=', Carbon::parse($request->input('date_from')));
+            })
+            ->when($request->input('date_to'), function ($query) use ($request) {
+                $query->where('updated_at', '<', Carbon::parse($request->input('date_to')));
+            })
             ->where('publish', true)
             ->withHasValidEvses()
             ->paginate(
