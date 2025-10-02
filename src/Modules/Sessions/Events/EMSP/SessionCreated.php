@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Sessions\Events;
+namespace Ocpi\Modules\Sessions\Events\EMSP;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;

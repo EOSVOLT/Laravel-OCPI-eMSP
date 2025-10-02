@@ -27,7 +27,7 @@ trait HandlesSession
         $session->fill([
             'party_role_id' => $party_role_id,
             'location_id' => $location_id,
-            'id' => $session_id,
+            'session_id' => $session_id,
             'object' => $payload,
             'status' => $status,
         ]);
@@ -36,7 +36,7 @@ trait HandlesSession
             return false;
         }
 
-        Events\SessionCreated::dispatch($session->id);
+        Events\EMSP\SessionCreated::dispatch($session->id);
 
         return true;
     }
@@ -53,7 +53,7 @@ trait HandlesSession
             return false;
         }
 
-        Events\SessionReplaced::dispatch($session->party_role_id, $session->id, $payload);
+        Events\EMSP\SessionReplaced::dispatch($session->party_role_id, $session->id, $payload);
 
         return true;
     }
@@ -68,7 +68,7 @@ trait HandlesSession
             return false;
         }
 
-        Events\SessionUpdated::dispatch($session->party_role_id, $session->id, $payload);
+        Events\EMSP\SessionUpdated::dispatch($session->party_role_id, $session->id, $payload);
 
         return true;
     }
