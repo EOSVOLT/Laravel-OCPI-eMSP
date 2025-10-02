@@ -26,11 +26,9 @@ class Session extends Model
     use HasVersion7Uuids,
         SoftDeletes;
 
-    protected $primaryKey = 'emsp_id';
-
     protected $fillable = [
         'party_role_id',
-        'location_evse_emsp_id',
+        'location_id',
         'id',
         'object',
         'status',
@@ -48,9 +46,9 @@ class Session extends Model
      * Relations.
      ***/
 
-    public function location_evse(): BelongsTo
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(LocationEvse::class, 'location_evse_emsp_id', 'emsp_id');
+        return $this->belongsTo(Location::class);
     }
 
     public function party_role(): BelongsTo
