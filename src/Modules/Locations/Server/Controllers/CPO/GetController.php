@@ -24,7 +24,6 @@ use Ocpi\Support\Server\Controllers\Controller;
 class GetController extends Controller
 {
     use HandlesLocation;
-
     /**
      * @param Request $request
      *
@@ -35,16 +34,17 @@ class GetController extends Controller
     ): JsonResponse {
         $offset = $request->input('offset', 0);
         $limit = $request->input('limit', 20);
-        $dateFrom = $request->input('date_from') ? Carbon::parse($request->input('date_from')) : Carbon::now(
-        )->startOfDay();
-        $dateTo = $request->input('date_to') ? Carbon::parse($request->input('date_to')) : Carbon::now();
         $party = Context::getHidden('party');
-        $page = $offset > 0 ? (int)ceil($offset / $limit) + 1 : 1;
+        $page = (int)floor($offset / $limit) + 1;
         $location = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
-            ->where('updated_at', '>=', $dateFrom->toDateTimeString()) //inclusive
-            ->where('updated_at', '<', $dateTo->toDateTimeString()) //exclusive
+            ->when($request->input('date_from'), function ($query) use ($request) {
+                $query->where('updated_at', '>=', Carbon::parse($request->input('date_from')));
+            })
+            ->when($request->input('date_to'), function ($query) use ($request) {
+                $query->where('updated_at', '<', Carbon::parse($request->input('date_to')));
+            })
             ->where('publish', true)
             ->withHasValidEvses()
             ->paginate(
@@ -74,8 +74,10 @@ class GetController extends Controller
      */
     public function location(string $locationId): JsonResponse
     {
+        $party = Context::getHidden('party');
         $location = Location::query()
             ->with(['party.role_cpo', 'evses.connectors'])
+            ->where('party_id', $party->getId())
             ->where('external_id', $locationId)
             ->first();
         if (null !== $location) {
@@ -96,10 +98,12 @@ class GetController extends Controller
      */
     public function evse(string $locationId, string $evseUid): JsonResponse
     {
+        $party = Context::getHidden('party');
         $evse = LocationEvse::query()
             ->with(['location.party.role_cpo', 'connectors'])
-            ->whereHas('location', function (Builder $query) use ($locationId) {
-                $query->where('external_id', $locationId);
+            ->whereHas('location', function (Builder $query) use ($locationId, $party) {
+                $query->where('external_id', $locationId)
+                    ->where('party_id', $party->getId());
             })
             ->where('uid', $evseUid)
             ->first();
@@ -121,10 +125,14 @@ class GetController extends Controller
      */
     public function connector(string $locationId, string $evseUid, string $connectorId): JsonResponse
     {
+        $party = Context::getHidden('party');
         $connector = LocationConnector::query()
-            ->with(['evse'])
-            ->whereHas('evse', function (Builder $query) use ($locationId, $evseUid) {
+            ->with(['evse.location'])
+            ->whereHas('evse', function (Builder $query) use ($locationId, $evseUid, $party) {
                 $query->validEvse();
+                $query->whereHas('location', function (Builder $query) use ($locationId, $party) {
+                    $query->where('party_id', $party->getId());
+                });
             })
             ->first();
         if (null !== $connector) {
