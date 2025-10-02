@@ -3,20 +3,19 @@
 namespace Ocpi\Modules\Cdrs\Factories;
 
 use Illuminate\Support\Carbon;
-use Ocpi\Modules\Cdrs\DTO\CdrDimensionDTOCollection;
 use Ocpi\Modules\Cdrs\DTO\ChargingPeriodDTO;
 use Ocpi\Modules\Cdrs\DTO\ChargingPeriodDTOCollection;
 
 class ChargingPeriodFactory
 {
     /**
-     * @param array $data
+     * @param array|null $data
      * @return ChargingPeriodDTOCollection
      */
-    public static function collectionFromArray(array $data): ChargingPeriodDTOCollection
+    public static function collectionFromArray(?array $data): ChargingPeriodDTOCollection
     {
         $collection = new ChargingPeriodDTOCollection();
-        foreach ($data as $datum) {
+        foreach ($data ?? [] as $datum) {
             $collection->append(self::fromArray($datum));
         }
         return $collection;
