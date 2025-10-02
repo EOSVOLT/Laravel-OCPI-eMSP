@@ -3,22 +3,34 @@
 namespace Ocpi\Modules\Sessions\Factories;
 
 use Illuminate\Support\Carbon;
+use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Cdrs\Factories\CdrTokenFactory;
 use Ocpi\Modules\Cdrs\Factories\ChargingPeriodFactory;
-use Ocpi\Modules\Sessions\Objects\Session;
+use Ocpi\Modules\Sessions\Objects\SessionDetails;
 use Ocpi\Support\Enums\AuthMethod;
 use Ocpi\Support\Enums\SessionStatus;
 use Ocpi\Support\Factories\PriceFactory;
 
 class SessionFactory
 {
+    public static function fromModel(Session $model): \Ocpi\Modules\Sessions\Objects\Session
+    {
+        return new \Ocpi\Modules\Sessions\Objects\Session(
+            $model->id,
+            $model->party_role_id,
+            $model->location_id,
+            $model->session_id,
+            $model->status,
+            self::createDetailsFromArray($model->object)
+        );
+    }
     /**
      * @param array $data
-     * @return Session
+     * @return SessionDetails
      */
-    public static function fromArray(array $data): Session
+    public static function createDetailsFromArray(array $data): SessionDetails
     {
-        return new Session(
+        return new SessionDetails(
             $data['id'],
             $data['country_code'],
             $data['party_id'],

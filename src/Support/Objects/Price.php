@@ -9,9 +9,9 @@ readonly class Price implements Arrayable
 
     /**
      * @param float $excludeVat
-     * @param float $includeVat
+     * @param float|null $includeVat
      */
-    public function __construct(private float $excludeVat, private float $includeVat)
+    public function __construct(private float $excludeVat, private ?float $includeVat = null)
     {
     }
 
@@ -24,9 +24,9 @@ readonly class Price implements Arrayable
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getIncludeVat(): float
+    public function getIncludeVat(): ?float
     {
         return $this->includeVat;
     }

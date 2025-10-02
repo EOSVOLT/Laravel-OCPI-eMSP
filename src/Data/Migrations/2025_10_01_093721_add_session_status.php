@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table(config('ocpi.database.table.prefix').'sessions', function (Blueprint $table) {
-            $table->string('invoker')->after('session_id');
             $table->string('status')->after('session_id');
         });
     }
@@ -23,7 +22,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table(config('ocpi.database.table.prefix').'sessions', function (Blueprint $table) {
-            $table->dropColumn('invoker');
             $table->dropColumn('status');
         });
     }
