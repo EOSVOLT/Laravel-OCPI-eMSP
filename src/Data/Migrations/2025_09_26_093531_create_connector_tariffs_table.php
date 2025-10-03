@@ -10,17 +10,15 @@ return new class extends Migration {
         Schema::create(
             config('ocpi.database.table.prefix') . 'location_connector_tariffs',
             function (Blueprint $table) {
-                $table->foreignId('connector_id')->constrained(
+                $table->foreignId('location_connector_id')->constrained(
                     config('ocpi.database.table.prefix') . 'location_connectors',
-                    indexName: 'location_connector_tariffs_connector_id',
+                    indexName: 'location_connector_tariffs_location_connector_id',
                 )->onDelete('cascade');
                 $table->foreignId('tariff_id')->constrained(
                     config('ocpi.database.table.prefix') . 'tariffs',
                     indexName: 'location_connector_tariffs_tariff_id',
-                )->onDelete(
-                    'cascade'
-                );
-                $table->unique(['connector_id', 'tariff_id']);
+                )->onDelete('cascade');
+                $table->unique(['location_connector_id', 'tariff_id']);
             }
         );
     }
