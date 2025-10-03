@@ -18,7 +18,7 @@ return new class extends Migration {
                     config('ocpi.database.table.prefix') . 'tariffs',
                     indexName: 'location_connector_tariffs_tariff_id',
                 )->onDelete('cascade');
-                $table->unique(['location_connector_id', 'tariff_id']);
+                $table->unique(['location_connector_id', 'tariff_id'], 'location_connector_tariffs_unique');
             }
         );
     }
