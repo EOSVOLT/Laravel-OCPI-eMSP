@@ -67,7 +67,7 @@ class DetailsController extends Controller
     private function getInterfaceRoleByModule(string $module): InterfaceRole
     {
         return match ($module) {
-            'credentials', 'locations', 'cdrs', 'sessions' => InterfaceRole::SENDER,
+            'credentials', 'locations', 'cdrs', 'sessions', 'tariffs' => InterfaceRole::SENDER,
             'commands' => InterfaceRole::RECEIVER,
         };
     }

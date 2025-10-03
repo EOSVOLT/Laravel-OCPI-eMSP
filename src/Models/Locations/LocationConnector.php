@@ -5,7 +5,10 @@ namespace Ocpi\Models\Locations;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
+use Ocpi\Models\Tariff\Tariff;
 use Ocpi\Support\Models\Model;
 
 /**
@@ -17,6 +20,7 @@ use Ocpi\Support\Models\Model;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
+ * @property Tariff[]|Collection $tariffs
  */
 class LocationConnector extends Model
 {
@@ -47,5 +51,20 @@ class LocationConnector extends Model
     public function evse(): BelongsTo
     {
         return $this->belongsTo(LocationEvse::class, 'evse_id', 'id');
+    }
+
+    /**
+     * @return HasManyThrough
+     */
+    public function tariffs(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Tariff::class,
+            LocationConnectorTariff::class,
+            'location_connector_id',
+            'id',
+            'id',
+            'tariff_id'
+        );
     }
 }
