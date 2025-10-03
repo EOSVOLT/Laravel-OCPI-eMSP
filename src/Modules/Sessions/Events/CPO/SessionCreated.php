@@ -10,19 +10,19 @@ class SessionCreated implements ShouldDispatchAfterCommit, SenderSessionEventInt
     use Dispatchable;
 
     /**
-     * @param string $id
+     * @param string $sessionId
      */
     public function __construct(
-        private readonly string $id,
+        private readonly string $sessionId,
     ) {
     }
 
     /**
      * @return string
      */
-    public function getId(): string
+    public function getSessionId(): string
     {
-        return $this->id;
+        return $this->sessionId;
     }
 
 }
