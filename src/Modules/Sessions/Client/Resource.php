@@ -30,4 +30,16 @@ class Resource extends OcpiResource
     {
         return $this->requestPostSend($payload);
     }
+
+    /**
+     * @param array $payload
+     * @return array|null
+     * @throws FatalRequestException
+     * @throws RequestException
+     * @throws \Throwable
+     */
+    public function put(array $payload): ?array
+    {
+        return $this->requestPutSend($payload);
+    }
 }
