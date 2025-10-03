@@ -12,7 +12,7 @@ return new class extends Migration {
             function (Blueprint $table) {
                 $table->foreignId('location_connector_id')->constrained(
                     config('ocpi.database.table.prefix') . 'location_connectors',
-                    indexName: 'location_connector_tariffs_location_connector_id',
+                    indexName: 'location_connector_id_tariff',
                 )->onDelete('cascade');
                 $table->foreignId('tariff_id')->constrained(
                     config('ocpi.database.table.prefix') . 'tariffs',
