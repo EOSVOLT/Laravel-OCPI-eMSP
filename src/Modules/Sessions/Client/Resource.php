@@ -21,36 +21,40 @@ class Resource extends OcpiResource
 
     /**
      * @param array $payload
+     * @param string|null $endpoint
      * @return array|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws \Throwable
      */
-    public function post(array $payload): ?array
+    public function post(array $payload, ?string $endpoint = null): ?array
     {
-        return $this->requestPostSend($payload);
+        return $this->requestPostSend($payload, $endpoint);
     }
 
     /**
      * @param array $payload
+     * @param string|null $endpoint
      * @return array|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws \Throwable
      */
-    public function put(array $payload): ?array
+    public function put(array $payload, ?string $endpoint = null): ?array
     {
-        return $this->requestPutSend($payload);
+        return $this->requestPutSend($payload, $endpoint);
     }
 
     /**
      * @param array $payload
+     * @param string|null $endpoint
      * @return array|null
      * @throws FatalRequestException
      * @throws RequestException
+     * @throws \Throwable
      */
-    public function patch(array $payload): ?array
+    public function patch(array $payload, ?string $endpoint = null): ?array
     {
-        return $this->requestPatchSend($payload);
+        return $this->requestPatchSend($payload, $endpoint);
     }
 }
