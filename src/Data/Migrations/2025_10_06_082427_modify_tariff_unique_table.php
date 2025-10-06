@@ -16,12 +16,6 @@ return new class extends Migration {
                 [
                     'party_id',
                     'external_id',
-                    'currency',
-                    'type',
-                    'min_price_excl_vat',
-                    'min_price_incl_vat',
-                    'max_price_excl_vat',
-                    'max_price_incl_vat',
                 ],
                 'tariff_unique'
             );
