@@ -25,7 +25,7 @@ class ConnectorFactory
             $connector->object['max_amperage'],
             $connector->updated_at
         );
-        $connectorObj->setTariffIds($connector->tariffs->pluck('externalId')->toArray());
+        $connectorObj->setTariffIds($connector->tariffs->pluck('external_id')->toArray());
         return $connectorObj;
     }
 
