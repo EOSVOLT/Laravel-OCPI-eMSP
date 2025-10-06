@@ -54,7 +54,7 @@ class PutController extends Controller
                                 payload: $payload,
                                 party_role_id: Context::get('party_role_id'),
                                 session_id: $session_id,
-                                location_evse_emsp_id: $locationEvse?->emsp_id,
+                                location_id: $locationEvse?->emsp_id,
                             );
                         })
                 ) {
