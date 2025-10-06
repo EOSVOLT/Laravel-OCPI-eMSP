@@ -5,24 +5,22 @@ namespace Ocpi\Modules\Tariffs\Objects;
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
 
-class TariffPriceComponent implements Arrayable
+readonly class TariffPriceComponent implements Arrayable
 {
-    /**
-     * @var float|null
-     */
-    private ?float $vat = null;
 
     /**
      * @param int $id
      * @param TariffDimensionType $type
      * @param float $price
      * @param int $stepSize
+     * @param float|null $vat
      */
     public function __construct(
-        private readonly int $id,
-        private readonly TariffDimensionType $type,
-        private readonly float $price,
-        private readonly int $stepSize
+        private int $id,
+        private TariffDimensionType $type,
+        private float $price,
+        private int $stepSize,
+        private ?float $vat = null,
     ) {
     }
 
@@ -56,17 +54,6 @@ class TariffPriceComponent implements Arrayable
     public function getVat(): ?float
     {
         return $this->vat;
-    }
-
-    /**
-     * @param float|null $vat
-     *
-     * @return $this
-     */
-    public function setVat(?float $vat): self
-    {
-        $this->vat = $vat;
-        return $this;
     }
 
     /**

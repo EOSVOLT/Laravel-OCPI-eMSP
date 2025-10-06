@@ -3,6 +3,7 @@
 namespace Ocpi\Support\Client;
 
 use ArrayObject;
+use Ocpi\Support\Client\Requests\DeleteRequest;
 use Ocpi\Support\Client\Requests\GetRequest;
 use Ocpi\Support\Client\Requests\PatchRequest;
 use Ocpi\Support\Client\Requests\PostRequest;
@@ -103,6 +104,18 @@ class Resource extends BaseResource
         return $this->responsePatchProcess($response);
     }
 
+    public function requestDeleteSend(?string $endpoint = null): array|string|null
+    {
+        $response = $this->connector->send(
+            (new DeleteRequest)
+                ->withEndpoint($endpoint)
+        );
+
+        $response->throw();
+
+        return $this->responseDeleteProcess($response);
+    }
+
     /**
      * @param Response $response
      *
@@ -156,6 +169,22 @@ class Resource extends BaseResource
      * @return array|string|null
      */
     public function responsePatchProcess(Response $response): array|string|null
+    {
+        if (! $response->successful()) {
+            return null;
+        }
+
+        $responseArray = $response->array();
+
+        return $responseArray['data'] ?? null;
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @return array|string|null
+     */
+    public function responseDeleteProcess(Response $response): array|string|null
     {
         if (! $response->successful()) {
             return null;

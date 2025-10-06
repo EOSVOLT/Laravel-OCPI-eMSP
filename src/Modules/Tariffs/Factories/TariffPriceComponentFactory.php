@@ -20,8 +20,9 @@ class TariffPriceComponentFactory
             $model->id,
             $model->dimension_type,
             $model->price,
-            $model->step_size
-        )->setVat($model->vat);
+            $model->step_size,
+            $model->vat
+        );
     }
 
     /**
