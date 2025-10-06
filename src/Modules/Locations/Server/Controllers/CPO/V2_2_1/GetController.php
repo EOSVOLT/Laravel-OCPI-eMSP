@@ -18,6 +18,7 @@ use Ocpi\Modules\Locations\Resources\EvseResource;
 use Ocpi\Modules\Locations\Resources\LocationResource;
 use Ocpi\Modules\Locations\Resources\LocationResourceList;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
+use Ocpi\Support\Client\Requests\ListRequest;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -31,9 +32,9 @@ class GetController extends Controller
      * @return JsonResponse
      */
     public function list(
-        Request $request,
+        ListRequest $request,
     ): JsonResponse {
-        $offset = $request->input('offset', 0);
+        $offset = $request->input('offset');
         $limit = $request->input('limit');
         $party = Context::getHidden('party');
         $location = Location::query()

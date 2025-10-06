@@ -19,12 +19,12 @@ trait Response
     protected function ocpiSuccessPaginateResponse(
         array $data,
         int $offset,
-        ?int $limit,
+        int $limit,
         int $total,
         string $endpoint,
         $statusMessage = 'Success'
     ): JsonResponse {
-        $isNextPage = (null !== $limit && (($offset+$limit) < $total ));
+        $isNextPage = (($offset+$limit) < $total);
         return $this->ocpiResponse(
             data: $data,
             httpCode: 200,
