@@ -29,7 +29,7 @@ class TariffPriceComponentResource extends JsonResource
     {
         return self::removeEmptyField([
             'type' => $this->resource->getType()->value,
-            'price' => $this->resource->getPriceExclVat(),
+            'price' => $this->resource->getPrice(),
             'vat' => $this->resource->getVat(),
             'step_size' => $this->resource->getStepSize(),
         ]);
