@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Tariffs\Objects\TariffElement;
 
+/**
+ * @property TariffElement $resource
+ */
 class TariffElementResource extends JsonResource
 {
     public function __construct(?TariffElement $resource)
@@ -15,9 +18,10 @@ class TariffElementResource extends JsonResource
 
     public function toArray(?Request $request = null): array
     {
+        $restriction = $this->resource->getRestrictions();
         return [
             'price_components' => new TariffPriceComponentResourceList($this->resource->getPriceComponents())->toArray(),
-            'restrictions' => new TariffRestrictionResource($this->resource->getRestrictions())->toArray(),
+            'restrictions' => null !== $restriction ? new TariffRestrictionResource($restriction)->toArray() : null,
         ];
     }
 }
