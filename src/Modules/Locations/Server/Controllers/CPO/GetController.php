@@ -24,6 +24,7 @@ use Ocpi\Support\Server\Controllers\Controller;
 class GetController extends Controller
 {
     use HandlesLocation;
+
     /**
      * @param Request $request
      *
@@ -52,19 +53,13 @@ class GetController extends Controller
                 page: $page
             );
         $locationObj = LocationFactory::fromPaginator($location);
-        return $location->count() > 0
-            ? $this->ocpiSuccessPaginateResponse(
-                new LocationResourceList($locationObj)->toArray(),
-                $location->currentPage(),
-                $location->perPage(),
-                $location->total(),
-                self::getLocationPath(Context::get('ocpi_version'))
-            )
-            : $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::UnknownLocation,
-                statusMessage: 'Unknown Location',
-                httpCode: 404,
-            );
+        return $this->ocpiSuccessPaginateResponse(
+            $location->count() > 0 ? new LocationResourceList($locationObj)->toArray() : [],
+            $location->currentPage(),
+            $location->perPage(),
+            $location->total(),
+            self::getLocationPath(Context::get('ocpi_version'))
+        );
     }
 
     /**
