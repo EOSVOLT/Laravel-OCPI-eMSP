@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Context;
 use Log;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\Commands\Enums\CommandType;
-use Ocpi\Models\PartyRole;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStartTransaction;
 use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStopTransaction;
 use Ocpi\Modules\Commands\Factories\CommandTokenFactory;
 use Ocpi\Modules\Credentials\Object\Party;
+use Ocpi\Modules\Credentials\Object\PartyRole;
 use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -46,7 +46,7 @@ class PostController extends Controller
         /** @var Party $party */
         $party = Context::get('party');
         try {
-            /** @var \Ocpi\Modules\Credentials\Object\PartyRole $partyRole */
+            /** @var PartyRole $partyRole */
             $partyRole = $party->getRoles()->first();
 
             $payload = $request->toArray();
