@@ -7,6 +7,7 @@ namespace Ocpi\Support\Traits\Server;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Ocpi\Models\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Object\CommandResponse;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
@@ -18,12 +19,12 @@ trait Response
     protected function ocpiSuccessPaginateResponse(
         array $data,
         int $offset,
-        int $limit,
+        ?int $limit,
         int $total,
         string $endpoint,
         $statusMessage = 'Success'
     ): JsonResponse {
-        $isNextPage = !(($offset+$limit) < $total );
+        $isNextPage = (null !== $limit && (($offset+$limit) < $total ));
         return $this->ocpiResponse(
             data: $data,
             httpCode: 200,

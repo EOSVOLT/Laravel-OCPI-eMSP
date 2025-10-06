@@ -24,14 +24,13 @@ class GetController extends Controller
         /** @var Party $party */
         $party = Context::getHidden('party');
 
-        $tariff = Tariff::query()->where('party_id', $party->getId())
-            ->offset($offset)
-            ->limit($limit)
-            ->orderBy('created_at')
-            ->get();
-
+        $tariff = Tariff::query()->where('party_id', $party->getId())->orderBy('created_at');
+        if (null !== $limit) {
+            $tariff->offset($offset)->limit($limit);
+        }
+        $data = $tariff->get()?->toArray() ?? [];
         return $this->ocpiSuccessPaginateResponse(
-            $tariff,
+            $data,
             $offset,
             $limit,
             $tariff->count(),
