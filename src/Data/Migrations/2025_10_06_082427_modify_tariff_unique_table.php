@@ -28,6 +28,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::table(config('ocpi.database.table.prefix') . 'tariffs', function (Blueprint $table) {
             $table->dropUnique('tariff_unique');
             $table->unique(
@@ -43,5 +44,6 @@ return new class extends Migration {
                 'tariff_unique'
             );
         });
+        Schema::enableForeignKeyConstraints();
     }
 };
