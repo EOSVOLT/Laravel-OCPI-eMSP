@@ -60,10 +60,10 @@ return new class extends Migration {
         });
 
         Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
-            $table->foreignId('location_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+            $table->foreignId('location_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
         });
         Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
-            $table->foreignId('location_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+            $table->foreignId('location_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
         });
 
 
@@ -73,7 +73,15 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
+        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('location_id');
+            $table->dropColumn('location_id');
 
+        });
+        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('location_id');
+            $table->dropColumn('location_id');
+        });
         // Reverse of the last operations first (drop new FKs/uniques/columns added in up)
         Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
             $table->dropUnique('evse_id_connector_id_unique');
@@ -86,7 +94,7 @@ return new class extends Migration {
 
         // Revert ocpi_locations changes
         Schema::table('ocpi_locations', function (Blueprint $table) {
-            $table->unsignedBigInteger('emsp_id')->first();
+            $table->string('emsp_id', 36)->first();
             $table->dropColumn('id');
             $table->primary('emsp_id');
             $table->renameColumn('external_id', 'id');
@@ -94,7 +102,7 @@ return new class extends Migration {
 
         // Revert ocpi_location_evses changes
         Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
-            $table->unsignedBigInteger('emsp_id')->first();
+            $table->string('emsp_id', 36)->first();
             $table->unsignedBigInteger('location_emsp_id')->after('emsp_id');
             $table->dropColumn('id');
             $table->primary('emsp_id');
@@ -105,7 +113,7 @@ return new class extends Migration {
         });
 
         Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
-            $table->unsignedBigInteger('emsp_id')->first();
+            $table->string('emsp_id', 36)->first();
             $table->unsignedBigInteger('location_evse_emsp_id')->after('emsp_id');
             $table->dropColumn('id');
             $table->renameColumn('connector_id', 'id');
@@ -122,6 +130,13 @@ return new class extends Migration {
 
         Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
             $table->dropColumn('status');
+        });
+
+        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
+            $table->foreignId('location_evse_emsp_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+        });
+        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
+            $table->foreignId('location_evse_emsp_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
         });
         Schema::enableForeignKeyConstraints();
     }

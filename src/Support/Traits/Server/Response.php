@@ -7,6 +7,7 @@ namespace Ocpi\Support\Traits\Server;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Ocpi\Models\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Object\CommandResponse;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
@@ -17,13 +18,13 @@ trait Response
 {
     protected function ocpiSuccessPaginateResponse(
         array $data,
-        int $page,
-        int $perPage,
+        int $offset,
+        int $limit,
         int $total,
         string $endpoint,
         $statusMessage = 'Success'
     ): JsonResponse {
-        $isNextPage = !(($page * $perPage) >= ($total - $perPage));
+        $isNextPage = (($offset+$limit) < $total);
         return $this->ocpiResponse(
             data: $data,
             httpCode: 200,
@@ -31,13 +32,12 @@ trait Response
             statusMessage: $statusMessage,
             paginator: [
                 'link' => $isNextPage ? $this->generateNextPageLink(
-                    $page,
-                    $perPage,
-                    $total,
+                    $offset,
+                    $limit,
                     $endpoint,
                 ) : null,
                 'total' => $total,
-                'limit' => $perPage,
+                'limit' => $limit,
             ]
         );
     }
@@ -110,15 +110,14 @@ trait Response
     }
 
     private function generateNextPageLink(
-        int $page,
-        int $perPage,
-        int $total,
+        int $offset,
+        int $limit,
         string $endpoint,
     ): string {
-        $nextOffset = (($page - 1) * $perPage) + $perPage;
+        $nextOffset = $offset+$limit;
         $query = [];
         $query['offset'] = $nextOffset;
-        $query['limit'] = $perPage;
+        $query['limit'] = $limit;
         array_merge($query, Request::capture()->query->all());
         $basePath = config('app.url') . '/' . $endpoint;
         return "<".$basePath . '?' . http_build_query($query).">; rel=\"next\"";

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Server\Controllers\CPO;
+namespace Ocpi\Modules\Locations\Server\Controllers\CPO\V2_2_1;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,6 +18,7 @@ use Ocpi\Modules\Locations\Resources\EvseResource;
 use Ocpi\Modules\Locations\Resources\LocationResource;
 use Ocpi\Modules\Locations\Resources\LocationResourceList;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
+use Ocpi\Support\Client\Requests\ListRequest;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -31,12 +32,11 @@ class GetController extends Controller
      * @return JsonResponse
      */
     public function list(
-        Request $request,
+        ListRequest $request,
     ): JsonResponse {
-        $offset = $request->input('offset', 0);
-        $limit = $request->input('limit', 20);
+        $offset = $request->input('offset');
+        $limit = $request->input('limit');
         $party = Context::getHidden('party');
-        $page = (int)floor($offset / $limit) + 1;
         $location = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
@@ -48,16 +48,15 @@ class GetController extends Controller
             })
             ->where('publish', true)
             ->withHasValidEvses()
-            ->paginate(
-                perPage: $limit,
-                page: $page
-            );
-        $locationObj = LocationFactory::fromPaginator($location);
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+        $locationObj = LocationFactory::fromCollection($location);
         return $this->ocpiSuccessPaginateResponse(
-            $location->count() > 0 ? new LocationResourceList($locationObj)->toArray() : [],
-            $location->currentPage(),
-            $location->perPage(),
-            $location->total(),
+            new LocationResourceList($locationObj)->toArray(),
+            $offset,
+            $limit,
+            $location->count(),
             self::getLocationPath(Context::get('ocpi_version'))
         );
     }

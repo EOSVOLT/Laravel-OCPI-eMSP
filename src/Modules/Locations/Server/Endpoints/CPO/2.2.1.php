@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Modules\Locations\Server\Controllers\CPO\GetController;
+use Ocpi\Modules\Locations\Server\Controllers\CPO\V2_2_1\GetController;
 use Ocpi\Support\Server\Middlewares\IdentifyCPOSender;
 
 Route::middleware([

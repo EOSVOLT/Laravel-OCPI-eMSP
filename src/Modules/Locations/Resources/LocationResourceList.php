@@ -16,11 +16,16 @@ class LocationResourceList extends JsonResource
         parent::__construct($resource);
     }
 
-    public function toArray(?Request $request = null)
+    /**
+     * @param Request|null $request
+     *
+     * @return array
+     */
+    public function toArray(?Request $request = null): array
     {
         $data = [];
         foreach ($this->resource as $location) {
-            $data[] = (new LocationResource($location))->toArray();
+            $data[] = new LocationResource($location)->toArray();
         }
         return $data;
     }

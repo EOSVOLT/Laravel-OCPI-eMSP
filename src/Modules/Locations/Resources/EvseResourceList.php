@@ -13,11 +13,16 @@ class EvseResourceList extends JsonResource
         parent::__construct($resource);
     }
 
+    /**
+     * @param Request|null $request
+     *
+     * @return array
+     */
     public function toArray(Request|null $request = null): array
     {
         $data = [];
         foreach ($this->resource as $evse) {
-            $data[] = (new EvseResource($evse))->toArray();
+            $data[] = new EvseResource($evse)->toArray();
         }
         return $data;
     }
