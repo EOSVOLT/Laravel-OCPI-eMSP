@@ -8,7 +8,7 @@ Route::middleware([
     IdentifyCPOSender::class,
 ])
     ->prefix('tariffs')
-    ->name('tariffs.')
+    ->name('tariffs')
     ->group(function () {
-        Route::get('', [GetController::class, 'list'])->name('list');
+        Route::get('', [GetController::class, 'list']);
     });
