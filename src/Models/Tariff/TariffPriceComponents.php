@@ -8,7 +8,8 @@ use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
 /**
  * @property int $id
  * @property TariffDimensionType $dimension_type
- * @property float $price
+ * @property float $price_excl_vat
+ * @property float $price_incl_vat
  * @property ?float $vat
  * @property int $step_size
  */
