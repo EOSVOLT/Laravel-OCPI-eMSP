@@ -20,11 +20,11 @@ class TariffResource extends JsonResource
     }
 
     /**
-     * @param array|Request $request
+     * @param Request|null $request
      *
      * @return array
      */
-    public function toArray(Request|array $request = []): array
+    public function toArray(?Request $request = null): array
     {
         return self::removeEmptyField([
             'country_code' => $this->resource->getCountryCode(),

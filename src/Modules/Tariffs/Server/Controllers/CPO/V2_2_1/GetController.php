@@ -40,7 +40,7 @@ class GetController extends Controller
             ->get();
         $tariffs = TariffFactory::fromCollection($tariffData);
         return $this->ocpiSuccessPaginateResponse(
-            new TariffResourceList($tariffs) ?? [],
+            new TariffResourceList($tariffs)->toArray(),
             $offset,
             $limit,
             $tariffs->count(),

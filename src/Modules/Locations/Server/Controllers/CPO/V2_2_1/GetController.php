@@ -53,7 +53,7 @@ class GetController extends Controller
             ->get();
         $locationObj = LocationFactory::fromCollection($location);
         return $this->ocpiSuccessPaginateResponse(
-            $location->count() > 0 ? new LocationResourceList($locationObj)->toArray() : [],
+            new LocationResourceList($locationObj)->toArray(),
             $offset,
             $limit,
             $location->count(),
