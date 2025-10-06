@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Modules\Commands\Server\Controllers\CPO\V2_2_1\GetController;
 use Ocpi\Modules\Commands\Server\Controllers\CPO\V2_2_1\PostController;
 
 Route::prefix('commands')

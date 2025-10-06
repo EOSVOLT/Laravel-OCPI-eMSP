@@ -88,6 +88,7 @@ class Resource extends BaseResource
      * @return array|string|null
      * @throws FatalRequestException
      * @throws RequestException
+     * @throws Throwable
      */
     public function requestPatchSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
     {
@@ -96,6 +97,9 @@ class Resource extends BaseResource
                 ->withEndpoint($endpoint)
                 ->withPayload($payload)
         );
+
+        $response->throw();
+
         return $this->responsePatchProcess($response);
     }
 
@@ -146,6 +150,11 @@ class Resource extends BaseResource
 
         return $responseArray['data'] ?? null;
     }
+
+    /**
+     * @param Response $response
+     * @return array|string|null
+     */
     public function responsePatchProcess(Response $response): array|string|null
     {
         if (! $response->successful()) {

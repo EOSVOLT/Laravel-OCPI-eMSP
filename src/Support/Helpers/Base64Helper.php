@@ -2,8 +2,6 @@
 
 namespace Ocpi\Support\Helpers;
 
-use Ocpi\Models\Party;
-
 class Base64Helper
 {
     public static function isBase64Encoded(string $input): bool
