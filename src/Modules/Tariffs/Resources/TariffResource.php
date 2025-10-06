@@ -36,7 +36,7 @@ class TariffResource extends JsonResource
             'tariff_alt_url' => $this->resource->getTariffAltUrl(),
             'min_price' => $this->resource->getMinPrice()?->toArray(),
             'max_price' => $this->resource->getMaxPrice()?->toArray(),
-            'elements' => $this->resource->getElements()->toArray(),
+            'elements' => new TariffElementResourceList($this->resource->getElements())->toArray(),
             'start_date_time' => $this->resource->getStartDateTime()?->toISOString(),
             'end_date_time' => $this->resource->getEndDateTime()?->toISOString(),
             'energy_mix' => $this->resource->getEnergyMix()?->toArray(),
