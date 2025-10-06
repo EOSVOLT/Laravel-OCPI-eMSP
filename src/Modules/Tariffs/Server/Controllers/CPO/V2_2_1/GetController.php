@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Context;
 use Ocpi\Models\Tariff\Tariff;
 use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
+use Ocpi\Modules\Tariffs\Factories\TariffFactory;
+use Ocpi\Modules\Tariffs\Resources\TariffResourceList;
 use Ocpi\Support\Client\Requests\ListRequest;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -24,7 +26,7 @@ class GetController extends Controller
         $party = Context::getHidden('party');
         $offset = $request->input('offset');
         $limit = $request->input('limit');
-        $tariff = Tariff::query()
+        $tariffData = Tariff::query()
             ->where('party_id', $party->getId())
             ->when($request->input('date_from'), function ($query) use ($request) {
                 $query->where('updated_at', '>=', Carbon::parse($request->input('date_from')));
@@ -36,11 +38,12 @@ class GetController extends Controller
             ->offset($offset)
             ->limit($limit)
             ->get();
+        $tariffs = TariffFactory::fromCollection($tariffData);
         return $this->ocpiSuccessPaginateResponse(
-            $tariff?->toArray() ?? [],
+            new TariffResourceList($tariffs) ?? [],
             $offset,
             $limit,
-            $tariff->count(),
+            $tariffs->count(),
             self::getLocationPath(Context::get('ocpi_version')),
         );
     }
