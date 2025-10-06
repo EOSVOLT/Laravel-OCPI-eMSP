@@ -23,7 +23,9 @@ use Ocpi\Models\Party;
  * @property ?float $max_price_incl_vat
  * @property Party $party
  * @property TariffElement[]|Collection $elements
+ * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property Carbon|null $deleted_at
  */
 class Tariff extends Model
 {
@@ -35,6 +37,8 @@ class Tariff extends Model
     {
         return [
             'tariff_alt_text' => 'json',
+            'created_at' => 'datetime',
+            'deleted_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
     }

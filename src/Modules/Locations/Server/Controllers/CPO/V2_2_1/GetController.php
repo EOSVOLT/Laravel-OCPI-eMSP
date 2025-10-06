@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Server\Controllers\CPO;
+namespace Ocpi\Modules\Locations\Server\Controllers\CPO\V2_2_1;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;

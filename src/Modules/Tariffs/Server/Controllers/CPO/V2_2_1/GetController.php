@@ -30,13 +30,14 @@ class GetController extends Controller
         $tariff = Tariff::query()->where('party_id', $party->getId())
             ->offset($offset)
             ->limit($limit)
-            ->paginate();
+            ->orderBy('created_at')
+            ->get();
 
         return $this->ocpiSuccessPaginateResponse(
             $tariff,
             $page,
             $limit,
-            $tariff->total(),
+            $tariff->count(),
             self::getLocationPath(Context::get('ocpi_version')),
         );
     }
