@@ -8,8 +8,7 @@ Route::middleware([
     IdentifyCPOSender::class,
 ])
     ->prefix('tariffs')
-    ->name('tariffs')
+    ->name('tariffs.')
     ->group(function () {
-        // OCPI 2.2.1: GET /tariffs and GET /tariffs/{country_code}/{party_id}/{tariff_id}
-        Route::get('', [GetController::class, 'list']);
+        Route::get('', [GetController::class, 'list'])->name('list');
     });

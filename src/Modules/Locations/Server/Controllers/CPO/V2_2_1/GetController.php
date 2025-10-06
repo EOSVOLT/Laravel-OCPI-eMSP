@@ -20,12 +20,10 @@ use Ocpi\Modules\Locations\Resources\LocationResourceList;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
-use Ocpi\Support\Traits\PageConvertor;
 
 class GetController extends Controller
 {
     use HandlesLocation;
-    use PageConvertor;
 
     /**
      * @param Request $request
@@ -36,9 +34,8 @@ class GetController extends Controller
         Request $request,
     ): JsonResponse {
         $offset = $request->input('offset', 0);
-        $limit = $request->input('limit', 20);
+        $limit = $request->input('limit');
         $party = Context::getHidden('party');
-        $page = self::fromOffset($offset, $limit);
         $location = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
@@ -50,16 +47,15 @@ class GetController extends Controller
             })
             ->where('publish', true)
             ->withHasValidEvses()
-            ->paginate(
-                perPage: $limit,
-                page: $page
-            );
-        $locationObj = LocationFactory::fromPaginator($location);
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+        $locationObj = LocationFactory::fromCollection($location);
         return $this->ocpiSuccessPaginateResponse(
             $location->count() > 0 ? new LocationResourceList($locationObj)->toArray() : [],
-            $location->currentPage(),
-            $location->perPage(),
-            $location->total(),
+            $offset,
+            $limit,
+            $location->count(),
             self::getLocationPath(Context::get('ocpi_version'))
         );
     }

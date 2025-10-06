@@ -9,20 +9,17 @@ use Ocpi\Models\Tariff\Tariff;
 use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Server\Controllers\Controller;
-use Ocpi\Support\Traits\PageConvertor;
 
 class GetController extends Controller
 {
     use HandlesLocation;
-    use PageConvertor;
     /**
      * GET /tariffs
      */
     public function list(Request $request): JsonResponse
     {
         $offset = (int) $request->input('offset', 0);
-        $limit = (int) $request->input('limit', 20);
-        $page = self::fromOffset($offset, $limit);
+        $limit = $request->input('limit');
 
         /** @var Party $party */
         $party = Context::getHidden('party');
@@ -35,7 +32,7 @@ class GetController extends Controller
 
         return $this->ocpiSuccessPaginateResponse(
             $tariff,
-            $page,
+            $offset,
             $limit,
             $tariff->count(),
             self::getLocationPath(Context::get('ocpi_version')),
