@@ -13,6 +13,7 @@ use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
 use Ocpi\Modules\Locations\Client\V2_2_1\Resource as LocationsResource;
 use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;
 use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
+use Ocpi\Modules\Tariffs\Client\V2_2_1\Resource as TariffResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
 use Ocpi\Support\Enums\InterfaceRole;
@@ -95,6 +96,11 @@ class Client extends Connector
     public function locations(): LocationsResource
     {
         return new LocationsResource($this);
+    }
+
+    public function tariffs(): TariffResource
+    {
+        return new TariffResource($this);
     }
 
     public function sessions(): SessionsResource
