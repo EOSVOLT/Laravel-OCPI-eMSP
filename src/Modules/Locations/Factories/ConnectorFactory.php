@@ -14,7 +14,7 @@ class ConnectorFactory
 {
     public static function fromModel(LocationConnector $connector): Connector
     {
-        return new Connector(
+        $connectorObj = new Connector(
             $connector->id,
             $connector->evse_id,
             $connector->connector_id,
@@ -25,6 +25,8 @@ class ConnectorFactory
             $connector->object['max_amperage'],
             $connector->updated_at
         );
+        $connectorObj->setTariffIds($connector->tariffs->pluck('id')->toArray());
+        return $connectorObj;
     }
 
     public static function fromModels(Collection $connectors): ConnectorCollection
