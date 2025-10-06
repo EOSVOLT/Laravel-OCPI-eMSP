@@ -19,10 +19,9 @@ class TariffPriceComponentFactory
         return new TariffPriceComponent(
             $model->id,
             $model->dimension_type,
-            $model->price_excl_vat,
+            $model->price,
             $model->step_size,
-            $model->vat,
-            $model->price_incl_vat,
+            $model->vat
         );
     }
 

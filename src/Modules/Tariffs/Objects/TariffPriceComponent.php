@@ -5,23 +5,22 @@ namespace Ocpi\Modules\Tariffs\Objects;
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
 
-class TariffPriceComponent implements Arrayable
+readonly class TariffPriceComponent implements Arrayable
 {
+
     /**
      * @param int $id
      * @param TariffDimensionType $type
-     * @param float $priceExclVat
+     * @param float $price
      * @param int $stepSize
      * @param float|null $vat
-     * @param float|null $priceInclVat
      */
     public function __construct(
-        private readonly int $id,
-        private readonly TariffDimensionType $type,
-        private readonly float $priceExclVat,
-        private readonly int $stepSize,
+        private int $id,
+        private TariffDimensionType $type,
+        private float $price,
+        private int $stepSize,
         private ?float $vat = null,
-        private readonly ?float $priceInclVat = null,
     ) {
     }
 
@@ -31,6 +30,14 @@ class TariffPriceComponent implements Arrayable
     public function getType(): TariffDimensionType
     {
         return $this->type;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrice(): float
+    {
+        return $this->price;
     }
 
     /**
@@ -57,16 +64,6 @@ class TariffPriceComponent implements Arrayable
         return $this->id;
     }
 
-    public function getPriceExclVat(): float
-    {
-        return $this->priceExclVat;
-    }
-
-    public function getPriceInclVat(): ?float
-    {
-        return $this->priceInclVat;
-    }
-
     /**
      * @return array
      */
@@ -75,8 +72,7 @@ class TariffPriceComponent implements Arrayable
         return [
             'id' => $this->getId(),
             'type' => $this->getType()->value,
-            'price_excl_vat' => $this->getPriceExclVat(),
-            'price_incl_vat' => $this->getPriceInclVat(),
+            'price' => $this->getPrice(),
             'step_size' => $this->getStepSize(),
             'vat' => $this->getVat(),
         ];
