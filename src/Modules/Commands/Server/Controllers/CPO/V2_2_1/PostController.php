@@ -68,7 +68,8 @@ class PostController extends Controller
     {
         try {
             //@todo request class with validation the request for each commandType
-            $session = Session::query()->findOrFail($request->get('session_id'));
+            /** @var Session $session */
+            $session = Session::query()->where('session_id', $request->get('session_id'))->first();
 
             $payload = $request->toArray();
             $command = Command::query()->create([
