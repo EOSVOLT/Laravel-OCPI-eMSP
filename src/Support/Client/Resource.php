@@ -123,13 +123,13 @@ class Resource extends BaseResource
      */
     public function responseGetProcess(Response $response): ?array
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
 
-        return $responseArray['data'] ?? null;
+        return $responseArray['data'] ?? $responseArray ?? null;
     }
 
     /**
@@ -139,13 +139,13 @@ class Resource extends BaseResource
      */
     public function responsePostProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
 
-        return $responseArray['data'] ?? null;
+        return $responseArray['data'] ?? $responseArray ?? null;
     }
 
     /**
@@ -155,13 +155,13 @@ class Resource extends BaseResource
      */
     public function responsePutProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
 
-        return $responseArray['data'] ?? null;
+        return $responseArray['data'] ?? $responseArray ?? null;
     }
 
     /**
@@ -170,13 +170,13 @@ class Resource extends BaseResource
      */
     public function responsePatchProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
 
-        return $responseArray['data'] ?? null;
+        return $responseArray['data'] ?? $responseArray ?? null;
     }
 
     /**
@@ -186,12 +186,12 @@ class Resource extends BaseResource
      */
     public function responseDeleteProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
 
-        return $responseArray['data'] ?? null;
+        return $responseArray['data'] ?? $responseArray ?? null;
     }
 }
