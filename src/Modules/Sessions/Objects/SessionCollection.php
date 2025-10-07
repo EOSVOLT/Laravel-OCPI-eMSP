@@ -2,9 +2,9 @@
 
 namespace Ocpi\Modules\Sessions\Objects;
 
-use Ocpi\Helpers\TypeCollection;
+use Ocpi\Helpers\PaginatedCollection;
 
-class SessionCollection extends TypeCollection
+class SessionCollection extends PaginatedCollection
 {
     protected string $type = Session::class;
 }
