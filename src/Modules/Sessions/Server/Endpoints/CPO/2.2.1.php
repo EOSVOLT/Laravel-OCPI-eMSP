@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Ocpi\Modules\Sessions\Server\Controllers\CPO\GetController;
 use Ocpi\Modules\Sessions\Server\Controllers\CPO\PutController;
-use Ocpi\Support\Server\Middlewares\IdentifyPartyRole;
+use Ocpi\Support\Server\Middlewares\IdentifyReceiverParty;
 
 Route::middleware([
-    IdentifyPartyRole::class,
+    IdentifyReceiverParty::class,
 ])
     ->prefix('sessions')
     ->name('sessions')
