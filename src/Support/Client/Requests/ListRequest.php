@@ -9,7 +9,7 @@ class ListRequest extends PaginationRequest
     {
         return [
             'date_from' => ['nullable', 'date_format:Y-m-d\TH:i:s\Z|Y-m-d\TH:i:s.u\Z|Y-m-d\TH:i:s'],
-            'date_to' => ['nullable', 'date_format:Y-m-d\TH:i:s\Z|Y-m-d\TH:i:s.u\Z||Y-m-d\TH:i:s', 'after:date_from'],
+            'date_to' => ['nullable', 'date_format:Y-m-d\TH:i:s\Z|Y-m-d\TH:i:s.u\Z|Y-m-d\TH:i:s', 'after:date_from'],
         ];
     }
 }
