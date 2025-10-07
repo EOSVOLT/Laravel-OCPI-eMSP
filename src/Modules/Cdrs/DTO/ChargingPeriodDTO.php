@@ -50,7 +50,7 @@ readonly class ChargingPeriodDTO implements Arrayable
     public function toArray(): array
     {
         return [
-            'start_date_time' => $this->getStartDate()->toRfc3339String(),
+            'start_date_time' => $this->getStartDate()->toISOString(),
             'dimensions' => $this->getDimensions()->toArray(),
             'tariff_id' => $this->getTariffId(),
         ];

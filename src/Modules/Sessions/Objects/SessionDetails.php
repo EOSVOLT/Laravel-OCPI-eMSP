@@ -208,8 +208,8 @@ readonly class SessionDetails implements Arrayable
             'id' => $this->getId(),
             'country_code' => $this->getCountryCode(),
             'party_id' => $this->getPartyId(),
-            'start_date_time' => $this->getStartDate()->toRfc3339String(),
-            'end_date_time' => $this->getEndDate()->toRfc3339String(),
+            'start_date_time' => $this->getStartDate()->toISOString(),
+            'end_date_time' => $this->getEndDate()?->toISOString(),
             'kwh' => $this->getKwh(),
             'cdr_token' => $this->getCdrToken()->toArray(),
             'auth_method' => $this->getAuthMethod()->value,
@@ -222,7 +222,7 @@ readonly class SessionDetails implements Arrayable
             'charging_periods' => $this->getChargingPeriods()->toArray(),
             'total_cost' => $this->getTotalCost()->toArray(),
             'status' => $this->getStatus()->value,
-            'last_updated' => $this->getLastUpdated()->toRfc3339String(),
+            'last_updated' => $this->getLastUpdated()->toISOString(),
         ];
     }
 }
