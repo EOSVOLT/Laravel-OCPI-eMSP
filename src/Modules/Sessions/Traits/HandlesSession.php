@@ -2,14 +2,23 @@
 
 namespace Ocpi\Modules\Sessions\Traits;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Sessions\Events;
-use Ocpi\Support\Enums\Invoker;
+use Ocpi\Modules\Sessions\Factories\SessionFactory;
+use Ocpi\Modules\Sessions\Objects\SessionCollection;
 use Ocpi\Support\Enums\SessionStatus;
 
 trait HandlesSession
 {
-    private function sessionSearch(string $session_id, int $party_role_id): ?Session
+    /**
+     * @todo return object instead.
+     * @param string $session_id
+     * @param int $party_role_id
+     * @return Session|null
+     */
+    private function sessionById(string $session_id, int $party_role_id): ?Session
     {
         return Session::query()
             ->where('id', $session_id)
@@ -17,6 +26,29 @@ trait HandlesSession
             ->first();
     }
 
+    /**
+     * @param Carbon $dateFrom
+     * @param Carbon $dateTo
+     * @param int $offset
+     * @param int $limit
+     * @return SessionCollection
+     */
+    private function sessionSearch(Carbon $dateFrom, Carbon $dateTo, int $offset, int $limit): SessionCollection
+    {
+        $collection = Session::query()->whereBetween('updated_at', [$dateFrom, $dateTo])
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+        return SessionFactory::fromCollection($collection);
+    }
+
+    /**
+     * @param array $payload
+     * @param int $party_role_id
+     * @param string $session_id
+     * @param string|null $location_id
+     * @return bool
+     */
     private function sessionCreate(array $payload, int $party_role_id, string $session_id, ?string $location_id): bool
     {
         if (($payload['id'] ?? null) === null || $payload['id'] !== $session_id) {
@@ -41,6 +73,11 @@ trait HandlesSession
         return true;
     }
 
+    /**
+     * @param array $payload
+     * @param Session $session
+     * @return bool
+     */
     private function sessionReplace(array $payload, Session $session): bool
     {
         if (($payload['id'] ?? null) === null || $payload['id'] !== $session->id) {
@@ -58,6 +95,11 @@ trait HandlesSession
         return true;
     }
 
+    /**
+     * @param array $payload
+     * @param Session $session
+     * @return bool
+     */
     private function sessionObjectUpdate(array $payload, Session $session): bool
     {
         foreach ($payload as $field => $value) {

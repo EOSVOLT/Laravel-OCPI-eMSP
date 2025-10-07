@@ -3,9 +3,9 @@
 namespace Ocpi\Modules\Sessions\Server\Controllers\CPO;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Ocpi\Modules\Sessions\Traits\HandlesSession;
+use Ocpi\Support\Client\Requests\ListRequest;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -13,22 +13,13 @@ class GetController extends Controller
 {
     use HandlesSession;
 
-    public function __invoke(
-        Request $request,
-        ?string $country_code = null,
-        ?string $party_id = null,
-        ?string $session_id = null,
-    ): JsonResponse {
-        if ($session_id === null) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::NotEnoughInformation,
-                statusMessage: 'Session ID is missing.',
-            );
-        }
+    public function __invoke(ListRequest $request): JsonResponse {
 
         $session = $this->sessionSearch(
-            session_id: $session_id,
-            party_role_id: Context::get('party_role_id'),
+            $request->input('date_from'),
+            $request->input('date_to'),
+            $request->input('offset'),
+            $request->input('limit')
         );
 
         if ($session === null) {
