@@ -10,7 +10,7 @@ readonly class CommandToken implements Arrayable
 
     /**
      * @param string $countryCode
-     * @param string $partyCode
+     * @param string $partyId
      * @param string $tokenUid
      * @param TokenType $type
      * @param string $contractId
@@ -18,7 +18,7 @@ readonly class CommandToken implements Arrayable
      */
     public function __construct(
         private string $countryCode,
-        private string $partyCode,
+        private string $partyId,
         private string $tokenUid,
         private TokenType $type,
         private string $contractId,
@@ -37,9 +37,9 @@ readonly class CommandToken implements Arrayable
     /**
      * @return string
      */
-    public function getPartyCode(): string
+    public function getPartyId(): string
     {
-        return $this->partyCode;
+        return $this->partyId;
     }
 
     /**
@@ -81,7 +81,7 @@ readonly class CommandToken implements Arrayable
     {
         return [
             'country_code' => $this->getCountryCode(),
-            'party_code' => $this->getPartyCode(),
+            'party_id' => $this->getPartyId(),
             'uid' => $this->getTokenUid(),
             'type' => $this->getType()->value,
             'contract_id' => $this->getContractId(),
