@@ -2,11 +2,10 @@
 
 namespace Ocpi\Models\Sessions;
 
-use Illuminate\Database\Eloquent\Concerns\HasVersion7Uuids;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\Locations\Location;
-use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\PartyRole;
 use Ocpi\Support\Enums\SessionStatus;
 use Ocpi\Support\Models\Model;
@@ -23,7 +22,7 @@ use Ocpi\Support\Models\Model;
  */
 class Session extends Model
 {
-    use HasVersion7Uuids,
+    use HasUuids,
         SoftDeletes;
 
     protected $fillable = [
