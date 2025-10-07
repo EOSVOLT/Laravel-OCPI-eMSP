@@ -20,7 +20,9 @@ class EvseFactory
             $evse->status,
             $connectors,
             $evse->updated_at,
-        )->setEvseId($evse->object['evse_id'] ?? null);
+        )
+            ->setEvseId($evse->object['evse_id'] ?? null)
+            ->setCapabilities($evse->object['capabilities'] ?? []);
     }
 
     public static function fromCollection(Collection $evses): EvseCollection
