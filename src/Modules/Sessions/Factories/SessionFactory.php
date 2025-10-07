@@ -24,18 +24,21 @@ class SessionFactory
             self::createDetailsFromArray($model->object)
         );
     }
+
     /**
      * @param array $data
      * @return SessionDetails
      */
     public static function createDetailsFromArray(array $data): SessionDetails
     {
+        $startDate = Carbon::createFromTimeString($data['start_date_time']);
+        $endDate = true === isset($data['end_date_time']) ? Carbon::createFromTimeString($data['end_date_time']) : null;
         return new SessionDetails(
             $data['id'],
             $data['country_code'],
             $data['party_id'],
-            Carbon::createFromTimeString($data['start_date_time ']),
-            Carbon::createFromTimeString($data['end_date_time ']),
+            $startDate,
+            $endDate,
             $data['kwh'],
             CdrTokenFactory::fromArray($data['cdr_token']),
             AuthMethod::tryFrom($data['auth_method']),
