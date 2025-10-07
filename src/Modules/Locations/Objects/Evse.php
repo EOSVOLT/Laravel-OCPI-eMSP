@@ -4,7 +4,6 @@ namespace Ocpi\Modules\Locations\Objects;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
-use Ocpi\Modules\Locations\Enums\EvseCapability;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Modules\Locations\Enums\ParkingRestriction;
 use Ocpi\Trait\ValidateArrayEnum;
@@ -22,9 +21,9 @@ class Evse implements Arrayable
      */
     protected ?StatusScheduleCollection $statusScheduleCollection = null;
     /**
-     * @var EvseCapability|null
+     * @var array
      */
-    protected ?EvseCapability $capabilities = null;
+    protected array $capabilities = [];
     /**
      * @var string|null
      */
@@ -107,19 +106,19 @@ class Evse implements Arrayable
     }
 
     /**
-     * @return EvseCapability|null
+     * @return array
      */
-    public function getCapabilities(): ?EvseCapability
+    public function getCapabilities(): array
     {
         return $this->capabilities;
     }
 
     /**
-     * @param EvseCapability|null $capabilities
+     * @param array $capabilities
      *
      * @return $this
      */
-    public function setCapabilities(?EvseCapability $capabilities): self
+    public function setCapabilities(array $capabilities): self
     {
         $this->capabilities = $capabilities;
         return $this;
@@ -298,7 +297,7 @@ class Evse implements Arrayable
             'evse_id' => $this->getEvseId(),
             'status' => $this->getStatus()->value,
             'status_schedule' => $this->getStatusScheduleCollection()?->toArray(),
-            'capabilities' => $this->getCapabilities()?->value,
+            'capabilities' => $this->getCapabilities(),
             'connectors' => $this->getConnectors()->toArray(),
             'floor_level' => $this->getFloorLevel(),
             'coordinates' => $this->getCoordinates()?->toArray(),

@@ -23,7 +23,7 @@ class EvseResource extends JsonResource
             'evse_id' => $this->resource->getEvseId(),
             'status' => $this->resource->getStatus()->value,
             'status_schedule' => $this->resource->getStatusScheduleCollection()?->toArray(),
-            'capabilities' => $this->resource->getCapabilities()?->value,
+            'capabilities' => $this->resource->getCapabilities(),
             'connectors' => new ConnectorResourceList($this->resource->getConnectors())->toArray(),
             'floor_level' => $this->resource->getFloorLevel(),
             'coordinates' => $this->resource->getCoordinates()?->toArray(),
