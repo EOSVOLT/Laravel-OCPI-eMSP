@@ -44,7 +44,7 @@ class PostController extends Controller
             return $this->ocpiServerErrorResponse(statusMessage: 'RFID is not support yet.');
         }
         /** @var Party $party */
-        $party = Context::get('party');
+        $party = Context::getHidden('party');
         try {
             /** @var PartyRole $partyRole */
             $partyRole = $party->getRoles()->first();
