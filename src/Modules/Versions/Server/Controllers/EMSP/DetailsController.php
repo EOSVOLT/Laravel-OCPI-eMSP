@@ -31,7 +31,7 @@ class DetailsController extends Controller
                 $endpointList = collect(($configInformation['modules'] ?? []))
                     ->map(function ($module) use ($version) {
                         $route = UrlHelper::getEMSPBaseUrlByModule($module, $version);
-                        $interfaceRole = $this->getInterfaceRoleByModule($module);
+                        $interfaceRole = $this->getEMSPInterfaceRoleByModule($module);
                         return Route::has($route)
                             ? [
                                 'identifier' => $module,
