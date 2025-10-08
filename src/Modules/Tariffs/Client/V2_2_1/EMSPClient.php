@@ -10,6 +10,6 @@ class EMSPClient extends ReceiverClient
 {
     public function __construct(Party $party, PartyToken $partyToken)
     {
-        parent::__construct($party, $partyToken, 'locations');
+        parent::__construct($party, $partyToken, 'tariffs');
     }
 }
