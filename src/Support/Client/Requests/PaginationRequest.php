@@ -10,8 +10,8 @@ class PaginationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'offset' => 'nullable|integer',
-            'limit' => 'nullable|integer',
+            'offset' => 'nullable|integer|gte:0',
+            'limit' => 'nullable|integer|gt:0',
         ];
     }
 

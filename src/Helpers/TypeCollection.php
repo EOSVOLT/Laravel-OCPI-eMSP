@@ -49,10 +49,12 @@ abstract class TypeCollection extends \ArrayIterator implements Arrayable
         $return = [];
         $camelValue = $this->snakeToCamel($value);
         foreach ($this->getArrayCopy() as $item) {
+            $value = $item->{'get' . ucfirst($camelValue)}();
+            $value  = ($value instanceof Arrayable) ? $value->toArray() : $value;
             if (is_null($key)) {
-                $return[] = $item->{'get' . ucfirst($camelValue)}();
+                $return[] = $value;
             } else {
-                $return[$key] = $item->{'get' . ucfirst($camelValue)}();
+                $return[$key] = $value;
             }
         }
         return $return;

@@ -7,11 +7,13 @@ namespace Ocpi\Support\Traits\Server;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Str;
 use Ocpi\Models\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Object\CommandResponse;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
+use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Objects\DisplayText;
 
 trait Response
@@ -21,10 +23,10 @@ trait Response
         int $offset,
         int $limit,
         int $total,
-        string $endpoint,
+        string $module,
         $statusMessage = 'Success'
     ): JsonResponse {
-        $isNextPage = (($offset+$limit) < $total);
+        $isNextPage = (($offset + $limit) < $total);
         return $this->ocpiResponse(
             data: $data,
             httpCode: 200,
@@ -34,7 +36,7 @@ trait Response
                 'link' => $isNextPage ? $this->generateNextPageLink(
                     $offset,
                     $limit,
-                    $endpoint,
+                    $module,
                 ) : null,
                 'total' => $total,
                 'limit' => $limit,
@@ -112,14 +114,15 @@ trait Response
     private function generateNextPageLink(
         int $offset,
         int $limit,
-        string $endpoint,
+        string $module,
     ): string {
-        $nextOffset = $offset+$limit;
+        $nextOffset = $offset + $limit;
         $query = [];
         $query['offset'] = $nextOffset;
         $query['limit'] = $limit;
-        array_merge($query, Request::capture()->query->all());
-        $basePath = config('app.url') . '/' . $endpoint;
-        return "<".$basePath . '?' . http_build_query($query).">; rel=\"next\"";
+        $query = array_merge(Request::capture()->query->all(), $query);
+        $route = UrlHelper::getCPOBaseUrlByModule($module, Context::get('ocpi_version'));
+        $basePath = route($route);
+        return "<" . $basePath . '?' . http_build_query($query) . ">; rel=\"next\"";
     }
 }

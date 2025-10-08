@@ -3,45 +3,30 @@
 namespace Ocpi\Modules\Sessions\Server\Controllers\CPO;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Carbon;
 use Ocpi\Modules\Sessions\Traits\HandlesSession;
-use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Support\Client\Requests\ListRequest;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class GetController extends Controller
 {
     use HandlesSession;
 
-    public function __invoke(
-        Request $request,
-        ?string $country_code = null,
-        ?string $party_id = null,
-        ?string $session_id = null,
-    ): JsonResponse {
-        if ($session_id === null) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::NotEnoughInformation,
-                statusMessage: 'Session ID is missing.',
-            );
-        }
-
-        $session = $this->sessionSearch(
-            session_id: $session_id,
-            party_role_id: Context::get('party_role_id'),
+    public function __invoke(ListRequest $request): JsonResponse
+    {
+        $dateFrom = Carbon::createFromTimeString($request->input('date_from'));
+        $dateTo = Carbon::createFromTimeString($request->input('date_to'));
+        $offset = $request->input('offset');
+        $limit = $request->input('limit');
+        $collection = $this->sessionSearch(
+            $dateFrom,
+            $dateTo,
+            $offset,
+            $limit
         );
 
-        if ($session === null) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::InvalidParameters,
-                statusMessage: 'Unknown Session.',
-            );
-        }
+        $data = $collection->pluck('session_details');
 
-        $data = $session->object;
-
-        return $data
-            ? $this->ocpiSuccessResponse($data)
-            : $this->ocpiServerErrorResponse();
+        return $this->ocpiSuccessPaginateResponse($data, $offset, $limit, $collection->getTotalResults(), 'sessions');
     }
 }

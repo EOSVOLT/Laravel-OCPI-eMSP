@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Ocpi\Support\Enums\InterfaceRole;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class DetailsController extends Controller
@@ -27,12 +28,10 @@ class DetailsController extends Controller
 
         foreach (config('ocpi-cpo.versions', []) as $configVersion => $configInformation) {
             if ($configVersion === $version) {
-                $routeVersion = Str::replace('.', '_', $version);
-
                 $endpointList = collect(($configInformation['modules'] ?? []))
-                    ->map(function ($module) use ($routeVersion) {
-                        $route = config('ocpi.server.routing.cpo.name_prefix') . $routeVersion . '.' . $module;
-                        $interfaceRole = $this->getInterfaceRoleByModule($module);
+                    ->map(function ($module) use ($version) {
+                        $route = UrlHelper::getCPOBaseUrlByModule($module, $version);
+                        $interfaceRole = $this->getCPOInterfaceRoleByModule($module);
                         return Route::has($route)
                             ? [
                                 'identifier' => $module,
@@ -62,13 +61,5 @@ class DetailsController extends Controller
         }
 
         return $this->ocpiSuccessResponse($data);
-    }
-
-    private function getInterfaceRoleByModule(string $module): InterfaceRole
-    {
-        return match ($module) {
-            'credentials', 'locations', 'cdrs', 'sessions', 'tariffs' => InterfaceRole::SENDER,
-            'commands' => InterfaceRole::RECEIVER,
-        };
     }
 }

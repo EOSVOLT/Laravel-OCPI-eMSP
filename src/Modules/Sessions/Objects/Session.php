@@ -5,49 +5,78 @@ namespace Ocpi\Modules\Sessions\Objects;
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Support\Enums\SessionStatus;
 
-class Session implements Arrayable
+readonly class Session implements Arrayable
 {
 
+    /**
+     * @param string $id
+     * @param int $partyRoleId
+     * @param int $locationId
+     * @param string $sessionId
+     * @param SessionStatus $status
+     * @param SessionDetails $sessionDetails
+     */
     public function __construct(
-        private readonly string $id,
-        private readonly int $partyRoleId,
-        private readonly int $locationId,
-        private readonly string $sessionId,
-        private readonly SessionStatus $status,
-        private readonly SessionDetails $sessionDetails,
+        private string $id,
+        private int $partyRoleId,
+        private int $locationId,
+        private string $sessionId,
+        private SessionStatus $status,
+        private SessionDetails $sessionDetails,
     ) {
     }
 
+    /**
+     * @return string
+     */
     public function getId(): string
     {
         return $this->id;
     }
 
+    /**
+     * @return int
+     */
     public function getPartyRoleId(): int
     {
         return $this->partyRoleId;
     }
 
+    /**
+     * @return int
+     */
     public function getLocationId(): int
     {
         return $this->locationId;
     }
 
+    /**
+     * @return string
+     */
     public function getSessionId(): string
     {
         return $this->sessionId;
     }
 
+    /**
+     * @return SessionStatus
+     */
     public function getStatus(): SessionStatus
     {
         return $this->status;
     }
 
+    /**
+     * @return SessionDetails
+     */
     public function getSessionDetails(): SessionDetails
     {
         return $this->sessionDetails;
     }
 
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return [

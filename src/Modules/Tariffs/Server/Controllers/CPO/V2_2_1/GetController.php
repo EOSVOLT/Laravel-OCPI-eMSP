@@ -44,7 +44,7 @@ class GetController extends Controller
             $offset,
             $limit,
             $tariffs->count(),
-            self::getLocationPath(Context::get('ocpi_version')),
+            'tariffs',
         );
     }
 }

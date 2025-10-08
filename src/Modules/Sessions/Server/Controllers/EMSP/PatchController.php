@@ -25,7 +25,7 @@ class PatchController extends Controller
         try {
             $payload = $request->json()->all();
 
-            $session = $this->sessionSearch(
+            $session = $this->sessionById(
                 session_id: $session_id,
                 party_role_id: Context::get('party_role_id'),
             );

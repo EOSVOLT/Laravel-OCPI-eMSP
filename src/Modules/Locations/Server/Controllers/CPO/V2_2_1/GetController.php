@@ -57,7 +57,7 @@ class GetController extends Controller
             $offset,
             $limit,
             $location->count(),
-            self::getLocationPath(Context::get('ocpi_version'))
+            'locations'
         );
     }
 

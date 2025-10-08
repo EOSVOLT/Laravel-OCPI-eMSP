@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class DetailsController extends Controller
@@ -27,16 +28,15 @@ class DetailsController extends Controller
             config('ocpi-emsp.versions', []
             ) as $configVersion => $configInformation) {
             if ($configVersion === $version) {
-                $routeVersion = Str::replace('.', '_', $version);
-
                 $endpointList = collect(($configInformation['modules'] ?? []))
-                    ->map(function ($module) use ($routeVersion) {
-                        $route = config('ocpi.server.routing.emsp.name_prefix') .$routeVersion.'.'.$module;
-
+                    ->map(function ($module) use ($version) {
+                        $route = UrlHelper::getEMSPBaseUrlByModule($module, $version);
+                        $interfaceRole = $this->getEMSPInterfaceRoleByModule($module);
                         return Route::has($route)
                             ? [
                                 'identifier' => $module,
-                                'url' => \Ocpi\Modules\Versions\Server\Controllers\route($route),
+                                'role' => $interfaceRole->value,
+                                'url' => route($route),
                             ]
                             : null;
                     })
