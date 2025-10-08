@@ -82,7 +82,7 @@ class PartyInformationAndDetailsSynchronizeAction
         foreach ($versionDetails['endpoints'] as $endpoint) {
             $key = $endpoint['identifier'];
             $innerKey = $endpoint['role'];
-            $endpoints[$key][$innerKey] = $endpoint['url'];
+            $endpoints[$key][$innerKey] = rtrim($endpoint['url']);
         }
         $party->endpoints = $endpoints;
         throw_if(
