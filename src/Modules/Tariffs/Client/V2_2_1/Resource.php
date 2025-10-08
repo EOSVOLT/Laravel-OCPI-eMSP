@@ -13,22 +13,11 @@ class Resource extends OcpiResource
     use HandlesTariff;
 
     /**
-     * @return array|null
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function all(): ?array
-    {
-        return $this->requestGetSend();
-    }
-
-    /**
      * @param string $countryCode
      * @param string $partyId
      * @param string $tariffId
      *
-     * @return array|null
+     * @return array|string|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws Throwable
@@ -37,9 +26,9 @@ class Resource extends OcpiResource
         string $countryCode,
         string $partyId,
         string $tariffId
-    ): ?array {
+    ): array|string|null {
         return $this->requestGetSend(
-            implode('/', array_filter([$this->connector->resolveBaseUrl(), $countryCode, $partyId, $tariffId]))
+            implode('/', array_filter([$countryCode, $partyId, $tariffId]))
         );
     }
 
@@ -65,7 +54,7 @@ class Resource extends OcpiResource
             implode(
                 '/',
                 array_filter(
-                    [$this->connector->resolveBaseUrl(), $countryCode, $partyId, $tariffId]
+                    [$countryCode, $partyId, $tariffId]
                 )
             )
         );
@@ -76,18 +65,18 @@ class Resource extends OcpiResource
      * @param string $partyId
      * @param string $tariffId
      *
-     * @return array|null
+     * @return array|string|null
      */
     public function delete(
         string $countryCode,
         string $partyId,
         string $tariffId,
-    ): ?array {
+    ): array|string|null {
         return $this->requestDeleteSend(
             implode(
                 '/',
                 array_filter(
-                    [$this->connector->resolveBaseUrl(), $countryCode, $partyId, $tariffId]
+                    [$countryCode, $partyId, $tariffId]
                 )
             )
         );
