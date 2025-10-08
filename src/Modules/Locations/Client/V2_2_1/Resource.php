@@ -11,58 +11,6 @@ use Throwable;
 class Resource extends OcpiResource
 {
     use HandlesLocation;
-    /**
-     * @return array|null
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function all(): ?array
-    {
-        return $this->requestGetSend();
-    }
-
-    /**
-     * @param string $locationId
-     *
-     * @return array|null
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function location(string $locationId): ?array
-    {
-        return $this->requestGetSend($locationId);
-    }
-
-    /**
-     * @param string $locationId
-     * @param string $evseUid
-     *
-     * @return array|null
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function locationEvse(string $locationId, string $evseUid): ?array
-    {
-        return $this->requestGetSend(implode('/', func_get_args()));
-    }
-
-    /**
-     * @param string $locationId
-     * @param string $evseUid
-     * @param string $connectorId
-     *
-     * @return array|null
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function locationEvseConnector(string $locationId, string $evseUid, string $connectorId): ?array
-    {
-        return $this->requestGetSend(implode('/', func_get_args()));
-    }
 
     /**
      * @param string $countryCode
@@ -72,7 +20,7 @@ class Resource extends OcpiResource
      * @param string|null $evseUid
      * @param string|null $connectorId
      *
-     * @return array|null
+     * @return array|string|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws Throwable
@@ -84,10 +32,10 @@ class Resource extends OcpiResource
         array $data,
         ?string $evseUid = null,
         ?string $connectorId = null
-    ): ?array {
+    ): array|string|null {
         return $this->requestPutSend(
             $data,
-            implode('/', array_filter([$this->connector->resolveBaseUrl(), $countryCode, $partyId, $locationId, $evseUid, $connectorId]))
+            implode('/', [$countryCode, $partyId, $locationId]+array_filter([$evseUid, $connectorId]))
         );
     }
 
@@ -99,9 +47,10 @@ class Resource extends OcpiResource
      * @param string|null $evseUid
      * @param string|null $connectorId
      *
-     * @return array|null
+     * @return array|string|null
      * @throws FatalRequestException
      * @throws RequestException
+     * @throws Throwable
      */
     public function update(
         string $countryCode,
@@ -110,10 +59,10 @@ class Resource extends OcpiResource
         array $data,
         ?string $evseUid = null,
         ?string $connectorId = null
-    ): ?array {
+    ): array|string|null {
         return $this->requestPatchSend(
             $data,
-            implode('/', array_filter([$this->connector->resolveBaseUrl(),$countryCode, $partyId, $locationId, $evseUid, $connectorId]))
+            implode('/', [$countryCode, $partyId, $locationId]+array_filter([$evseUid, $connectorId]))
         );
     }
 }
