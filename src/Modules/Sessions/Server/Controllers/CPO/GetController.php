@@ -27,6 +27,6 @@ class GetController extends Controller
 
         $data = $collection->pluck('session_details');
 
-        return $this->ocpiSuccessPaginateResponse($data, $offset, $limit, $collection->count(), 'sessions');
+        return $this->ocpiSuccessPaginateResponse($data, $offset, $limit, $collection->getTotalResults(), 'sessions');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Ocpi\Modules\Sessions\Factories;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Ocpi\Models\Sessions\Session;
@@ -16,12 +17,17 @@ use Ocpi\Support\Factories\PriceFactory;
 class SessionFactory
 {
     /**
-     * @param Collection $collection
+     * @param Collection|LengthAwarePaginator $collection
      * @return SessionCollection
      */
-    public static function fromCollection(Collection $collection): SessionCollection
+    public static function fromCollection(Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection): SessionCollection
     {
-        $sessionCollection = new SessionCollection();
+        $sessionCollection = new SessionCollection(
+            page: $collection->currentPage(),
+            perPage: $collection->perPage(),
+            totalPages: ($collection->total()/$collection->perPage()),
+            totalResults: $collection->total(),
+        );
         foreach ($collection as $session) {
             $sessionCollection->append(self::fromModel($session));
         }

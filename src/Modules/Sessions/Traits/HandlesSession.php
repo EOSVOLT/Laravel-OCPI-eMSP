@@ -2,7 +2,6 @@
 
 namespace Ocpi\Modules\Sessions\Traits;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Sessions\Events;
@@ -13,10 +12,10 @@ use Ocpi\Support\Enums\SessionStatus;
 trait HandlesSession
 {
     /**
-     * @todo return object instead.
      * @param string $session_id
      * @param int $party_role_id
      * @return Session|null
+     * @todo return object instead.
      */
     private function sessionById(string $session_id, int $party_role_id): ?Session
     {
@@ -35,10 +34,13 @@ trait HandlesSession
      */
     private function sessionSearch(Carbon $dateFrom, Carbon $dateTo, int $offset, int $limit): SessionCollection
     {
+        $perPage = $limit;
+        $page = ($offset / $limit) + 1;
         $collection = Session::query()->whereBetween('updated_at', [$dateFrom, $dateTo])
-            ->offset($offset)
-            ->limit($limit)
-            ->get();
+            ->paginate(
+                perPage: $perPage,
+                page: $page,
+            );
         return SessionFactory::fromCollection($collection);
     }
 
@@ -64,7 +66,7 @@ trait HandlesSession
             'status' => $status,
         ]);
 
-        if (! $session->save()) {
+        if (!$session->save()) {
             return false;
         }
 
@@ -86,7 +88,7 @@ trait HandlesSession
 
         $session->object = $payload;
 
-        if (! $session->save()) {
+        if (!$session->save()) {
             return false;
         }
 
@@ -106,7 +108,7 @@ trait HandlesSession
             $session->object[$field] = $value;
         }
 
-        if (! $session->save()) {
+        if (!$session->save()) {
             return false;
         }
 
