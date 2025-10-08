@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Str;
 use Ocpi\Models\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Object\CommandResponse;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
@@ -120,7 +121,7 @@ trait Response
         $query['offset'] = $nextOffset;
         $query['limit'] = $limit;
         $query = array_merge(Request::capture()->query->all(), $query);
-        $route = UrlHelper::getBaseUrlByModule($module, Context::get('ocpi_version'));
+        $route = UrlHelper::getCPOBaseUrlByModule($module, Context::get('ocpi_version'));
         $basePath = route($route);
         return "<" . $basePath . '?' . http_build_query($query) . ">; rel=\"next\"";
     }

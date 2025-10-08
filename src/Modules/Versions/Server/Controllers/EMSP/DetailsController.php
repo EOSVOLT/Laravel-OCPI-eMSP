@@ -28,11 +28,9 @@ class DetailsController extends Controller
             config('ocpi-emsp.versions', []
             ) as $configVersion => $configInformation) {
             if ($configVersion === $version) {
-                $routeVersion = Str::replace('.', '_', $version);
-
                 $endpointList = collect(($configInformation['modules'] ?? []))
-                    ->map(function ($module) use ($routeVersion) {
-                        $route = UrlHelper::getBaseUrlByModule($module, $routeVersion);
+                    ->map(function ($module) use ($version) {
+                        $route = UrlHelper::getEMSPBaseUrlByModule($module, $version);
                         $interfaceRole = $this->getInterfaceRoleByModule($module);
                         return Route::has($route)
                             ? [
