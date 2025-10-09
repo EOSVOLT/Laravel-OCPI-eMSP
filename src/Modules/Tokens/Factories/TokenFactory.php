@@ -4,6 +4,7 @@ namespace Ocpi\Modules\Tokens\Factories;
 
 use Illuminate\Support\Carbon;
 use Ocpi\Models\Commands\Enums\ProfileType;
+use Ocpi\Models\Commands\Enums\WhitelistType;
 use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Modules\Tokens\Objects\Token;
 
@@ -25,7 +26,7 @@ class TokenFactory
             $data['issuer'],
             $data['group_id'] ?? null,
             $data['valid'],
-            $data['whitelist'],
+            WhitelistType::tryFrom($data['whitelist']),
             $data['language'] ?? null,
             (true === isset($data['default_profile_type']) ? ProfileType::tryFrom(
                 $data['default_profile_type']
