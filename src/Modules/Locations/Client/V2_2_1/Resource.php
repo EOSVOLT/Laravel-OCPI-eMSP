@@ -35,7 +35,7 @@ class Resource extends OcpiResource
     ): array|string|null {
         return $this->requestPutSend(
             $data,
-            implode('/', [$countryCode, $partyId, $locationId]+array_filter([$evseUid, $connectorId]))
+            implode('/', array_filter([$countryCode, $partyId, $locationId,$evseUid, $connectorId]))
         );
     }
 
@@ -62,7 +62,7 @@ class Resource extends OcpiResource
     ): array|string|null {
         return $this->requestPatchSend(
             $data,
-            implode('/', [$countryCode, $partyId, $locationId]+array_filter([$evseUid, $connectorId]))
+            implode('/', array_filter([$countryCode, $partyId, $locationId,$evseUid, $connectorId]))
         );
     }
 }
