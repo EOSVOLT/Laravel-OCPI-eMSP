@@ -8,7 +8,7 @@ class BusinessModelFactory
 {
     public static function fromArray(array $data): BusinessDetails
     {
-        return new BusinessDetails($data['name'])
+        return new BusinessDetails($data['name'] ?? "")
             ->setWebsite($data['website'] ?? null)
             ->setLogo($data['logo'] ?? null);
     }
