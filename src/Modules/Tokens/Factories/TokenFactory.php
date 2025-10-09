@@ -33,7 +33,7 @@ class TokenFactory
             (true === isset($data['energy_contract']) ? EnergyContractFactory::fromArray(
                 $data['energy_contract']
             ) : null),
-            Carbon::createFromTimeString($data['last_updated ']),
+            Carbon::createFromTimeString($data['last_updated']),
         );
     }
 }
