@@ -123,7 +123,10 @@ class Client extends Connector
 
     protected function defaultConfig(): array
     {
-        return [];
+        return [
+            'timeout' => 120, // 30 seconds request timeout
+            'connect_timeout' => 60, // 10 seconds connection timeout
+        ];
     }
 
     protected function defaultAuth(): TokenAuthenticator

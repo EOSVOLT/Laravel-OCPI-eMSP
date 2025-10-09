@@ -12,10 +12,10 @@ use Ocpi\Models\Commands\Enums\CommandType;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStartTransaction;
 use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStopTransaction;
-use Ocpi\Modules\Commands\Factories\CommandTokenFactory;
 use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Credentials\Object\PartyRole;
 use Ocpi\Modules\Locations\Enums\TokenType;
+use Ocpi\Modules\Tokens\Factories\TokenFactory;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
@@ -39,7 +39,7 @@ class PostController extends Controller
 
     private function remoteStartTransaction(Request $request): JsonResponse
     {
-        $token = CommandTokenFactory::fromArray($request->input('token'));
+        $token = TokenFactory::fromArray($request->input('token'));
         if (TokenType::RFID === $token->getType()) {
             return $this->ocpiServerErrorResponse(statusMessage: 'RFID is not support yet.');
         }
