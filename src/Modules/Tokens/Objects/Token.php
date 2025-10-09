@@ -174,8 +174,8 @@ readonly class Token implements Arrayable
             'valid' => $this->isValid(),
             'whitelist' => $this->getWhitelist()->value,
             'language' => $this->getLanguage(),
-            'default_profile_type' => $this->getDefaultProfileType()->value,
-            'energy_contract' => $this->getEnergyContract()->toArray(),
+            'default_profile_type' => $this->getDefaultProfileType()?->value,
+            'energy_contract' => $this->getEnergyContract()?->toArray(),
             'last_updated' => $this->getUpdatedAt()->toIsoString(),
         ];
     }
