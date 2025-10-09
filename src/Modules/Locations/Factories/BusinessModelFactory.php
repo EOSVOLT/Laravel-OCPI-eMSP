@@ -8,8 +8,11 @@ class BusinessModelFactory
 {
     public static function fromArray(array $data): BusinessDetails
     {
-        return new BusinessDetails($data['name'] ?? "")
-            ->setWebsite($data['website'] ?? null)
-            ->setLogo($data['logo'] ?? null);
+        $businessDetail = new BusinessDetails($data['name'] ?? "")
+            ->setWebsite($data['website'] ?? null);
+        if (isset($data['logo'])) {
+            $businessDetail->setLogo(ImageFactory::fromArray($data['logo']));
+        }
+        return $businessDetail;
     }
 }
