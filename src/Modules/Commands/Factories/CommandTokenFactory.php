@@ -19,7 +19,7 @@ class CommandTokenFactory
             $data['uid'],
             TokenType::tryFrom($data['type']),
             $data['contract_id'],
-            $data['visual_number']
+            $data['visual_number'] ?? null
         );
     }
 }

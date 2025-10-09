@@ -14,7 +14,7 @@ readonly class CommandToken implements Arrayable
      * @param string $tokenUid
      * @param TokenType $type
      * @param string $contractId
-     * @param string $visual_number
+     * @param string|null $visual_number
      */
     public function __construct(
         private string $countryCode,
@@ -22,7 +22,7 @@ readonly class CommandToken implements Arrayable
         private string $tokenUid,
         private TokenType $type,
         private string $contractId,
-        private string $visual_number,
+        private ?string $visual_number = null,
     ) {
     }
 
@@ -67,9 +67,9 @@ readonly class CommandToken implements Arrayable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getVisualNumber(): string
+    public function getVisualNumber(): ?string
     {
         return $this->visual_number;
     }
