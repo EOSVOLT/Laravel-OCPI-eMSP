@@ -42,7 +42,8 @@ class LocationFactory
             ->setPostalCode($object['postal_code'] ?? null)
             ->setOpeningTimes(HourFactory::fromArray($object['opening_times'] ?? []))
             ->setFacilities($object['facilities'] ?? [])
-            ->setParkingType(ParkingType::tryFrom($object['parking_type'] ?? ""));
+            ->setParkingType(ParkingType::tryFrom($object['parking_type'] ?? ""))
+            ->setOwner(BusinessModelFactory::fromArray($object['owner'] ?? []));
     }
 
     /**
