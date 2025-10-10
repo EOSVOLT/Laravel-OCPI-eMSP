@@ -3,8 +3,8 @@
 namespace Ocpi\Modules\Tokens\Factories;
 
 use Illuminate\Support\Carbon;
-use Ocpi\Models\Commands\Enums\ProfileType;
-use Ocpi\Models\Commands\Enums\WhitelistType;
+use Ocpi\Modules\Commands\Enums\ProfileType;
+use Ocpi\Modules\Commands\Enums\WhitelistType;
 use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Modules\Tokens\Objects\Token;
 

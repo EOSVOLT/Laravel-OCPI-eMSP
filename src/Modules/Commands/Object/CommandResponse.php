@@ -3,7 +3,7 @@
 namespace Ocpi\Modules\Commands\Object;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Ocpi\Models\Commands\Enums\CommandResponseType;
+use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Support\Objects\DisplayText;
 
 readonly class CommandResponse implements Arrayable
