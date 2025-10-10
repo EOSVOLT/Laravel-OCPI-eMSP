@@ -2,13 +2,12 @@
 
 namespace Ocpi\Models\Commands;
 
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Ocpi\Models\Commands\Enums\CommandResponseType;
-use Ocpi\Models\Commands\Enums\CommandResultType;
-use Ocpi\Models\Commands\Enums\CommandType;
 use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Commands\Enums\CommandResponseType;
+use Ocpi\Modules\Commands\Enums\CommandResultType;
+use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Support\Models\Model;
 
 /**

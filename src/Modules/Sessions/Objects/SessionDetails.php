@@ -4,8 +4,8 @@ namespace Ocpi\Modules\Sessions\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
-use Ocpi\Modules\Cdrs\DTO\CdrTokenDTO;
-use Ocpi\Modules\Cdrs\DTO\ChargingPeriodDTOCollection;
+use Ocpi\Modules\Cdrs\Objects\CdrToken;
+use Ocpi\Modules\Cdrs\Objects\ChargingPeriodCollection;
 use Ocpi\Support\Enums\AuthMethod;
 use Ocpi\Support\Enums\SessionStatus;
 use Ocpi\Support\Objects\Price;
@@ -19,7 +19,7 @@ readonly class SessionDetails implements Arrayable
      * @param Carbon $startDate
      * @param Carbon|null $endDate
      * @param float $kwh
-     * @param CdrTokenDTO $cdrToken
+     * @param CdrToken $cdrToken
      * @param AuthMethod $authMethod
      * @param string|null $authorizationReference
      * @param string $locationId
@@ -27,7 +27,7 @@ readonly class SessionDetails implements Arrayable
      * @param string $connectorId
      * @param string|null $meterId
      * @param string $currency
-     * @param ChargingPeriodDTOCollection|null $chargingPeriods
+     * @param ChargingPeriodCollection|null $chargingPeriods
      * @param Price $totalCost
      * @param SessionStatus $status
      * @param Carbon $lastUpdated
@@ -39,7 +39,7 @@ readonly class SessionDetails implements Arrayable
         private Carbon $startDate,
         private ?Carbon $endDate = null,
         private float $kwh,
-        private CdrTokenDTO $cdrToken,
+        private CdrToken $cdrToken,
         private AuthMethod $authMethod,
         private ?string $authorizationReference = null,
         private string $locationId,
@@ -47,7 +47,7 @@ readonly class SessionDetails implements Arrayable
         private string $connectorId,
         private ?string $meterId = null,
         private string $currency,
-        private ?ChargingPeriodDTOCollection $chargingPeriods = null,
+        private ?ChargingPeriodCollection $chargingPeriods = null,
         private Price $totalCost,
         private SessionStatus $status,
         private Carbon $lastUpdated,
@@ -104,9 +104,9 @@ readonly class SessionDetails implements Arrayable
     }
 
     /**
-     * @return CdrTokenDTO
+     * @return CdrToken
      */
-    public function getCdrToken(): CdrTokenDTO
+    public function getCdrToken(): CdrToken
     {
         return $this->cdrToken;
     }
@@ -168,9 +168,9 @@ readonly class SessionDetails implements Arrayable
     }
 
     /**
-     * @return ChargingPeriodDTOCollection
+     * @return ChargingPeriodCollection
      */
-    public function getChargingPeriods(): ChargingPeriodDTOCollection
+    public function getChargingPeriods(): ChargingPeriodCollection
     {
         return $this->chargingPeriods;
     }

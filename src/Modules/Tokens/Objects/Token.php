@@ -4,8 +4,8 @@ namespace Ocpi\Modules\Tokens\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
-use Ocpi\Models\Commands\Enums\ProfileType;
-use Ocpi\Models\Commands\Enums\WhitelistType;
+use Ocpi\Modules\Commands\Enums\ProfileType;
+use Ocpi\Modules\Commands\Enums\WhitelistType;
 use Ocpi\Modules\Locations\Enums\TokenType;
 
 readonly class Token implements Arrayable

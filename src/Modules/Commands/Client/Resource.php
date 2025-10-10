@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Log;
 use Ocpi\Models\Commands\Command;
-use Ocpi\Models\Commands\Enums\CommandResponseType;
-use Ocpi\Models\Commands\Enums\CommandType;
 use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Commands\Enums\CommandResponseType;
+use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Modules\Commands\Events;
 use Ocpi\Support\Client\Resource as OcpiResource;
 

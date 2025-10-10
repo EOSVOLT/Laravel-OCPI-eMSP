@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 use Ocpi\Models\Commands\Command;
-use Ocpi\Models\Commands\Enums\CommandResultType;
+use Ocpi\Modules\Commands\Enums\CommandResultType;
 use Ocpi\Modules\Commands\Events;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;

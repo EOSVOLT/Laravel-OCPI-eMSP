@@ -1,11 +1,11 @@
 <?php
 
-namespace Ocpi\Modules\Cdrs\DTO;
+namespace Ocpi\Modules\Cdrs\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Support\Enums\CdrDimensionType;
 
-readonly class CdrDimensionDTO implements Arrayable
+readonly class CdrDimension implements Arrayable
 {
 
     /**

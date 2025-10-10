@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Models\Commands\Enums;
+namespace Ocpi\Modules\Commands\Enums;
 
 enum ProfileType: string
 {
