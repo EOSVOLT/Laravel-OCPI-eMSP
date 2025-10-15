@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\Locations\Location;
+use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\PartyRole;
 use Ocpi\Support\Enums\SessionStatus;
 use Ocpi\Support\Models\Model;
@@ -19,6 +20,8 @@ use Ocpi\Support\Models\Model;
  * @property Location $location
  * @property array $object
  * @property SessionStatus $status
+ * @property int $location_evse_id
+ * @property LocationEvse $location_evse
  */
 class Session extends Model
 {
@@ -28,6 +31,7 @@ class Session extends Model
     protected $fillable = [
         'party_role_id',
         'location_id',
+        'location_evse_id',
         'session_id',
         'object',
         'status',
@@ -48,6 +52,9 @@ class Session extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }public function location_evse(): BelongsTo
+    {
+        return $this->belongsTo(LocationEvse::class);
     }
 
     public function party_role(): BelongsTo
