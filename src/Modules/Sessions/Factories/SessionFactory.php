@@ -17,7 +17,7 @@ use Ocpi\Support\Factories\PriceFactory;
 class SessionFactory
 {
     /**
-     * @param Collection|LengthAwarePaginator $collection
+     * @param Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection
      * @return SessionCollection
      */
     public static function fromCollection(Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection): SessionCollection
