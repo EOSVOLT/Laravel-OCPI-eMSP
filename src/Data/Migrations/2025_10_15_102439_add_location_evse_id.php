@@ -21,9 +21,8 @@ return new class extends Migration {
         });
         //migrate session data
         Session::all()->each(function (Session $session) {
-            $sessionObj = SessionFactory::fromModel($session);
             /** @var LocationEvse $evse */
-            $evse = LocationEvse::query()->where('uid', $sessionObj->getSessionDetails()->getEvseUid())->first();
+            $evse = LocationEvse::query()->where('uid', $session->object['evse_uid'])->first();
             $session->location_evse_id = $evse->id;
             $session->save();
         });
