@@ -44,6 +44,7 @@ class SessionFactory
             $model->id,
             $model->party_role_id,
             $model->location_id,
+            $model->location_evse_id,
             $model->session_id,
             $model->status,
             self::createDetailsFromArray($model->object)
