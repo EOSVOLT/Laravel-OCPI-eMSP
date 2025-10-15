@@ -37,14 +37,6 @@ class Session extends Model
         'status',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'object' => 'array',
-            'status' => SessionStatus::class,
-        ];
-    }
-
     /***
      * Relations.
      ***/
@@ -52,7 +44,9 @@ class Session extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
-    }public function location_evse(): BelongsTo
+    }
+
+    public function location_evse(): BelongsTo
     {
         return $this->belongsTo(LocationEvse::class);
     }
@@ -60,5 +54,13 @@ class Session extends Model
     public function party_role(): BelongsTo
     {
         return $this->belongsTo(PartyRole::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'status' => SessionStatus::class,
+        ];
     }
 }
