@@ -5,6 +5,7 @@ namespace Ocpi\Modules\Cdrs\Objects;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
 use Ocpi\Modules\Tariffs\Objects\Tariff;
+use Ocpi\Modules\Tariffs\Objects\TariffCollection;
 use Ocpi\Support\Objects\Price;
 
 readonly class CdrDetails implements Arrayable
@@ -22,7 +23,7 @@ readonly class CdrDetails implements Arrayable
         private CdrLocation $cdrLocation,
         private ?string $meterId = null,
         private string $currency,
-        private ?Tariff $tariff = null,
+        private ?TariffCollection $tariffs = null,
         private ChargingPeriodCollection $chargingPeriodCollection,
         private ?SignedData $signedData = null,
         private Price $totalCost,
@@ -98,9 +99,9 @@ readonly class CdrDetails implements Arrayable
         return $this->currency;
     }
 
-    public function getTariff(): ?Tariff
+    public function getTariffs(): TariffCollection
     {
-        return $this->tariff;
+        return $this->tariffs;
     }
 
     public function getChargingPeriodCollection(): ChargingPeriodCollection
@@ -202,7 +203,7 @@ readonly class CdrDetails implements Arrayable
             'cdr_location' => $this->getCdrLocation()->toArray(),
             'meter_id' => $this->getMeterId(),
             'currency' => $this->getCurrency(),
-            'tariff' => $this->getTariff()->toArray(),
+            'tariffs' => $this->getTariffs()->toArray(),
             'charging_periods' => $this->getChargingPeriodCollection()->toArray(),
             'signed_data' => $this->getSignedData()->toArray(),
             'total_cost' => $this->getTotalCost()->toArray(),

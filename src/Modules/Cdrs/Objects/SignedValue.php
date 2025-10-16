@@ -12,9 +12,9 @@ readonly class SignedValue implements Arrayable
      * @param string $signedData
      */
     public function __construct(
-        private readonly string $nature,
-        private readonly string $plainData,
-        private readonly string $signedData,
+        private string $nature,
+        private string $plainData,
+        private string $signedData,
     ) {
     }
 

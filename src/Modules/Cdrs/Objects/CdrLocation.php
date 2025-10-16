@@ -12,7 +12,7 @@ readonly class CdrLocation implements Arrayable
 {
 
     /**
-     * @param string $locationId
+     * @param string $id
      * @param string|null $name
      * @param string $address
      * @param string $city
@@ -28,7 +28,7 @@ readonly class CdrLocation implements Arrayable
      * @param PowerType $powerType
      */
     public function __construct(
-        private string $locationId,
+        private string $id,
         private ?string $name = null,
         private string $address,
         private string $city,
@@ -48,9 +48,9 @@ readonly class CdrLocation implements Arrayable
     /**
      * @return string
      */
-    public function getLocationId(): string
+    public function getId(): string
     {
-        return $this->locationId;
+        return $this->id;
     }
 
     /**
@@ -163,7 +163,7 @@ readonly class CdrLocation implements Arrayable
     public function toArray(): array
     {
         return [
-            'id' => $this->getLocationId(),
+            'id' => $this->getId(),
             'name' => $this->getName(),
             'address' => $this->getAddress(),
             'city' => $this->getCity(),
