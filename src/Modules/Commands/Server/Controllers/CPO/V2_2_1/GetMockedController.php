@@ -6,7 +6,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Ocpi\Support\Server\Controllers\Controller;
 
-class GetController extends Controller
+/**
+ * Route only used in Versions details to give an endpoint for this Module to the CPO.
+ */
+class GetMockedController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {

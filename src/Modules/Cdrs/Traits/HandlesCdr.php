@@ -28,7 +28,7 @@ trait HandlesCdr
             ->first();
     }
 
-    private function cdrCreate(array $payload, int $party_role_id, ?string $location_evse_emsp_id): ?Cdr
+    private function cdrCreate(array $payload, int $party_role_id, ?string $location_evse_id): ?Cdr
     {
         if (($payload['id'] ?? null) === null) {
             return null;
@@ -37,7 +37,7 @@ trait HandlesCdr
         $cdr = new Cdr;
         $cdr->fill([
             'party_role_id' => $party_role_id,
-            'location_evse_emsp_id' => $location_evse_emsp_id,
+            'location_evse_id' => $location_evse_id,
             'id' => $payload['id'],
             'object' => $payload,
         ]);
