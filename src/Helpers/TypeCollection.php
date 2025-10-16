@@ -130,6 +130,26 @@ abstract class TypeCollection extends \ArrayIterator implements Arrayable
         return new static($mappedItems);
     }
 
+    public function filter(callable $callback): static
+    {
+        $filteredItems = [];
+        foreach ($this as $item) {
+            if ($callback($item)) {
+                $filteredItems[] = $item;
+            }
+        }
+        return new static($filteredItems);
+    }
+
+    public function reduce(callable $callback, $initial = null)
+    {
+        $value = $initial;
+        foreach ($this as $item) {
+            $value = $callback($value, $item);
+        }
+        return $value;
+    }
+
     public function sum(string $field): float|int
     {
         $sum = 0;

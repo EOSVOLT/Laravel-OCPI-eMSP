@@ -8,6 +8,7 @@ use Ocpi\Modules\Cdrs\Objects\Cdr;
 use Ocpi\Modules\Cdrs\Objects\CdrDetails;
 use Ocpi\Modules\Tariffs\Factories\TariffFactory;
 use Ocpi\Modules\Tariffs\Objects\TariffCollection;
+use Ocpi\Support\Enums\AuthMethod;
 use Ocpi\Support\Factories\PriceFactory;
 
 class CdrFactory
@@ -38,6 +39,7 @@ class CdrFactory
             Carbon::createFromTimeString($data['end_date_time']),
             $data['session_id'],
             CdrTokenFactory::fromArray($data['cdr_token']),
+            AuthMethod::tryFrom($data['auth_method']),
             $data['authorization_reference'],
             CdrLocationFactory::fromArray($data['cdr_location']),
             $data['meter_id'] ?? null,

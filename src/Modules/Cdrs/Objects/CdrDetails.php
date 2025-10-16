@@ -6,6 +6,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
 use Ocpi\Modules\Tariffs\Objects\Tariff;
 use Ocpi\Modules\Tariffs\Objects\TariffCollection;
+use Ocpi\Support\Enums\AuthMethod;
 use Ocpi\Support\Objects\Price;
 
 readonly class CdrDetails implements Arrayable
@@ -19,6 +20,7 @@ readonly class CdrDetails implements Arrayable
         private Carbon $endTime,
         private ?string $sessionId = null,
         private CdrToken $cdrToken,
+        private AuthMethod $authMethod,
         private ?string $authorizationReference = null,
         private CdrLocation $cdrLocation,
         private ?string $meterId = null,
@@ -77,6 +79,11 @@ readonly class CdrDetails implements Arrayable
     public function getCdrToken(): CdrToken
     {
         return $this->cdrToken;
+    }
+
+    public function getAuthMethod(): AuthMethod
+    {
+        return $this->authMethod;
     }
 
     public function getAuthorizationReference(): ?string
@@ -199,6 +206,7 @@ readonly class CdrDetails implements Arrayable
             'end_date_time' => $this->getEndTime()->toISOString(),
             'session_id' => $this->getSessionId(),
             'cdr_token' => $this->getCdrToken()->toArray(),
+            'auth_method' => $this->getAuthMethod()->value,
             'authorization_reference' => $this->getAuthorizationReference(),
             'cdr_location' => $this->getCdrLocation()->toArray(),
             'meter_id' => $this->getMeterId(),
