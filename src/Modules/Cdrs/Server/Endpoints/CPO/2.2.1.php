@@ -9,5 +9,5 @@ Route::prefix('cdrs')
     ->group(function () {
         Route::get('{cdr_emsp_id?}', GetController::class)->name('.get');
         // Route only used in Versions details to give an endpoint for this Module to the CPO.
-        Route::post('/', GetMockedController::class);
+        Route::get('/', GetMockedController::class);
     });
