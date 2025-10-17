@@ -53,7 +53,7 @@ class CdrFactory
             PriceFactory::fromArray($data['total_energy_cost']),
             $data['total_time'],
             PriceFactory::fromArray($data['total_time_cost']),
-            $data['total_parking_time'] ?? null,
+            $data['total_parking_time'] ?? 0,
             PriceFactory::fromArray($data['total_parking_cost']),
             PriceFactory::fromArray($data['total_reservation_cost']),
             $data['remark'] ?? null,
