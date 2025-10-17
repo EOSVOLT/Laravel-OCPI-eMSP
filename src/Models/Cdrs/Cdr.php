@@ -2,7 +2,6 @@
 
 namespace Ocpi\Models\Cdrs;
 
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\Locations\Location;
@@ -60,10 +59,11 @@ class Cdr extends Model
     {
         return $this->belongsTo(PartyRole::class);
     }
+
     protected function casts(): array
     {
         return [
-            'object' => AsArrayObject::class,
+            'object' => 'array',
         ];
     }
 }
