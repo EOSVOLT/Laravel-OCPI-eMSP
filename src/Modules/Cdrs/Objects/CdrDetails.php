@@ -30,11 +30,11 @@ readonly class CdrDetails implements Arrayable
         private ?SignedData $signedData = null,
         private Price $totalCost,
         private ?Price $totalFixedCost = null,
-        private int $totalEnergy,
+        private float $totalEnergy,
         private ?Price $totalEnergyCost = null,
-        private int $totalTimeHours,
+        private float $totalTimeHours,
         private ?Price $totalTimeCost = null,
-        private int $totalParkingTimeHours,
+        private float $totalParkingTimeHours,
         private ?Price $totalParkingTimeCost = null,
         private ?Price $totalReservationCost = null,
         private ?string $remarks = null,
@@ -131,7 +131,7 @@ readonly class CdrDetails implements Arrayable
         return $this->totalFixedCost;
     }
 
-    public function getTotalEnergy(): int
+    public function getTotalEnergy(): float
     {
         return $this->totalEnergy;
     }
@@ -141,7 +141,7 @@ readonly class CdrDetails implements Arrayable
         return $this->totalEnergyCost;
     }
 
-    public function getTotalTimeHours(): int
+    public function getTotalTimeHours(): float
     {
         return $this->totalTimeHours;
     }
@@ -151,7 +151,7 @@ readonly class CdrDetails implements Arrayable
         return $this->totalTimeCost;
     }
 
-    public function getTotalParkingTimeHours(): int
+    public function getTotalParkingTimeHours(): float
     {
         return $this->totalParkingTimeHours;
     }
