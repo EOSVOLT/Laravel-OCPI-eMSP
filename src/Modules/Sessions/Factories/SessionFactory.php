@@ -17,7 +17,7 @@ use Ocpi\Support\Factories\PriceFactory;
 class SessionFactory
 {
     /**
-     * @param Collection|LengthAwarePaginator $collection
+     * @param Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection
      * @return SessionCollection
      */
     public static function fromCollection(Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection): SessionCollection
@@ -44,6 +44,7 @@ class SessionFactory
             $model->id,
             $model->party_role_id,
             $model->location_id,
+            $model->location_evse_id,
             $model->session_id,
             $model->status,
             self::createDetailsFromArray($model->object)

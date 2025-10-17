@@ -57,6 +57,7 @@ class PostController extends Controller
             $location_id = data_get($payload, 'location.id');
             $location_evse_uid = data_get($payload, 'location.evses.0.uid');
             if ($location_id && $location_evse_uid) {
+                //@todo revisit evseSearch() is missing
                 $locationEvse = $this->evseSearch(
                     party_role_id: $partyRoleId,
                     location_id: $location_id,
@@ -70,7 +71,7 @@ class PostController extends Controller
                     return $this->cdrCreate(
                         payload: $payload,
                         party_role_id: $partyRoleId,
-                        location_evse_emsp_id: $locationEvse?->emsp_id,
+                        location_evse_id: $locationEvse?->id,
                     );
                 });
 
