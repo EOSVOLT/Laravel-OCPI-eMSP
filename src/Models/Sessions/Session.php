@@ -52,12 +52,12 @@ class Session extends Model
 
     public function evse(): BelongsTo
     {
-        return $this->belongsTo(LocationEvse::class);
+        return $this->belongsTo(LocationEvse::class, 'evse_id', 'id');
     }
 
     public function connector(): BelongsTo
     {
-        return $this->belongsTo(LocationConnector::class);
+        return $this->belongsTo(LocationConnector::class,'location_connector_id', 'id');
     }
 
     public function location_evse(): BelongsTo
