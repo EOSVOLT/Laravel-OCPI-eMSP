@@ -26,6 +26,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table(config('ocpi.database.table.prefix') . 'cdrs', function (Blueprint $table) {
+            $table->dropForeign('location_evse_id');
+            $table->removeColumn('location_evse_id');
+            $table->dropForeign('session_id');
+            $table->removeColumn('session_id');
+        });
     }
 };

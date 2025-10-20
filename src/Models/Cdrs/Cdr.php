@@ -19,7 +19,7 @@ use Ocpi\Support\Models\Model;
  * @property Location $location
  * @property int $location_id
  * @property int $location_evse_id
- * @property LocationEvse $location_evse
+ * @property LocationEvse $evse
  * @property Session $session
  * @property string $session_id
  */
@@ -40,9 +40,9 @@ class Cdr extends Model
      * Relations.
      ***/
 
-    public function location_evse(): BelongsTo
+    public function evse(): BelongsTo
     {
-        return $this->belongsTo(LocationEvse::class);
+        return $this->belongsTo(LocationEvse::class, 'location_evse_id', 'id');
     }
 
     public function location(): BelongsTo

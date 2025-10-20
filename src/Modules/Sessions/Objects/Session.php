@@ -13,6 +13,7 @@ readonly class Session implements Arrayable
      * @param int $partyRoleId
      * @param int $locationId
      * @param int $locationEvseId
+     * @param int $locationConnectorId
      * @param string $sessionId
      * @param SessionStatus $status
      * @param SessionDetails $sessionDetails
@@ -22,6 +23,7 @@ readonly class Session implements Arrayable
         private int $partyRoleId,
         private int $locationId,
         private int $locationEvseId,
+        private int $locationConnectorId,
         private string $sessionId,
         private SessionStatus $status,
         private SessionDetails $sessionDetails,
@@ -61,6 +63,14 @@ readonly class Session implements Arrayable
     }
 
     /**
+     * @return int
+     */
+    public function getLocationConnectorId(): int
+    {
+        return $this->locationConnectorId;
+    }
+
+    /**
      * @return string
      */
     public function getSessionId(): string
@@ -94,6 +104,7 @@ readonly class Session implements Arrayable
             'party_role_id' => $this->getPartyRoleId(),
             'location_id' => $this->getLocationId(),
             'location_evse_id' => $this->getLocationEvseId(),
+            'location_connector_id' => $this->getLocationConnectorId(),
             'session_id' => $this->getSessionId(),
             'status' => $this->getStatus()->value,
             'details' => $this->getSessionDetails()->toArray(),
