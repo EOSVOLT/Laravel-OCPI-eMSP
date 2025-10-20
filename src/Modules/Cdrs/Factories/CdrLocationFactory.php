@@ -42,7 +42,7 @@ class CdrLocationFactory
     public static function fromSessionModel(Session $sessionModel): CdrLocation
     {
         $location = LocationFactory::fromModel($sessionModel->location);
-        $locationEvse = EvseFactory::fromModel($sessionModel->location_evse);
+        $locationEvse = EvseFactory::fromModel($sessionModel->evse);
         /** @var Connector $connector */
         $connector = $locationEvse->getConnectors()->filter(function (Connector $connector) use ($sessionModel) {
             return $connector->getConnectorId() === $sessionModel->object['connector_id'];

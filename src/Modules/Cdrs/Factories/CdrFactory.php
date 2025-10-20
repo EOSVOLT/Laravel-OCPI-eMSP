@@ -3,7 +3,6 @@
 namespace Ocpi\Modules\Cdrs\Factories;
 
 use Illuminate\Support\Carbon;
-use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Modules\Cdrs\Objects\Cdr;
 use Ocpi\Modules\Cdrs\Objects\CdrDetails;
 use Ocpi\Modules\Tariffs\Factories\TariffFactory;
@@ -15,14 +14,12 @@ class CdrFactory
 {
     public static function fromModel(\Ocpi\Models\Cdrs\Cdr $model): Cdr
     {
-        /** @var LocationConnector $connector */
-        $connector = $model->location_evse->connectors->first();
-
+        $tariffCollection = TariffFactory::fromCollection($model->session->connector->tariffs);
         return new Cdr(
             $model->id,
             $model->party_role_id,
             $model->cdr_id,
-            self::createDetailsFromArray($model->object, TariffFactory::fromCollection($connector->tariffs)),
+            self::createDetailsFromArray($model->object, $tariffCollection),
             $model->location_id,
             $model->location_evse_id,
             $model->session_id
