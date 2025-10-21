@@ -4,6 +4,7 @@ namespace Ocpi\Models\Locations;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,6 +26,7 @@ use Ocpi\Support\Models\Model;
 class LocationConnector extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $primaryKey = 'id';
 

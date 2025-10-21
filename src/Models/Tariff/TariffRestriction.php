@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models\Tariff;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class TariffRestriction extends Model
 {
+    use HasFactory;
+
     protected $guarded = [];
     /**
      * @return string

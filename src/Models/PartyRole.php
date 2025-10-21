@@ -4,6 +4,7 @@ namespace Ocpi\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Support\Enums\Role;
@@ -21,6 +22,7 @@ use Ocpi\Support\Models\Model;
 class PartyRole extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'code',

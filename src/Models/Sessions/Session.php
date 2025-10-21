@@ -3,6 +3,7 @@
 namespace Ocpi\Models\Sessions;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\Locations\Location;
@@ -28,8 +29,9 @@ use Ocpi\Support\Models\Model;
  */
 class Session extends Model
 {
-    use HasUuids,
-        SoftDeletes;
+    use HasUuids;
+    use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'party_role_id',
