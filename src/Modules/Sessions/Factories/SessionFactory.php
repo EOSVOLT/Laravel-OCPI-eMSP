@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Cdrs\Factories\CdrTokenFactory;
 use Ocpi\Modules\Cdrs\Factories\ChargingPeriodFactory;
+use Ocpi\Modules\Locations\Factories\LocationFactory;
 use Ocpi\Modules\Sessions\Objects\SessionCollection;
 use Ocpi\Modules\Sessions\Objects\SessionDetails;
 use Ocpi\Support\Enums\AuthMethod;
@@ -20,12 +21,13 @@ class SessionFactory
      * @param Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection
      * @return SessionCollection
      */
-    public static function fromCollection(Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection): SessionCollection
-    {
+    public static function fromCollection(
+        Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection
+    ): SessionCollection {
         $sessionCollection = new SessionCollection(
             page: $collection->currentPage(),
             perPage: $collection->perPage(),
-            totalPages: ($collection->total()/$collection->perPage()),
+            totalPages: ($collection->total() / $collection->perPage()),
             totalResults: $collection->total(),
         );
         foreach ($collection as $session) {
@@ -36,9 +38,10 @@ class SessionFactory
 
     /**
      * @param Session $model
+     * @param bool $withLocation
      * @return \Ocpi\Modules\Sessions\Objects\Session
      */
-    public static function fromModel(Session $model): \Ocpi\Modules\Sessions\Objects\Session
+    public static function fromModel(Session $model, bool $withLocation = false): \Ocpi\Modules\Sessions\Objects\Session
     {
         return new \Ocpi\Modules\Sessions\Objects\Session(
             $model->id,
@@ -48,7 +51,8 @@ class SessionFactory
             $model->location_connector_id,
             $model->session_id,
             $model->status,
-            self::createDetailsFromArray($model->object)
+            self::createDetailsFromArray($model->object),
+            (true === $withLocation) ? LocationFactory::fromModel($model->location) : null,
         );
     }
 
