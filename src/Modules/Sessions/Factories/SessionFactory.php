@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Cdrs\Factories\CdrTokenFactory;
 use Ocpi\Modules\Cdrs\Factories\ChargingPeriodFactory;
+use Ocpi\Modules\Locations\Factories\ConnectorFactory;
 use Ocpi\Modules\Locations\Factories\LocationFactory;
 use Ocpi\Modules\Sessions\Objects\SessionCollection;
 use Ocpi\Modules\Sessions\Objects\SessionDetails;
@@ -38,10 +39,10 @@ class SessionFactory
 
     /**
      * @param Session $model
-     * @param bool $withLocation
+     * @param bool $withLocationConnector
      * @return \Ocpi\Modules\Sessions\Objects\Session
      */
-    public static function fromModel(Session $model, bool $withLocation = false): \Ocpi\Modules\Sessions\Objects\Session
+    public static function fromModel(Session $model, bool $withLocationConnector = false): \Ocpi\Modules\Sessions\Objects\Session
     {
         return new \Ocpi\Modules\Sessions\Objects\Session(
             $model->id,
@@ -52,7 +53,7 @@ class SessionFactory
             $model->session_id,
             $model->status,
             self::createDetailsFromArray($model->object),
-            (true === $withLocation) ? LocationFactory::fromModel($model->location) : null,
+            (true === $withLocationConnector) ? ConnectorFactory::fromModel($model->connector) : null,
         );
     }
 
