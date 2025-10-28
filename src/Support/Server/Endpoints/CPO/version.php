@@ -3,13 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Ocpi\Support\Server\Middlewares\IdentifyCPOVersion;
-use Ocpi\Support\Server\Middlewares\IdentifyReceiverParty;
+use Ocpi\Support\Server\Middlewares\IdentifyParty;
 use Ocpi\Support\Server\Middlewares\LogRequest;
 
 Route::middleware([
     'api',
     LogRequest::class,
-    IdentifyReceiverParty::class,
+    IdentifyParty::class,
     IdentifyCPOVersion::class,
 ])
     ->prefix(config('ocpi.server.routing.cpo.uri_prefix'))

@@ -17,13 +17,16 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Identify a Receiver party aka CPO party
  */
-class IdentifyReceiverParty
+class IdentifyParty
 {
     use ServerResponse;
 
     public function handle(Request $request, Closure $next): Response
     {
-        // Retrieve Authorization Token from header.
+        /** Retrieve Authorization Token from header.
+         * it could be a Token A, before handshake completed.
+         * or Token C after handshake is completed.
+         * */
         $tokenA = $this->token($request, 'Token');
         if ($tokenA === null) {
             return $this->ocpiClientErrorResponse(
