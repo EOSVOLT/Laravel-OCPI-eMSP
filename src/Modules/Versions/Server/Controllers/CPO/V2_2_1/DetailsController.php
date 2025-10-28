@@ -1,20 +1,23 @@
 <?php
-namespace Ocpi\Modules\Versions\Server\Controllers\EMSP;
+
+namespace Ocpi\Modules\Versions\Server\Controllers\CPO\V2_2_1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Server\Controllers\Controller;
+
+use function Ocpi\Modules\Versions\Server\Controllers\CPO\config;
+use function Ocpi\Modules\Versions\Server\Controllers\CPO\route;
 
 class DetailsController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        if (! Context::has('ocpi_version')) {
+        if (!Context::has('ocpi_version')) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::InvalidParameters,
                 statusMessage: 'Unknown OCPI version.',
@@ -24,14 +27,12 @@ class DetailsController extends Controller
         $version = Context::get('ocpi_version');
         $data = null;
 
-        foreach (
-            config('ocpi-emsp.versions', []
-            ) as $configVersion => $configInformation) {
+        foreach (config('ocpi-cpo.versions', []) as $configVersion => $configInformation) {
             if ($configVersion === $version) {
                 $endpointList = collect(($configInformation['modules'] ?? []))
                     ->map(function ($module) use ($version) {
-                        $route = UrlHelper::getEMSPBaseUrlByModule($module, $version);
-                        $interfaceRole = $this->getEMSPInterfaceRoleByModule($module);
+                        $route = UrlHelper::getCPOBaseUrlByModule($module, $version);
+                        $interfaceRole = $this->getCPOInterfaceRoleByModule($module);
                         return Route::has($route)
                             ? [
                                 'identifier' => $module,

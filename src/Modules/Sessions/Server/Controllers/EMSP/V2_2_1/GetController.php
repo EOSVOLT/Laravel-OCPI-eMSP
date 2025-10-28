@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Sessions\Server\Controllers\EMSP;
+namespace Ocpi\Modules\Sessions\Server\Controllers\EMSP\V2_2_1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

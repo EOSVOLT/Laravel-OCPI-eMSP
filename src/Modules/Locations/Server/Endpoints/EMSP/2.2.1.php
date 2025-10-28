@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Modules\Locations\Server\Controllers\EMSP\GetController;
-use Ocpi\Modules\Locations\Server\Controllers\EMSP\PatchController;
-use Ocpi\Modules\Locations\Server\Controllers\EMSP\PutController;
+use Ocpi\Modules\Locations\Server\Controllers\EMSP\V2_2_1\GetController;
+use Ocpi\Modules\Locations\Server\Controllers\EMSP\V2_2_1\PatchController;
+use Ocpi\Modules\Locations\Server\Controllers\EMSP\V2_2_1\PutController;
 use Ocpi\Support\Server\Middlewares\IdentifyPartyRole;
 
 Route::middleware([

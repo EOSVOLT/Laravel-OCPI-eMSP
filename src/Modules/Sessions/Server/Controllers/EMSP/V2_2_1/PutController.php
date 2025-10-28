@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Sessions\Server\Controllers\EMSP;
+namespace Ocpi\Modules\Sessions\Server\Controllers\EMSP\V2_2_1;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +12,8 @@ use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Modules\Sessions\Traits\HandlesSession;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
+
+use function Ocpi\Modules\Sessions\Server\Controllers\EMSP\config;
 
 class PutController extends Controller
 {

@@ -1,16 +1,17 @@
 <?php
 
-namespace Ocpi\Modules\Versions\Server\Controllers\CPO;
+namespace Ocpi\Modules\Versions\Server\Controllers\EMSP\V2_2_1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
-use Ocpi\Support\Enums\InterfaceRole;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Server\Controllers\Controller;
+
+use function Ocpi\Modules\Versions\Server\Controllers\EMSP\config;
+use function Ocpi\Modules\Versions\Server\Controllers\EMSP\route;
 
 class DetailsController extends Controller
 {
@@ -26,12 +27,15 @@ class DetailsController extends Controller
         $version = Context::get('ocpi_version');
         $data = null;
 
-        foreach (config('ocpi-cpo.versions', []) as $configVersion => $configInformation) {
+        foreach (
+            config('ocpi-emsp.versions', []
+            ) as $configVersion => $configInformation
+        ) {
             if ($configVersion === $version) {
                 $endpointList = collect(($configInformation['modules'] ?? []))
                     ->map(function ($module) use ($version) {
-                        $route = UrlHelper::getCPOBaseUrlByModule($module, $version);
-                        $interfaceRole = $this->getCPOInterfaceRoleByModule($module);
+                        $route = UrlHelper::getEMSPBaseUrlByModule($module, $version);
+                        $interfaceRole = $this->getEMSPInterfaceRoleByModule($module);
                         return Route::has($route)
                             ? [
                                 'identifier' => $module,

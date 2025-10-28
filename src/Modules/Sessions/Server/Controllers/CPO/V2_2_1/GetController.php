@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Modules\Sessions\Server\Controllers\CPO;
+namespace Ocpi\Modules\Sessions\Server\Controllers\CPO\V2_2_1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
