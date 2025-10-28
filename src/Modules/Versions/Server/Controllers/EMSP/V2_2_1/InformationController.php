@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Ocpi\Support\Server\Controllers\Controller;
 
-use function Ocpi\Modules\Versions\Server\Controllers\EMSP\config;
-use function Ocpi\Modules\Versions\Server\Controllers\EMSP\route;
-
 class InformationController extends Controller
 {
     public function __invoke(Request $request): JsonResponse

@@ -10,9 +10,6 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
-use function Ocpi\Modules\Versions\Server\Controllers\CPO\config;
-use function Ocpi\Modules\Versions\Server\Controllers\CPO\route;
-
 class DetailsController extends Controller
 {
     public function __invoke(Request $request): JsonResponse

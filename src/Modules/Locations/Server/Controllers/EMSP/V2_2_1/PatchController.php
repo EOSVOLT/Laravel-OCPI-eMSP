@@ -12,8 +12,6 @@ use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
-use function Ocpi\Modules\Locations\Server\Controllers\EMSP\config;
-
 class PatchController extends Controller
 {
     use HandlesLocation;
