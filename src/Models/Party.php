@@ -27,6 +27,7 @@ use Ocpi\Support\Models\Model;
  * @property bool $registered
  * @property Collection|PartyRole[] $roles
  * @property PartyRole|null $role_cpo
+ * @property PartyRole|null $role_emsp
  * @property array|null $endpoints
  * @property int|null $parent_id
  * @property Party|null $parent
