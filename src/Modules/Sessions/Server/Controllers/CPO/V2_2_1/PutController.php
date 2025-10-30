@@ -19,7 +19,7 @@ class PutController extends Controller
         string $party_id,
         string $session_id,
     ): JsonResponse {
-        //PUT for setting charging preference.
+        //@todo revisit PUT for setting charging preference.
         return $this->ocpiSuccessResponse();
     }
 }
