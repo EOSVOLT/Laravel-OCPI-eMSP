@@ -17,6 +17,7 @@ use Ocpi\Support\Models\Model;
  * @property Role $role
  * @property string $country_code
  * @property AsArrayObject|null $business_details
+ * @property string|null $url
  */
 class PartyRole extends Model
 {
@@ -27,6 +28,7 @@ class PartyRole extends Model
         'role',
         'country_code',
         'business_details',
+        'url'
     ];
 
     protected function casts(): array

@@ -22,7 +22,6 @@ use Ocpi\Support\Models\Model;
  * @property string|null $encoded_client_token
  * @property string|null $encoded_server_token
  * @property string $code
- * @property string|null $url
  * @property string|null $version
  * @property string|null $version_url
  * @property bool $registered
