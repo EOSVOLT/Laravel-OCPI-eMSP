@@ -14,7 +14,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'party_roles', function (Blueprint $table) {
-            $table->text('url')->nullable()->change();
+            $table->text('url')->nullable();
         });
         Party::all()->each(function (Party $party) {
             $party->roles->each(function (PartyRole $partyRole) {
