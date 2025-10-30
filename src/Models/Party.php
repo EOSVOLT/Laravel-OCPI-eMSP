@@ -98,7 +98,10 @@ class Party extends Model
     {
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::CPO->value);
     }
-
+    public function role_emsp(): HasOne
+    {
+        return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::EMSP->value);
+    }
 
     public function tokens(): HasMany
     {
