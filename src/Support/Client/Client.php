@@ -17,7 +17,6 @@ use Ocpi\Modules\Tariffs\Client\V2_2_1\Resource as TariffResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
 use Ocpi\Support\Enums\InterfaceRole;
-use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
@@ -59,9 +58,9 @@ class Client extends Connector
     public function resolveBaseUrl(): string
     {
         return match ($this->module) {
-            'versions.information' => $this->informationUrl,
-            'versions.details' => $this->party?->version_url,
-            default => $this->party?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
+            'versions.information' => $this->partyRole->url,
+            'versions.details' => $this->partyRole->party?->version_url,
+            default => $this->partyRole?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
         };
     }
 
@@ -132,7 +131,7 @@ class Client extends Connector
 
     protected function defaultAuth(): TokenAuthenticator
     {
-        $token = GeneratorHelper::encodeToken($this->partyToken->token, $this->party->version);
+        $token = GeneratorHelper::encodeToken($this->partyToken->token, $this->partyRole->party->version);
         return new TokenAuthenticator($token, 'Token');
     }
 }
