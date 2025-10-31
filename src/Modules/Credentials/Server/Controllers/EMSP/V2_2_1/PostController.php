@@ -73,7 +73,6 @@ class PostController extends Controller
                                     [
                                         'code' => $partyCode->getCodeFormatted(),
                                         'parent_id' => $parentParty->id,
-                                        'url' => $url,
                                         'version' => $parentParty->version,
                                     ]
                                 );
@@ -96,6 +95,7 @@ class PostController extends Controller
                             $partyRole->fill([
                                 'code' => $partyCode->getCode(),
                                 'role' => $role['role'],
+                                'url' => $url,
                                 'country_code' => $partyCode->getCountryCode(),
                                 'business_details' => $role['business_details'],
                             ]);
