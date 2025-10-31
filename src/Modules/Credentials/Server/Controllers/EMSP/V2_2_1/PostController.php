@@ -19,6 +19,7 @@ use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -110,9 +111,9 @@ class PostController extends Controller
                 );
 
             Events\CredentialsCreated::dispatch($parentParty->id, $request->json()->all());
-
+            $parentPartyRole = $parentParty->roles()->where('role', Role::EMSP->value)->first();
             return $this->ocpiCreatedResponse(
-                $selfCredentialsGetAction->handle($parentParty, $partyToken)
+                $selfCredentialsGetAction->handle($parentPartyRole, $partyToken)
             );
         } catch (ValidationException $e) {
             Log::channel('ocpi')->error($e->getMessage());
