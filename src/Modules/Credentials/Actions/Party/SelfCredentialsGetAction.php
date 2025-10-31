@@ -29,10 +29,12 @@ class SelfCredentialsGetAction
                 'url' => $partyRole->url,
                 'token' => $token, //token C
                 'roles' => [
-                    'role' => $partyRole->role,
-                    'party_id' => $partyRole->code,
-                    'country_code' => $partyRole->country_code,
-                    'business_details' => $partyRole->business_details,
+                    [
+                        'role' => $partyRole->role,
+                        'party_id' => $partyRole->code,
+                        'country_code' => $partyRole->country_code,
+                        'business_details' => $partyRole->business_details,
+                    ]
                 ],
             ];
         }
