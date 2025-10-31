@@ -15,16 +15,19 @@ return new class extends Migration {
     {
         Schema::table(config('ocpi.database.table.prefix') . 'party_roles', function (Blueprint $table) {
             $table->text('url')->nullable();
+            $table->text('endpoints')->nullable();
         });
         Party::all()->each(function (Party $party) {
             $party->roles->each(function (PartyRole $partyRole) {
                 return $partyRole->update([
                     'url' => $partyRole->party->url,
+                    'endpoints' => $partyRole->party->endpoints,
                 ]);
             });
         });
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
             $table->dropColumn('url');
+            $table->dropColumn('endpoints');
         });
     }
 
@@ -35,14 +38,18 @@ return new class extends Migration {
     {
         Schema::table(config('ocpi.database.table.prefix') . 'parties', function (Blueprint $table) {
             $table->text('url')->nullable();
+            $table->text('endpoints')->nullable();
         });
         Party::all()->each(function (Party $party) {
+            $partyRole = $party->roles->where('role', Role::CPO)->first();
             $party->update([
-                'url' => $party->roles->where('role', Role::CPO)->first()?->url,
+                'url' => $partyRole?->url,
+                'endpoints' => $partyRole?->endpoints,
             ]);
         });
         Schema::table(config('ocpi.database.table.prefix') . 'party_roles', function (Blueprint $table) {
-            $table->text('url')->nullable(false)->change();
+            $table->text('url')->nullable();
+            $table->text('endpoints')->nullable();
         });
     }
 };

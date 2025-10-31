@@ -5,7 +5,7 @@ namespace Ocpi\Support\Client;
 use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
-use Ocpi\Models\Party;
+use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Client\Resource as CdrsResource;
 use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
@@ -30,13 +30,12 @@ class Client extends Connector
 
     protected InterfaceRole $interfaceRole;
     public function __construct(
-        protected readonly Party $party,
+        protected readonly PartyRole $partyRole,
         protected readonly PartyToken $partyToken,
         protected string $module,
-        protected ?Role $role = null,
     ) {
         Context::add('trace_id', Str::uuid()->toString());
-        Context::add('party_code', $party?->code);
+        Context::add('party_code', $partyRole?->code);
 
         $this->middleware()->onRequest(new LogRequest);
         $this->middleware()->onResponse(new LogResponse);
@@ -60,7 +59,7 @@ class Client extends Connector
     public function resolveBaseUrl(): string
     {
         return match ($this->module) {
-            'versions.information' => $this->party?->roles->where('role', $this->role->value)->first()->url,
+            'versions.information' => $this->informationUrl,
             'versions.details' => $this->party?->version_url,
             default => $this->party?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
         };

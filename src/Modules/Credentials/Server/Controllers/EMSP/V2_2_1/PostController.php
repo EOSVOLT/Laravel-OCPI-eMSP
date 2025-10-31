@@ -15,11 +15,10 @@ use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Events;
 use Ocpi\Modules\Credentials\Object\PartyCode;
-use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
+use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
-use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -31,7 +30,7 @@ class PostController extends Controller
         SelfCredentialsGetAction $selfCredentialsGetAction,
     ): JsonResponse {
         try {
-            $input = \Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator::validate($request->all());
+            $input = CredentialsValidator::validate($request->all());
             /** @var PartyToken $partyToken */
             $partyToken = PartyToken::query()->find(Context::get('token_id'));
             $parentParty = $partyToken->party;
@@ -85,23 +84,21 @@ class PostController extends Controller
                                     'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
                                 ]);
                                 $childrenParty->tokens()->save($childrenPartyToken);
+                                $partyRole = new PartyRole;
+                                $partyRole->fill([
+                                    'code' => $partyCode->getCode(),
+                                    'role' => $role['role'],
+                                    'url' => $url,
+                                    'country_code' => $partyCode->getCountryCode(),
+                                    'business_details' => $role['business_details'],
+                                ]);
+                                $childrenParty->roles()->save($partyRole);
                                 // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
-                                $childrenParty = $versionsPartyInformationAndDetailsSynchronizeAction->handle(
-                                    $childrenParty,
+                                $versionsPartyInformationAndDetailsSynchronizeAction->handle(
+                                    $partyRole,
                                     $childrenPartyToken,
-                                    Role::tryFrom($role['role']),
                                 );
                             }
-
-                            $partyRole = new PartyRole;
-                            $partyRole->fill([
-                                'code' => $partyCode->getCode(),
-                                'role' => $role['role'],
-                                'url' => $url,
-                                'country_code' => $partyCode->getCountryCode(),
-                                'business_details' => $role['business_details'],
-                            ]);
-                            $childrenParty->roles()->save($partyRole);
                         }
                         // Generate a Token C for the client Party.
                         $partyToken->token = GeneratorHelper::generateToken($parentParty->code);
