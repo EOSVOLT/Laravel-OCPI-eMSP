@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyToken;
 use Ocpi\Support\Client\Client;
+use Ocpi\Support\Enums\Role;
 
 class PartyInformationAndDetailsSynchronizeAction
 {
-    public function handle(Party $party, PartyToken $partyToken): Party
+    public function handle(Party $party, PartyToken $partyToken, Role $role): Party
     {
         // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
-        Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Information of the Party on '.$party->url);
-        $client = new Client($party, $partyToken, 'versions.information');
+        Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Information of the Party on '.$party->roles->where('role', $role->value)->first()->url);
+        $client = new Client($party, $partyToken, 'versions.information', $role);
         $versionList = $client->versions()->information();
         throw_if(
             ! is_array($versionList),

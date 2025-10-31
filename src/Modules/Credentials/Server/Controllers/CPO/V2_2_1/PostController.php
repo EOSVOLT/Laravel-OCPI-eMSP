@@ -19,6 +19,7 @@ use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -88,7 +89,8 @@ class PostController extends Controller
                                 // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
                                 $childrenParty = $versionsPartyInformationAndDetailsSynchronizeAction->handle(
                                     $childrenParty,
-                                    $childrenPartyToken
+                                    $childrenPartyToken,
+                                    Role::tryFrom($role['role']),
                                 );
                             }
 

@@ -17,6 +17,7 @@ use Ocpi\Modules\Tariffs\Client\V2_2_1\Resource as TariffResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
 use Ocpi\Support\Enums\InterfaceRole;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
@@ -32,6 +33,7 @@ class Client extends Connector
         protected readonly Party $party,
         protected readonly PartyToken $partyToken,
         protected string $module,
+        protected ?Role $role = null,
     ) {
         Context::add('trace_id', Str::uuid()->toString());
         Context::add('party_code', $party?->code);
@@ -58,7 +60,7 @@ class Client extends Connector
     public function resolveBaseUrl(): string
     {
         return match ($this->module) {
-            'versions.information' => $this->party?->url,
+            'versions.information' => $this->party?->roles->where('role', $this->role->value)->first()->url,
             'versions.details' => $this->party?->version_url,
             default => $this->party?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
         };
