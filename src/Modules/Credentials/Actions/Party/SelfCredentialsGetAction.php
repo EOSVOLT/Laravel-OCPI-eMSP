@@ -5,7 +5,6 @@ namespace Ocpi\Modules\Credentials\Actions\Party;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
-use Ocpi\Support\Helpers\GeneratorHelper;
 
 class SelfCredentialsGetAction
 {
