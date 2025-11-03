@@ -13,4 +13,5 @@ Route::middleware([
     ->group(function () {
         Route::get('', [GetController::class, 'list']);
         Route::put('/{country_code}/{party_id}/{external_id}', [PutController::class, 'upsert'])->name('.put');
+        Route::delete('/{country_code}/{party_id}/{external_id}', [PutController::class, 'delete'])->name('.put');
     });
