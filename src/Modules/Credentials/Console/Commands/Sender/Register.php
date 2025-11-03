@@ -104,7 +104,7 @@ class Register extends Command implements PromptsForMissingInput
             $token->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();
-
+            $this->info('OCPI party ' . $party->code . ' Registration completed.');
             return Command::SUCCESS;
         } catch (Exception $e) {
             DB::connection(config('ocpi.database.connection'))->rollback();
