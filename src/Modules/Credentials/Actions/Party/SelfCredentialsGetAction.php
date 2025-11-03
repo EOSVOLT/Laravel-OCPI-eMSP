@@ -13,14 +13,13 @@ class SelfCredentialsGetAction
         if (null === $party->url) {
             return null;
         }
-        $token = $partyToken->token;
         if (version_compare($party->version, '2.2', '<')) {
             /** @var PartyRole $role */
             $role = $party->roles->first();
 
             return [
                 'url' => $party->url,
-                'token' => $token, //token C
+                'token' => $partyToken->token, //token C
                 'party_id' => $role->code,
                 'country_code' => $role->country_code,
                 'business_details' => $role->business_details,
@@ -28,7 +27,7 @@ class SelfCredentialsGetAction
         } else {
             return [
                 'url' => $party->url,
-                'token' => $token, //token C
+                'token' => $partyToken->token, //token C
                 'roles' => $party->roles->map(function (PartyRole $role) {
                     return [
                         'role' => $role->role,
