@@ -53,7 +53,7 @@ class Register extends Command implements PromptsForMissingInput
             return Command::FAILURE;
         }
 
-        if ($party->registered === true) {
+        if ($party->tokens->first()->registered === true) {
             $this->error('Party already registered.');
             return Command::FAILURE;
         }
@@ -61,6 +61,8 @@ class Register extends Command implements PromptsForMissingInput
         try {
             DB::connection(config('ocpi.database.connection'))->beginTransaction();
             $parentParty = $party->parent;
+            /** @var PartyToken $parentToken */
+            $parentToken = $parentParty->tokens->first();
             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
             $this->info('  - Call Party OCPI - GET - Versions Information and Details, store OCPI endpoints');
             /** @var PartyToken $token */
@@ -75,19 +77,18 @@ class Register extends Command implements PromptsForMissingInput
             // OCPI POST call to update the Credentials and get new Server Token.
             $this->info('  - Call Party OCPI - POST - Credentials endpoint with a parent token');
             $ocpiClient = new ReceiverClient($party, $token, 'credentials');
-            $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($parentParty, $parentParty->tokens->first()));
+            $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($parentParty, $parentToken));
             $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
             // Store received OCPI Server Token, mark the Party as registered.
             $this->info(
                 '  - Store received OCPI Server Token: ' . $credentialsInput['token'] . ', mark the Party as registered'
             );
-            $parentParty->registered = true;
-            $parentParty->save();
+            $parentToken->registered = true;
+            $parentToken->save();
             $token->token = GeneratorHelper::decodeToken($credentialsInput['token'], $party->version);
+            $token->registered = true;
             $token->save();
-            $party->registered = true;
-            $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();
 
