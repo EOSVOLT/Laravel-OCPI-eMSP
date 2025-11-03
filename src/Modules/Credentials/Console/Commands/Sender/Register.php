@@ -65,10 +65,6 @@ class Register extends Command implements PromptsForMissingInput
             /** @var PartyToken $token */
             $token = $party->tokens->first();
             $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party, $token);
-
-            // Generate new Client Token for the Party.
-            $party->client_token = $party->generateToken();
-            $this->info('  - Generate, store new OCPI Client Token: ' . $party->client_token);
             $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();

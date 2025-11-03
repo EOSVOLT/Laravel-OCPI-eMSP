@@ -62,7 +62,7 @@ class Update extends Command implements PromptsForMissingInput
 
             // Generate new Client Token for the Party.
             if ($generateNewClientToken) {
-                $party->client_token = $party->generateToken();
+//                $party->client_token = $party->generateToken();
                 $this->info('  - Generate, store new OCPI Client Token: '.$party->client_token);
                 $party->save();
             }
@@ -79,7 +79,7 @@ class Update extends Command implements PromptsForMissingInput
 
             // Store received OCPI Server Token.
             $this->info('  - Store received OCPI Server Token: '.$credentialsInput['token']);
-            $party->server_token = Party::decodeToken($credentialsInput['token'], $party);
+//            $party->server_token = Party::decodeToken($credentialsInput['token'], $party);
             $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();

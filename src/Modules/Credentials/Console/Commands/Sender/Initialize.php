@@ -39,6 +39,7 @@ class Initialize extends Command
         }
 
         $name = $this->ask('Party alies name');
+        $input['version'] = $this->ask('OCPI version');
         $input['code'] = $this->ask('Party ID or code');
         $input['parent_id'] = $parentPartyId;
         if (Party::query()->where('code', $input['code'])->exists()) {
