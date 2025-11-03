@@ -12,6 +12,7 @@ use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\Client;
+use Ocpi\Support\Client\ReceiverClient;
 use Ocpi\Support\Helpers\GeneratorHelper;
 
 /**
@@ -73,7 +74,7 @@ class Register extends Command implements PromptsForMissingInput
 
             // OCPI POST call to update the Credentials and get new Server Token.
             $this->info('  - Call Party OCPI - POST - Credentials endpoint with a parent token');
-            $ocpiClient = new Client($party, $token, 'credentials');
+            $ocpiClient = new ReceiverClient($party, $token, 'credentials');
             $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($parentParty, $parentParty->tokens->first()));
             $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
