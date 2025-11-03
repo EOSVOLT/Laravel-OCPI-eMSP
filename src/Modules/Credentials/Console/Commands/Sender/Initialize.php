@@ -17,7 +17,7 @@ class Initialize extends Command
      *
      * @var string
      */
-    protected $signature = 'ocpi:emsp:credentials:initialize';
+    protected $signature = 'ocpi:sender:credentials:initialize';
 
     /**
      * The console command description.
@@ -67,7 +67,7 @@ class Initialize extends Command
 
         $this->info('Party "' . $party->code . '" created successfully.');
         $this->info(
-            'Credentials exchange can be launch executing: php artisan ocpi:credentials:register ' . $party->code
+            'Credentials exchange can be launch executing: php artisan ocpi:sender:credentials:register ' . $party->code
         );
 
         return Command::SUCCESS;

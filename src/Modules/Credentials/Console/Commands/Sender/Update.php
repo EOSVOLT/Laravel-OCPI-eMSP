@@ -8,7 +8,7 @@ use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
-use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
+use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\Client;
 

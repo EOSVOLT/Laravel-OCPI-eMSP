@@ -7,10 +7,12 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
-use Ocpi\Modules\Credentials\Validators\V2_1_1\CredentialsValidator;
+use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\Client;
+use Ocpi\Support\Helpers\GeneratorHelper;
 
 /**
  * @todo revisit again when we will doing as EMSP
@@ -22,14 +24,14 @@ class Register extends Command implements PromptsForMissingInput
      *
      * @var string
      */
-    protected $signature = 'ocpi:emsp:credentials:register {party_code}';
+    protected $signature = 'ocpi:sender:credentials:register {party_code}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Credentials exchange with a new "Receiver" Party';
+    protected $description = 'Credentials exchange with a "Receiver" Party';
 
     /**
      * Execute the console command.
@@ -39,7 +41,7 @@ class Register extends Command implements PromptsForMissingInput
         SelfCredentialsGetAction $selfCredentialsGetAction,
     ) {
         $partyCode = $this->argument('party_code');
-        $this->info('Starting credentials exchange with ' . $partyCode);
+        $this->info('Starting credentials exchange with a sender party ' . $partyCode);
 
         // Retrieve the Party.
         /** @var Party $party */
@@ -52,16 +54,17 @@ class Register extends Command implements PromptsForMissingInput
 
         if ($party->registered === true) {
             $this->error('Party already registered.');
-
             return Command::FAILURE;
         }
 
         try {
             DB::connection(config('ocpi.database.connection'))->beginTransaction();
-
+            $parentParty = $party->parent;
             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
             $this->info('  - Call Party OCPI - GET - Versions Information and Details, store OCPI endpoints');
-            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party, $party->tokens->first());
+            /** @var PartyToken $token */
+            $token = $party->tokens->first();
+            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party, $token);
 
             // Generate new Client Token for the Party.
             $party->client_token = $party->generateToken();
@@ -73,16 +76,19 @@ class Register extends Command implements PromptsForMissingInput
             DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
             // OCPI POST call to update the Credentials and get new Server Token.
-            $this->info('  - Call Party OCPI - POST - Credentials endpoint with new Client Token');
-            $ocpiClient = new Client($party, 'credentials');
-            $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($party));
+            $this->info('  - Call Party OCPI - POST - Credentials endpoint with a parent token');
+            $ocpiClient = new Client($party, $token, 'credentials');
+            $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($parentParty, $parentParty->tokens->first()));
             $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
             // Store received OCPI Server Token, mark the Party as registered.
             $this->info(
                 '  - Store received OCPI Server Token: ' . $credentialsInput['token'] . ', mark the Party as registered'
             );
-            $party->server_token = Party::decodeToken($credentialsInput['token'], $party);
+            $parentParty->registered = true;
+            $parentParty->save();
+            $token->token = GeneratorHelper::decodeToken($credentialsInput['token'], $party->version);
+            $token->save();
             $party->registered = true;
             $party->save();
 

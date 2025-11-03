@@ -18,7 +18,7 @@ class Initialize extends Command
      *
      * @var string
      */
-    protected $signature = 'ocpi:cpo:credentials:initialize';
+    protected $signature = 'ocpi:receiver:credentials:initialize';
 
     /**
      * The console command description.
@@ -36,6 +36,7 @@ class Initialize extends Command
         $tokenName = $this->ask('Handshake alias');
         $countryCode = $this->ask('Country code');
         $input['version'] = $this->ask('OCPI version');
+        $input['cpo_id'] = $this->ask('CPO id');
         $businessName = $this->ask('Company Name');
         $businessWebsite = $this->ask('Company Website');
 
@@ -69,7 +70,7 @@ class Initialize extends Command
         }
 
         $this->info('Party "' . $party->code . '" created successfully.');
-        $this->info('Token A "' . $partyToken->token . '" created successfully.');
+        $this->info('Token "' . $partyToken->token . '" created successfully.');
         $this->info('URL "' . $party->url . '" created successfully.');
         $this->info(
             'Credentials has been created, please share it to your 3rd party system and let them initiate the handshake.'
