@@ -7,11 +7,11 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
-use Ocpi\Support\Client\Client;
 use Ocpi\Support\Client\ReceiverClient;
 use Ocpi\Support\Helpers\GeneratorHelper;
 
@@ -77,13 +77,26 @@ class Register extends Command implements PromptsForMissingInput
             // OCPI POST call to update the Credentials and get new Server Token.
             $this->info('  - Call Party OCPI - POST - Credentials endpoint with a parent token');
             $ocpiClient = new ReceiverClient($party, $token, 'credentials');
-            $credentialsPostData = $ocpiClient->credentials()->post($selfCredentialsGetAction->handle($parentParty, $parentToken));
+            $credentialsPostData = $ocpiClient->credentials()->post(
+                $selfCredentialsGetAction->handle($parentParty, $parentToken)
+            );
             $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
             // Store received OCPI Server Token, mark the Party as registered.
             $this->info(
                 '  - Store received OCPI Server Token: ' . $credentialsInput['token'] . ', mark the Party as registered'
             );
+            $this->info('  - Creating party roles from OCPI server');
+            foreach ($credentialsInput['roles'] as $role) {
+                $partyRole = new PartyRole;
+                $partyRole->fill([
+                    'code' => $role['party_id'],
+                    'role' => $role['role'],
+                    'country_code' => $role['country_code'],
+                    'business_details' => $role['business_details'],
+                ]);
+                $party->roles()->save($partyRole);
+            }
             $parentToken->registered = true;
             $parentToken->save();
             $token->token = GeneratorHelper::decodeToken($credentialsInput['token'], $party->version);
