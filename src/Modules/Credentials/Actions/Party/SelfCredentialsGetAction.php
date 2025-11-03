@@ -14,7 +14,7 @@ class SelfCredentialsGetAction
         if (null === $party->url) {
             return null;
         }
-        $token = GeneratorHelper::encodeToken($partyToken->token, $party->version);
+        $token = $partyToken->token;
         if (version_compare($party->version, '2.2', '<')) {
             /** @var PartyRole $role */
             $role = $party->roles->first();
