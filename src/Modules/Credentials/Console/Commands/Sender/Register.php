@@ -42,7 +42,8 @@ class Register extends Command implements PromptsForMissingInput
         $this->info('Starting credentials exchange with ' . $partyCode);
 
         // Retrieve the Party.
-        $party = Party::where('code', $partyCode)->first();
+        /** @var Party $party */
+        $party = Party::query()->where('code', $partyCode)->first();
         if ($party === null) {
             $this->error('Party not found.');
 
@@ -60,7 +61,7 @@ class Register extends Command implements PromptsForMissingInput
 
             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
             $this->info('  - Call Party OCPI - GET - Versions Information and Details, store OCPI endpoints');
-            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party);
+            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party, $party->tokens->first());
 
             // Generate new Client Token for the Party.
             $party->client_token = $party->generateToken();

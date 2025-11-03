@@ -5,6 +5,7 @@ namespace Ocpi\Modules\Credentials\Console\Commands\Sender;
 use Exception;
 use Illuminate\Console\Command;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyToken;
 
 /**
  * @todo revisit again when doing a EMSP role.
@@ -31,21 +32,31 @@ class Initialize extends Command
     public function handle()
     {
         $input = [];
-
-        $input['name'] = $this->ask('Party name');
-        $input['code'] = $this->ask('Party ID or code');
-
-        if (Party::where('code', $input['code'])->exists()) {
-            $this->error('Party already exists.');
-
+        $parentPartyId = $this->ask('Parent Party Increment ID(our CPO party)');
+        if(false === Party::query()->where('id', $parentPartyId)->exists()) {
+            $this->error('Parent Party is missing, please create our party first.');
             return Command::FAILURE;
         }
 
+        $name = $this->ask('Party alies name');
+        $input['code'] = $this->ask('Party ID or code');
+        $input['parent_id'] = $parentPartyId;
+        if (Party::query()->where('code', $input['code'])->exists()) {
+            $this->error('Party already exists.');
+            return Command::FAILURE;
+        }
         $input['url'] = $this->ask('URL of API versions endpoint');
-        $input['server_token'] = $this->ask('Credentials Token');
-
+        $token = $this->ask('Credentials Token');
         try {
-            $party = Party::create($input);
+            /** @var Party $party */
+            $party = Party::query()->create($input);
+            $partyToken = new PartyToken();
+            $partyToken->fill([
+                'token' => $token,
+                'registered' => false,
+                'name' => $name . '_' . $input['code'],
+            ]);
+            $party->tokens()->save($partyToken);
         } catch (Exception $e) {
             $this->error('Error creating Party.');
             $this->newLine(2);
