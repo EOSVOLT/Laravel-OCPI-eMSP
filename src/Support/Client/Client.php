@@ -42,7 +42,7 @@ class Client extends Connector
 
     public function hasRequestFailed(Response $response): ?bool
     {
-        if (true === $response->isJson()) {
+        if (true === $response->isJson() || (null !== $response->header('content-type'))) {
             try {
                 $responseObject = $response->object();
 
