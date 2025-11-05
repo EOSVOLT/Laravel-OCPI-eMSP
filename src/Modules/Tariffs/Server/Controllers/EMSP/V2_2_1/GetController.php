@@ -5,7 +5,7 @@ namespace Ocpi\Modules\Tariffs\Server\Controllers\EMSP\V2_2_1;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Context;
-use Ocpi\Models\Tariff\Tariff;
+use Ocpi\Models\Tariffs\Tariff;
 use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Modules\Tariffs\Factories\TariffFactory;

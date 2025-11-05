@@ -36,7 +36,6 @@ class Initialize extends Command
         $tokenName = $this->ask('Handshake alias');
         $countryCode = $this->ask('Country code');
         $input['version'] = $this->ask('OCPI version');
-        $input['cpo_id'] = $this->ask('CPO id');
         $businessName = $this->ask('Company Name');
         $businessWebsite = $this->ask('Company Website');
 

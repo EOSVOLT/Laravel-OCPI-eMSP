@@ -3,10 +3,11 @@
 namespace Ocpi\Modules\Tariffs\Repositories;
 
 use Illuminate\Http\Request;
-use Ocpi\Models\Tariff\Tariff;
-use Ocpi\Models\Tariff\TariffElement;
-use Ocpi\Models\Tariff\TariffElementPriceComponents;
-use Ocpi\Models\Tariff\TariffPriceComponents;
+use Ocpi\Models\Tariffs\Tariff;
+use Ocpi\Models\Tariffs\TariffElement;
+use Ocpi\Models\Tariffs\TariffElementPriceComponents;
+use Ocpi\Models\Tariffs\TariffPriceComponents;
+use Ocpi\Models\Tariffs\TariffRestriction;
 use Ocpi\Modules\Tariffs\Factories\TariffFactory;
 
 class TariffRepository
@@ -33,10 +34,10 @@ class TariffRepository
             ]
         );
         foreach ($elements as $element) {
-//            $restrictionModel = $this->createRestrictionsFromSpark($element);
+            $restrictionModel = $this->createRestrictionsFromArray($element);
             $elementModel = TariffElement::query()->create([
                 'tariff_id' => $tariffModel->id,
-                'tariff_restriction_id' => null,
+                'tariff_restriction_id' => $restrictionModel?->id,
             ]);
             $this->clearElementsForTariff($tariffModel);
             $this->createPriceComponents($elementModel, $element['price_components']);
@@ -82,5 +83,33 @@ class TariffRepository
                 'tariff_price_component_id' => $priceComponent->id,
             ]);
         }
+    }
+
+    /**
+     * @param array $element
+     *
+     * @return TariffRestriction|null
+     */
+    private function createRestrictionsFromArray(array $element): ?TariffRestriction
+    {
+        if (empty($element['restriction'])) {
+            return null;
+        }
+        return TariffRestriction::query()->firstOrCreate([
+            'start_time' => $element['restriction']['start_time'] ?? null,
+            'end_time' => $element['restriction']['end_time'] ?? null,
+            'start_date' => $element['restriction']['start_date'] ?? null,
+            'end_date' => $element['restriction']['end_date'] ?? null,
+            'min_kwh' => $element['restriction']['min_kwh'] ?? null,
+            'max_kwh' => $element['restriction']['max_kwh'] ?? null,
+            'min_current' => $element['restriction']['min_current'] ?? null,
+            'max_current' => $element['restriction']['max_current'] ?? null,
+            'min_power' => $element['restriction']['min_power'] ?? null,
+            'max_power' => $element['restriction']['max_power'] ?? null,
+            'min_duration' => $element['restriction']['min_duration'] ?? null,
+            'max_duration' => $element['restriction']['max_duration'] ?? null,
+            'day_of_week' => $element['restriction']['day_of_week'] ?? null,
+            'reservation' => $element['restriction']['reservation'] ?? null,
+        ]);
     }
 }

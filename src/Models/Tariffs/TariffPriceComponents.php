@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Models\Tariff;
+namespace Ocpi\Models\Tariffs;
 
 use Illuminate\Database\Eloquent\Model;
 use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
