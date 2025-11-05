@@ -5,7 +5,7 @@ namespace Ocpi\Modules\Credentials\Events;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class CredentialsCreated implements ShouldDispatchAfterCommit
+class CredentialsCreated implements ShouldDispatchAfterCommit, CredentialEventInterface
 {
     use Dispatchable;
 
