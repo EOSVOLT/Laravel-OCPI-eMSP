@@ -33,9 +33,9 @@ class PostController extends Controller
     ): JsonResponse {
         try {
             $input = CredentialsValidator::validate($request->all());
-            /** @var PartyToken $partyToken */
-            $partyToken = PartyToken::query()->find(Context::get('token_id'));
-            $parentParty = $partyToken->party;
+            /** @var PartyToken $parentToken */
+            $parentToken = PartyToken::query()->find(Context::get('token_id'));
+            $parentParty = $parentToken->party;
             if (null === $parentParty) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
@@ -44,7 +44,7 @@ class PostController extends Controller
                 );
             }
 
-            if (true === $partyToken->registered) {
+            if (true === $parentToken->registered) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
                     statusMessage: 'Party already registered.',
@@ -56,24 +56,22 @@ class PostController extends Controller
                     function () use (
                         $parentParty,
                         $input,
-                        $partyToken,
+                        $parentToken,
                         $syncPartyRoleAction
                     ) {
                         // Create client parties from payload
                         $syncPartyRoleAction->handle($parentParty, $input);
                         // Generate a Token C for the client Party.
-                        $partyToken->token = GeneratorHelper::generateToken($parentParty->code);
-                        $partyToken->registered = true;
-                        $partyToken->save();
-                        $partyToken->refresh();
+                        $parentToken->token = GeneratorHelper::generateToken($parentParty->code);
+                        $parentToken->registered = true;
+                        $parentToken->save();
+                        $parentToken->refresh();
                         return $parentParty;
                     }
                 );
 
-            Events\CredentialsCreated::dispatch($parentParty->id, $request->json()->all());
-
             return $this->ocpiCreatedResponse(
-                $selfCredentialsGetAction->handle($parentParty, $partyToken)
+                $selfCredentialsGetAction->handle($parentParty, $parentToken)
             );
         } catch (ValidationException $e) {
             Log::channel('ocpi')->error($e->getMessage());

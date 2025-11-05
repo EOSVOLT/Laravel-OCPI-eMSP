@@ -5,6 +5,7 @@ namespace Ocpi\Modules\Credentials\Actions\PartyRole;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
+use Ocpi\Modules\Credentials\Events\CredentialsCreated;
 use Ocpi\Modules\Credentials\Object\PartyCode;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 
@@ -49,6 +50,7 @@ readonly class SyncPartyRoleAction
                     $childrenParty,
                     $childrenPartyToken
                 );
+                CredentialsCreated::dispatch($childrenParty->id);
             }
 
             $partyRole = new PartyRole;
