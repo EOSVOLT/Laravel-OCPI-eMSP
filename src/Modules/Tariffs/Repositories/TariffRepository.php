@@ -12,12 +12,16 @@ use Ocpi\Modules\Tariffs\Factories\TariffFactory;
 
 class TariffRepository
 {
+    /**
+     * @param int $partyId
+     * @param array $data
+     * @return \Ocpi\Modules\Tariffs\Objects\Tariff
+     */
     public function createOrUpdateFromArray(int $partyId, array $data): \Ocpi\Modules\Tariffs\Objects\Tariff
     {
         $minPrice = $data['min_price'] ?? null;
         $maxPrice = $data['max_price'] ?? null;
-        $elements = $data['elements'] ?? [];
-        $tariffModel = Tariff::query()->updateOrCreate(
+        $tariff = Tariff::query()->updateOrCreate(
             [
                 'party_id' => $partyId,
                 'external_id' => $data['id'],
@@ -33,16 +37,27 @@ class TariffRepository
                 'max_price_incl_vat' => $maxPrice['incl_vat'] ?? null,
             ]
         );
+        $this->clearElementsForTariff($tariff);
+        $this->createElementsForTariff($tariff, $data['elements'] ?? []);
+        return TariffFactory::fromModel($tariff);
+    }
+
+    /**
+     * @param Tariff $tariff
+     * @param array $elements
+     * @return void
+     */
+    private function createElementsForTariff(Tariff $tariff, array $elements): void
+    {
         foreach ($elements as $element) {
             $restrictionModel = $this->createRestrictionsFromArray($element);
             $elementModel = TariffElement::query()->create([
-                'tariff_id' => $tariffModel->id,
+                'tariff_id' => $tariff->id,
                 'tariff_restriction_id' => $restrictionModel?->id,
             ]);
-            $this->clearElementsForTariff($tariffModel);
+
             $this->createPriceComponents($elementModel, $element['price_components']);
         }
-        return TariffFactory::fromModel($tariffModel);
     }
 
     /**
@@ -69,7 +84,12 @@ class TariffRepository
             ->delete();
     }
 
-    private function createPriceComponents(TariffElement $elementModel, array $priceComponents): void
+    /**
+     * @param TariffElement $tariffElement
+     * @param array $priceComponents
+     * @return void
+     */
+    private function createPriceComponents(TariffElement $tariffElement, array $priceComponents): void
     {
         foreach ($priceComponents as $priceComponent) {
             $priceComponent = TariffPriceComponents::query()->firstOrCreate([
@@ -79,7 +99,7 @@ class TariffRepository
                 'step_size' => $priceComponent['step_size'],
             ]);
             TariffElementPriceComponents::query()->firstOrCreate([
-                'tariff_element_id' => $elementModel->id,
+                'tariff_element_id' => $tariffElement->id,
                 'tariff_price_component_id' => $priceComponent->id,
             ]);
         }
