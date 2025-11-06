@@ -8,10 +8,8 @@ use Illuminate\Support\Facades\Context;
 use Ocpi\Models\Tariffs\Tariff;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Modules\Tariffs\Events\EMSP\TariffCreated;
-use Ocpi\Modules\Tariffs\Events\EMSP\TariffRemoved;
 use Ocpi\Modules\Tariffs\Events\EMSP\TariffReplaced;
 use Ocpi\Modules\Tariffs\Repositories\TariffRepository;
-use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PutController extends Controller

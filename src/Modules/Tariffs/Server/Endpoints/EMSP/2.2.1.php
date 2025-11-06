@@ -5,9 +5,11 @@ use Ocpi\Modules\Tariffs\Server\Controllers\EMSP\V2_2_1\DeleteController;
 use Ocpi\Modules\Tariffs\Server\Controllers\EMSP\V2_2_1\GetController;
 use Ocpi\Modules\Tariffs\Server\Controllers\EMSP\V2_2_1\PutController;
 use Ocpi\Support\Server\Middlewares\IdentifyParty;
+use Ocpi\Support\Server\Middlewares\IdentifyPartyRole;
 
 Route::middleware([
     IdentifyParty::class,
+    IdentifyPartyRole::class,
 ])
     ->prefix('tariffs')
     ->name('tariffs')
