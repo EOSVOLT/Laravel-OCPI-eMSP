@@ -38,7 +38,7 @@ class DeleteController extends Controller
             return $this->ocpiClientErrorResponse(OcpiClientErrorCode::InvalidParameters, 'Tariff not found', 404);
         }
         $tariff->delete();
-        TariffRemoved::dispatch($tariff);
+        TariffRemoved::dispatch($tariff->id);
         return $this->ocpiSuccessResponse();
     }
 }

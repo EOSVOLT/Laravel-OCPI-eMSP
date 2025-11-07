@@ -44,9 +44,9 @@ class PutController extends Controller
             ->exists();
         $tariff = $this->tariffRepository->createOrUpdateFromArray($partyId, $data);
         if (true === $exist) {
-            TariffReplaced::dispatch($tariff);
+            TariffReplaced::dispatch($tariff->getId());
         } else {
-            TariffCreated::dispatch($tariff);
+            TariffCreated::dispatch($tariff->getId());
         }
 
         return $this->ocpiSuccessResponse();
