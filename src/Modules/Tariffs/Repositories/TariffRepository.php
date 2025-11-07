@@ -21,7 +21,7 @@ class TariffRepository
     {
         $minPrice = $data['min_price'] ?? null;
         $maxPrice = $data['max_price'] ?? null;
-        $tariff = Tariff::query()->updateOrCreate(
+        $tariff = Tariff::withTrashed()->updateOrCreate(
             [
                 'party_id' => $partyId,
                 'external_id' => $data['id'],
@@ -37,6 +37,9 @@ class TariffRepository
                 'max_price_incl_vat' => $maxPrice['incl_vat'] ?? null,
             ]
         );
+        if (true === $tariff->trashed()){
+            $tariff->restore();
+        }
         $this->clearElementsForTariff($tariff);
         $this->createElementsForTariff($tariff, $data['elements'] ?? []);
         return TariffFactory::fromModel($tariff);
