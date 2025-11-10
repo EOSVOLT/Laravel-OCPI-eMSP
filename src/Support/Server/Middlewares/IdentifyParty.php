@@ -11,6 +11,7 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Traits\Server\Response as ServerResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,6 +44,17 @@ class IdentifyParty
         $token = PartyToken::query()->where('token', $tokenA)
             ->when(false !== $decodedTokenA, function (Builder $query) use ($decodedTokenA) {
                 $query->orWhere('token', $decodedTokenA);
+            })
+            ->where(function (Builder $query) use ($request) {
+                if (Str::contains($request->getUri(), ['emsp', 'EMSP'])) {
+                    $query->whereHas('party_role', function (Builder $query) {
+                        $query->where('role', Role::EMSP);
+                    });
+                } elseif (Str::contains($request->getUri(), ['cpo', 'CPO'])) {
+                    $query->whereHas('party_role', function (Builder $query) {
+                        $query->where('role', Role::CPO);
+                    });
+                }
             })
             ->first();
         if (null === $token) {
