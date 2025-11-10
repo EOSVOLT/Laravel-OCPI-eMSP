@@ -13,7 +13,7 @@ class SelfCredentialsGetAction
             return null;
         }
         $role = $partyToken->party_role;
-        $party = $partyToken->party;
+        $party = $role->party;
         $token = GeneratorHelper::encodeToken($partyToken->token, $party->version);
         if (version_compare($party->version, '2.2', '<')) {
             return [
