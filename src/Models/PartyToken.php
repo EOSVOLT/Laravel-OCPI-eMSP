@@ -10,6 +10,7 @@ use Ocpi\Support\Models\Model;
  * @property int $id
  * @property Party $party
  * @property int $party_id
+ * @property int $party_role_id
  * @property PartyRole $party_role
  * @property string $name
  * @property string $token

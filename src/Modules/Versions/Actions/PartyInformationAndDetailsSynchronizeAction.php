@@ -6,23 +6,21 @@ use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
-use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Support\Client\Client;
-use Ocpi\Support\Enums\Role;
 
 class PartyInformationAndDetailsSynchronizeAction
 {
     /**
-     * @param PartyRole $partyRole
      * @param PartyToken $partyToken
      *
      * @return Party
      * @throws \Throwable
      */
-    public function handle(PartyRole $partyRole, PartyToken $partyToken): Party
+    public function handle(PartyToken $partyToken): Party
     {
-        $partyCode = $partyRole->party->code;
+        $partyRole = $partyToken->party_role;
+        $partyCode = $partyRole->code;
         $partyVersion = $partyRole->party->version;
         // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
         Log::channel('ocpi')->info('Party '.$partyCode.' - OCPI GET call for Versions Information of the Party on '. $partyRole->url);

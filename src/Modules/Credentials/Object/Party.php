@@ -21,10 +21,8 @@ readonly class Party implements Arrayable
         private int $id,
         private string $code,
         private ?string $token = null,
-        private ?string $url = null,
         private ?string $version = null,
         private ?string $versionUrl = null,
-        private ?array $endpoints = null,
         private bool $isRegistered = false,
         private ?PartyRoleCollection $roles = null,
     ) {

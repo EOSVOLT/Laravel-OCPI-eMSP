@@ -18,5 +18,5 @@ class CredentialsCreated implements ShouldDispatchAfterCommit, CredentialEventIn
     {
         return $this->partyId;
     }
-    
+
 }

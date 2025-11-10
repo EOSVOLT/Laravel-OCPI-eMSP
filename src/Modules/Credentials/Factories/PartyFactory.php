@@ -27,10 +27,8 @@ class PartyFactory
             $model->id,
             $model->code,
             $partyToken->token,
-            $model->url,
             $model->version,
             $model->version_url,
-            $model->endpoints ?? [],
             $partyToken->registered,
             $roles,
         );

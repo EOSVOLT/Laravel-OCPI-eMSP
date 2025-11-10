@@ -9,18 +9,13 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Ocpi\Models\Party;
-use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Actions\PartyRole\SyncPartyRoleAction;
-use Ocpi\Modules\Credentials\Events;
-use Ocpi\Modules\Credentials\Object\PartyCode;
 use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
-use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -36,7 +31,7 @@ class PostController extends Controller
             $input = CredentialsValidator::validate($request->all());
             /** @var PartyToken $parentToken */
             $parentToken = PartyToken::query()->find(Context::get('token_id'));
-            $parentParty = $parentToken->party;
+            $parentParty = $parentToken->party_role->party;
             if (null === $parentParty) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Models\Model;
 
@@ -20,6 +21,7 @@ use Ocpi\Support\Models\Model;
  * @property AsArrayObject|null $business_details
  * @property string|null $url
  * @property string|null $endpoints
+ * @property PartyToken[]|Collection $tokens
  */
 class PartyRole extends Model
 {
