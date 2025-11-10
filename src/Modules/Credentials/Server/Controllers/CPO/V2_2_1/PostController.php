@@ -30,7 +30,7 @@ class PostController extends Controller
         try {
             $input = CredentialsValidator::validate($request->all());
             /** @var PartyToken $parentToken */
-            $parentToken = PartyToken::query()->find(Context::get('token_id'));
+            $parentToken = PartyToken::query()->with(['party_role.party'])->find(Context::get('token_id'));
             $parentParty = $parentToken->party_role->party;
             if (null === $parentParty) {
                 return $this->ocpiServerErrorResponse(
