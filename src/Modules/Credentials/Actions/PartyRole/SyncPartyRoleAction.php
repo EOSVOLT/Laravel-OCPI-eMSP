@@ -36,10 +36,10 @@ readonly class SyncPartyRoleAction
                         'version' => $parentParty->version,
                     ]
                 );
-                CredentialsCreated::dispatch($childrenParty->id);
             }
             $partyRole = new PartyRole;
             $partyRole->fill([
+                'parent_role_id' => $parentParty->id,
                 'code' => $partyCode->getCode(),
                 'role' => $role['role'],
                 'url' => $url,
@@ -60,6 +60,7 @@ readonly class SyncPartyRoleAction
             $this->detailsSynchronizeAction->handle(
                 $childrenPartyToken
             );
+            CredentialsCreated::dispatch($childrenPartyToken->party_id);
         }
     }
 }
