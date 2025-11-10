@@ -33,7 +33,7 @@ class PartyRoleFactory
      *
      * @return PartyRoleCollection
      */
-    public static function fromModels(Collection $collection): PartyRoleCollection
+    public static function fromCollection(Collection $collection): PartyRoleCollection
     {
         $roles = new PartyRoleCollection();
         foreach ($collection as $role) {
