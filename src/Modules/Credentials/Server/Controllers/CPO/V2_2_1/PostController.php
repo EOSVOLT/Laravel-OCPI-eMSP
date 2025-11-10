@@ -34,7 +34,7 @@ class PostController extends Controller
             $input = CredentialsValidator::validate($request->all());
             /** @var PartyToken $partyToken */
             $partyToken = PartyToken::query()->find(Context::get('token_id'));
-            $parentParty = $partyToken->party;
+            $parentParty = $partyToken->party_role->party;
             if (null === $parentParty) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
@@ -74,25 +74,26 @@ class PostController extends Controller
                                     [
                                         'code' => $partyCode->getCodeFormatted(),
                                         'parent_id' => $parentParty->id,
-                                        'url' => $url,
                                         'version' => $parentParty->version,
                                     ]
                                 );
                                 $childrenPartyToken = new PartyToken();
                                 $tokenName = $role['business_details']['name'] ?? '';
                                 $childrenPartyToken->fill([
+                                    'party_id' => $childrenParty->id,
                                     'token' => $tokenB,
                                     'registered' => true,
                                     'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
                                 ]);
-                                $childrenParty->tokens()->save($childrenPartyToken);
                                 $partyRole = new PartyRole;
                                 $partyRole->fill([
                                     'code' => $partyCode->getCode(),
                                     'role' => $role['role'],
                                     'country_code' => $partyCode->getCountryCode(),
                                     'business_details' => $role['business_details'],
+                                    'url' => $url,
                                 ]);
+                                $partyRole->tokens()->save($childrenPartyToken);
                                 $childrenParty->roles()->save($partyRole);
                                 // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
                                 $versionsPartyInformationAndDetailsSynchronizeAction->handle(
