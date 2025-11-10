@@ -56,11 +56,12 @@ readonly class SyncPartyRoleAction
                 'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
             ]);
             $role->tokens()->save($childrenPartyToken);
+            $childrenParty->refresh();
             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
             $this->detailsSynchronizeAction->handle(
                 $childrenPartyToken
             );
-            CredentialsCreated::dispatch($childrenPartyToken->party_id);
+            CredentialsCreated::dispatch($childrenParty->id);
         }
     }
 }
