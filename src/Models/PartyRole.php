@@ -79,4 +79,9 @@ class PartyRole extends Model
     {
         return $this->belongsTo(PartyRole::class, 'parent_role_id');
     }
+
+    public function children_role(): HasMany
+    {
+        return $this->hasMany(PartyRole::class, 'parent_role_id');
+    }
 }
