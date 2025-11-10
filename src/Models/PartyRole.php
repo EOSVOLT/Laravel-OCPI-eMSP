@@ -5,6 +5,7 @@ namespace Ocpi\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Models\Model;
@@ -62,5 +63,10 @@ class PartyRole extends Model
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class);
+    }
+
+    public function tokens(): HasOneOrMany
+    {
+        return $this->hasMany(PartyToken::class, 'party_role_id');
     }
 }
