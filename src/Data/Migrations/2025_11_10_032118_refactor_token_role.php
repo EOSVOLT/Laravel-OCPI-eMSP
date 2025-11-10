@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
+use Ocpi\Support\Enums\Role;
 
 return new class extends Migration {
     public function up(): void
@@ -17,6 +18,9 @@ return new class extends Migration {
                 config('ocpi.database.table.prefix') . 'party_roles'
             )->cascadeOnDelete();
         });
+        Schema::table(config('ocpi.database.table.prefix') . 'party_roles', function (Blueprint $table) {
+            $table->unsignedBigInteger('parent_role_id')->nullable()->after('id');
+        });
         Party::all()->each(function (Party $party) {
             $currentTokens = DB::table(config('ocpi.database.table.prefix') . 'party_tokens')
                 ->where('party_id', $party->id)
@@ -26,6 +30,9 @@ return new class extends Migration {
                 return;
             }
             $party->roles()->each(function (PartyRole $partyRole) use ($party, $currentTokens) {
+                if (null !== $party->parent_id) {
+                    $partyRole->update(['parent_role_id' => $party->parent->roles()->where('role', Role::CPO)->first()?->id]);
+                }
                 foreach ($currentTokens as $token) {
                     PartyToken::create([
                         'party_id' => $party->id,

@@ -13,6 +13,7 @@ use Ocpi\Support\Models\Model;
 
 /**
  * @property int $id
+ * @property PartyRole|null $parent_role
  * @property string $code
  * @property string $party_id
  * @property Party $party
@@ -28,6 +29,7 @@ class PartyRole extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'parent_role_id',
         'code',
         'role',
         'country_code',
@@ -70,5 +72,10 @@ class PartyRole extends Model
     public function tokens(): HasMany
     {
         return $this->hasMany(PartyToken::class, 'party_role_id');
+    }
+
+    public function parent_role(): BelongsTo
+    {
+        return $this->belongsTo(PartyRole::class, 'parent_role_id');
     }
 }
