@@ -42,11 +42,6 @@ readonly class Party implements Arrayable
         return $this->versionUrl;
     }
 
-    public function isRegistered(): bool
-    {
-        return $this->isRegistered;
-    }
-
     public function getRoles(): ?PartyRoleCollection
     {
         return $this->roles;
