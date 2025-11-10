@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use Ocpi\Modules\Tariffs\Server\Controllers\CPO\V2_2_1\GetController;
-use Ocpi\Support\Server\Middlewares\IdentifyCPOSender;
+use Ocpi\Support\Server\Middlewares\IdentifyParty;
 
 Route::middleware([
-    IdentifyCPOSender::class,
+    IdentifyParty::class,
 ])
     ->prefix('tariffs')
     ->name('tariffs')

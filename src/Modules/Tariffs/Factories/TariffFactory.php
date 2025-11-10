@@ -3,8 +3,9 @@
 namespace Ocpi\Modules\Tariffs\Factories;
 
 use Illuminate\Support\Collection;
-use Ocpi\Models\Tariff\Tariff;
+use Ocpi\Models\Tariffs\Tariff;
 use Ocpi\Modules\Tariffs\Objects\TariffCollection;
+use Ocpi\Support\Factories\PriceFactory;
 
 class TariffFactory
 {

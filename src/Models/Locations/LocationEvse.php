@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Support\Models\Model;
 
@@ -24,8 +25,8 @@ use Ocpi\Support\Models\Model;
  * @property Carbon|null $deleted_at
  * @property Location $location
  * @property Location $locationWithTrashed
- * @property LocationConnector[]|HasMany $connectorsWithTrashed
- * @property LocationConnector[]|HasMany $connectors
+ * @property LocationConnector[]|Collection $connectorsWithTrashed
+ * @property LocationConnector[]|Collection $connectors
  */
 class LocationEvse extends Model
 {

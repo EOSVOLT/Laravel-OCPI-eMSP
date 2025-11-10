@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Ocpi\Modules\Sessions\Server\Controllers\CPO\GetController;
-use Ocpi\Modules\Sessions\Server\Controllers\CPO\PutController;
-use Ocpi\Support\Server\Middlewares\IdentifyReceiverParty;
+use Ocpi\Modules\Sessions\Server\Controllers\CPO\V2_2_1\GetController;
+use Ocpi\Modules\Sessions\Server\Controllers\CPO\V2_2_1\PutController;
+use Ocpi\Support\Server\Middlewares\IdentifyParty;
 
 Route::middleware([
-    IdentifyReceiverParty::class,
+    IdentifyParty::class,
 ])
     ->prefix('sessions')
     ->name('sessions')

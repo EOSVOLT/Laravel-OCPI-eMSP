@@ -3,6 +3,8 @@
 namespace Ocpi\Modules\Sessions\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Ocpi\Modules\Locations\Objects\Connector;
+use Ocpi\Modules\Locations\Objects\Location;
 use Ocpi\Support\Enums\SessionStatus;
 
 readonly class Session implements Arrayable
@@ -17,6 +19,7 @@ readonly class Session implements Arrayable
      * @param string $sessionId
      * @param SessionStatus $status
      * @param SessionDetails $sessionDetails
+     * @param Connector|null $locationConnector
      */
     public function __construct(
         private string $id,
@@ -27,6 +30,7 @@ readonly class Session implements Arrayable
         private string $sessionId,
         private SessionStatus $status,
         private SessionDetails $sessionDetails,
+        private readonly ?Connector $locationConnector = null,
     ) {
     }
 
@@ -92,6 +96,14 @@ readonly class Session implements Arrayable
     public function getSessionDetails(): SessionDetails
     {
         return $this->sessionDetails;
+    }
+
+    /**
+     * @return Connector|null
+     */
+    public function getLocationConnector(): ?Connector
+    {
+        return $this->locationConnector;
     }
 
     /**

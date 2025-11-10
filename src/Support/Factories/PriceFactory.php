@@ -20,4 +20,17 @@ class PriceFactory
             $data['incl_vat'],
         );
     }
+
+    /**
+     * @param float $excludeVat
+     * @param float|null $includeVat
+     * @return Price|null
+     */
+    public static function fromData(float $excludeVat, ?float $includeVat = null): ?Price
+    {
+        return new Price(
+            $excludeVat,
+            $includeVat,
+        );
+    }
 }
