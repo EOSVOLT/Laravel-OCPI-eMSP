@@ -33,7 +33,6 @@ readonly class SyncPartyRoleAction
                     [
                         'code' => $partyCode->getCodeFormatted(),
                         'parent_id' => $parentParty->id,
-                        'url' => $url,
                         'version' => $parentParty->version,
                     ]
                 );
@@ -43,6 +42,7 @@ readonly class SyncPartyRoleAction
             $partyRole->fill([
                 'code' => $partyCode->getCode(),
                 'role' => $role['role'],
+                'url' => $url,
                 'country_code' => $partyCode->getCountryCode(),
                 'business_details' => $role['business_details'],
             ]);
