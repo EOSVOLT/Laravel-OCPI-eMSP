@@ -49,7 +49,7 @@ class PostController extends Controller
                     httpCode: 405,
                 );
             }
-            $parentParty = DB::connection(config('ocpi.database.connection'))
+            DB::connection(config('ocpi.database.connection'))
                 ->transaction(
                     function () use (
                         $parentParty,
@@ -70,7 +70,7 @@ class PostController extends Controller
                 );
 
             return $this->ocpiCreatedResponse(
-                $selfCredentialsGetAction->handle($parentParty, $parentToken)
+                $selfCredentialsGetAction->handle($parentToken)
             );
         } catch (ValidationException $e) {
             Log::channel('ocpi')->error($e->getMessage());
