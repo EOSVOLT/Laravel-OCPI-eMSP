@@ -3,10 +3,12 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Ocpi\Models\Cdrs\Cdr;
 use Ocpi\Models\Sessions\Session;
 
 class CdrFactory extends Factory
 {
+    protected $model = Cdr::class;
     public function definition(): array
     {
         /** @var Session $session */

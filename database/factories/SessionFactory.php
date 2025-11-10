@@ -4,10 +4,12 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Locations\LocationConnector;
+use Ocpi\Models\Sessions\Session;
 use Ocpi\Support\Enums\SessionStatus;
 
 class SessionFactory extends Factory
 {
+    protected $model = Session::class;
 
     public function definition(): array
     {

@@ -3,10 +3,12 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Ocpi\Models\Party;
 
 class PartyFactory extends Factory
 {
 
+    protected $model = Party::class;
     public function definition(): array
     {
         return [
