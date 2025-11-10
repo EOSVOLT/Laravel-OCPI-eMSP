@@ -33,7 +33,7 @@ class PostController extends Controller
             $input = \Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator::validate($request->all());
             /** @var PartyToken $parentToken */
             $parentToken = PartyToken::query()->find(Context::get('token_id'));
-            $parentParty = $parentToken->party;
+            $parentParty = $parentToken->party_role->party;
             if (null === $parentParty) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
