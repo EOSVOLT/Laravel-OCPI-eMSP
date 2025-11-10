@@ -49,7 +49,7 @@ class PostController extends Controller
                     httpCode: 405,
                 );
             }
-            DB::connection(config('ocpi.database.connection'))
+            $parentToken = DB::connection(config('ocpi.database.connection'))
                 ->transaction(
                     function () use (
                         $parentParty,
@@ -65,7 +65,7 @@ class PostController extends Controller
                         $parentToken->registered = true;
                         $parentToken->save();
                         $parentToken->refresh();
-                        return $parentParty;
+                        return $parentToken;
                     }
                 );
 
