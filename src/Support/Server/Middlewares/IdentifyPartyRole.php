@@ -31,8 +31,9 @@ class IdentifyPartyRole
         }
 
         // Retrieve PartyRole.
-        $partyRole = PartyRole::code($partyRoleCode)
-            ->countryCode($partyRoleCountryCode)
+        $partyRole = PartyRole::query()
+            ->where('country_code', $partyRoleCountryCode)
+            ->where('code', $partyRoleCode)
             ->first();
 
         if ($partyRole === null) {
@@ -44,6 +45,7 @@ class IdentifyPartyRole
 
         // Add information to Context.
         Context::add('party_role_id', $partyRole->id);
+        Context::add('party_role_party_id', $partyRole->party->id);
 
         return $next($request);
     }

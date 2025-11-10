@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Models\Tariff;
+namespace Ocpi\Models\Tariffs;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

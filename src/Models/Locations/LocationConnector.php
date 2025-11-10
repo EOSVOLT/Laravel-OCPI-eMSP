@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
-use Ocpi\Models\Tariff\Tariff;
+use Ocpi\Models\Tariffs\Tariff;
 use Ocpi\Support\Models\Model;
 
 /**
