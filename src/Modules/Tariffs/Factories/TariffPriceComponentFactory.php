@@ -3,7 +3,7 @@
 namespace Ocpi\Modules\Tariffs\Factories;
 
 use Illuminate\Support\Collection;
-use Ocpi\Models\Tariff\TariffPriceComponents;
+use Ocpi\Models\Tariffs\TariffPriceComponents;
 use Ocpi\Modules\Tariffs\Objects\TariffPriceComponent;
 use Ocpi\Modules\Tariffs\Objects\TariffPriceComponentCollection;
 

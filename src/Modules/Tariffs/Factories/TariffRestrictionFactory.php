@@ -3,7 +3,7 @@
 namespace Ocpi\Modules\Tariffs\Factories;
 
 
-use Ocpi\Models\Tariff\TariffRestriction;
+use Ocpi\Models\Tariffs\TariffRestriction;
 
 class TariffRestrictionFactory
 {

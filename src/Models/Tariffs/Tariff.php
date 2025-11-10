@@ -1,6 +1,6 @@
 <?php
 
-namespace Ocpi\Models\Tariff;
+namespace Ocpi\Models\Tariffs;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,16 +33,6 @@ class Tariff extends Model
 
     protected $guarded = [];
 
-    protected function casts(): array
-    {
-        return [
-            'tariff_alt_text' => 'json',
-            'created_at' => 'datetime',
-            'deleted_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
-    }
-
     /**
      * @return string
      */
@@ -50,7 +40,6 @@ class Tariff extends Model
     {
         return config('ocpi.database.table.prefix') . 'tariffs';
     }
-
 
     /**
      * @return BelongsTo
@@ -66,5 +55,15 @@ class Tariff extends Model
     public function elements(): HasMany
     {
         return $this->hasMany(TariffElement::class, 'tariff_id', 'id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'tariff_alt_text' => 'json',
+            'created_at' => 'datetime',
+            'deleted_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
     }
 }

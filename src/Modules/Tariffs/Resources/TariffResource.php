@@ -8,12 +8,15 @@ use Ocpi\Modules\Tariffs\Objects\Tariff;
 use Ocpi\Support\Traits\RemoveEmptyField;
 
 /**
- * @property Tariff $resource
+ * @mixin Tariff
  */
 class TariffResource extends JsonResource
 {
     use RemoveEmptyField;
 
+    /**
+     * @param Tariff $resource
+     */
     public function __construct(Tariff $resource)
     {
         parent::__construct($resource);
@@ -27,20 +30,20 @@ class TariffResource extends JsonResource
     public function toArray(?Request $request = null): array
     {
         return self::removeEmptyField([
-            'country_code' => $this->resource->getCountryCode(),
-            'party_id' => $this->resource->getPartyCode(),
-            'id' => $this->resource->getExternalId(),
-            'currency' => $this->resource->getCurrency(),
-            'type' => $this->resource->getType()?->value,
-            'tariff_alt_text' => $this->resource->getTariffAltText()?->toArray(),
-            'tariff_alt_url' => $this->resource->getTariffAltUrl(),
-            'min_price' => $this->resource->getMinPrice()?->toArray(),
-            'max_price' => $this->resource->getMaxPrice()?->toArray(),
-            'elements' => new TariffElementResourceList($this->resource->getElements())->toArray(),
-            'start_date_time' => $this->resource->getStartDateTime()?->toISOString(),
-            'end_date_time' => $this->resource->getEndDateTime()?->toISOString(),
-            'energy_mix' => $this->resource->getEnergyMix()?->toArray(),
-            'last_updated' => $this->resource->getLastUpdated()->toISOString(),
+            'country_code' => $this->getCountryCode(),
+            'party_id' => $this->getPartyCode(),
+            'id' => $this->getExternalId(),
+            'currency' => $this->getCurrency(),
+            'type' => $this->getType()?->value,
+            'tariff_alt_text' => $this->getTariffAltText()?->toArray(),
+            'tariff_alt_url' => $this->getTariffAltUrl(),
+            'min_price' => $this->getMinPrice()?->toArray(),
+            'max_price' => $this->getMaxPrice()?->toArray(),
+            'elements' => new TariffElementResourceList($this->getElements())->toArray(),
+            'start_date_time' => $this->getStartDateTime()?->toISOString(),
+            'end_date_time' => $this->getEndDateTime()?->toISOString(),
+            'energy_mix' => $this->getEnergyMix()?->toArray(),
+            'last_updated' => $this->getLastUpdated()->toISOString(),
         ]);
     }
 }
