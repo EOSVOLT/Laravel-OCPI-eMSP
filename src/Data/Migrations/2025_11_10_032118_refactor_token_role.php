@@ -81,6 +81,9 @@ return new class extends Migration {
             $table->dropConstrainedForeignId('party_role_id');
             $table->foreignId('party_id')->nullable(false)->change();
         });
+        Schema::table(config('ocpi.database.table.prefix') . 'party_roles', function (Blueprint $table) {
+            $table->dropColumn('parent_role_id');
+        });
         Schema::enableForeignKeyConstraints();
     }
 };
