@@ -54,9 +54,9 @@ class IdentifyParty
 
         // Add information to Context.
         Context::add('trace_id', Str::uuid()->toString());
-        Context::add('party_code', $token->party->code);
+        Context::add('party_code', $token->party_role->party->code);
         Context::add('token_id', $token->id);
-        $party = PartyFactory::fromModel($token->party, $token);
+        $party = PartyFactory::fromModel($token->party_role->party);
         Context::addHidden('party', $party);
 
         return $next($request);
