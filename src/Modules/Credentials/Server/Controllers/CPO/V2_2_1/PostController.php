@@ -56,7 +56,7 @@ class PostController extends Controller
                         $syncPartyRoleAction
                     ) {
                         // Create client parties from payload
-                        $syncPartyRoleAction->handle($parentParty, $input);
+                        $syncPartyRoleAction->handle($parentToken, $input);
                         // Generate a Token C for the client Party.
                         $parentToken->token = GeneratorHelper::generateToken($parentParty->code);
                         $parentToken->registered = true;

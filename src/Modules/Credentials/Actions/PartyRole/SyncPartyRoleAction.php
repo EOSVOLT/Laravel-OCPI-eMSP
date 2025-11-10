@@ -17,14 +17,16 @@ readonly class SyncPartyRoleAction
     ) {
     }
 
-    public function handle(Party $parentParty, array $data): void
+    public function handle(PartyToken $parentToken, array $data): void
     {
         $tokenB = $data['token'];
         $url = $data['url'];
+        $partyRole = $parentToken->party_role;
+        $party = $partyRole->party;
         foreach ($data['roles'] as $role) {
             $partyCode = new PartyCode($role['party_id'], $role['country_code']);
 
-            $childrenParty = $parentParty->children()->where(
+            $childrenParty = $party->children()->where(
                 'code',
                 $partyCode->getCodeFormatted()
             )->first();
@@ -32,14 +34,14 @@ readonly class SyncPartyRoleAction
                 $childrenParty = Party::query()->create(
                     [
                         'code' => $partyCode->getCodeFormatted(),
-                        'parent_id' => $parentParty->id,
-                        'version' => $parentParty->version,
+                        'parent_id' => $party->id,
+                        'version' => $party->version,
                     ]
                 );
             }
             $partyRole = new PartyRole;
             $partyRole->fill([
-                'parent_role_id' => $parentParty->id,
+                'parent_role_id' => $partyRole->id,
                 'code' => $partyCode->getCode(),
                 'role' => $role['role'],
                 'url' => $url,
