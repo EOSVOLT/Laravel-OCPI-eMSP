@@ -29,16 +29,21 @@ class PartyToken extends Model
         'registered' => false,
     ];
 
-    public function party(): BelongsTo
-    {
-        return $this->belongsTo(Party::class);
-    }
-
     protected function casts(): array
     {
         return [
             'registered' => 'bool',
         ];
+    }
+
+    public function party(): BelongsTo
+    {
+        return $this->belongsTo(Party::class);
+    }
+
+    public function party_role(): BelongsTo
+    {
+        return $this->belongsTo(PartyRole::class);
     }
 
 }

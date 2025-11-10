@@ -102,11 +102,6 @@ class Party extends Model
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::EMSP->value);
     }
 
-    public function tokens(): HasMany
-    {
-        return $this->hasMany(PartyToken::class);
-    }
-
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'parent_id');
