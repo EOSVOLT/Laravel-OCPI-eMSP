@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models\Tariffs;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,6 +31,7 @@ use Ocpi\Models\Party;
 class Tariff extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $guarded = [];
 

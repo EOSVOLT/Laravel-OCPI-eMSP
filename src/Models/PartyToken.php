@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Support\Models\Model;
@@ -19,6 +20,7 @@ use Ocpi\Support\Models\Model;
 class PartyToken extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'party_id',

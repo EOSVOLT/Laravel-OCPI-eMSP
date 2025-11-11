@@ -2,9 +2,10 @@
 
 namespace Ocpi\Models;
 
+use Database\Factories\PartyFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -36,6 +37,7 @@ use Ocpi\Support\Models\Model;
 class Party extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'code',
@@ -73,6 +75,11 @@ class Party extends Model
             return base64_decode($token, true);
         }
         return $token;
+    }
+
+    protected static function newFactory(): PartyFactory
+    {
+        return PartyFactory::new();
     }
 
     /***
@@ -124,7 +131,7 @@ class Party extends Model
     protected function casts(): array
     {
         return [
-            'endpoints' => AsArrayObject::class,
+            'endpoints' => 'array',
             'registered' => 'boolean',
         ];
     }

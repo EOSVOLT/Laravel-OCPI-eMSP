@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models\Tariffs;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
 
@@ -14,6 +15,8 @@ use Ocpi\Modules\Tariffs\Enums\TariffDimensionType;
  */
 class TariffPriceComponents extends Model
 {
+    use HasFactory;
+
     protected $guarded = [];
     /**
      * @return string

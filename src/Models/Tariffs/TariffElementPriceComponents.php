@@ -2,11 +2,14 @@
 
 namespace Ocpi\Models\Tariffs;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TariffElementPriceComponents extends Model
 {
+    use HasFactory;
+
     protected $table = 'tariff_element_price_components';
     protected $guarded = [];
     /**

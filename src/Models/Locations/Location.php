@@ -2,20 +2,21 @@
 
 namespace Ocpi\Models\Locations;
 
+use Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Ocpi\Models\Party;
-use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Support\Models\Model;
 
 /**
  * @property Party $party
- * @property AsArrayObject $object
+ * @property array $object
  * @property int $party_id
  * @property string $external_id
  * @property bool $publish
@@ -23,10 +24,12 @@ use Ocpi\Support\Models\Model;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  * @property int $id
+ * @property Collection|LocationEvse[] $evses
  */
 class Location extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'object',
@@ -36,14 +39,9 @@ class Location extends Model
         'updated_at',
     ];
 
-    protected function casts(): array
+    protected static function newFactory(): LocationFactory
     {
-        return [
-            'object' => AsArrayObject::class,
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
+        return LocationFactory::new();
     }
 
     /***
@@ -85,6 +83,16 @@ class Location extends Model
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
     }
 
 

@@ -2,8 +2,9 @@
 
 namespace Ocpi\Models;
 
+use Database\Factories\PartyRoleFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,7 +22,7 @@ use Ocpi\Support\Models\Model;
  * @property Party $party
  * @property Role $role
  * @property string $country_code
- * @property AsArrayObject|null $business_details
+ * @property array|null $business_details
  * @property string|null $url
  * @property string|null $endpoints
  * @property PartyToken[]|Collection $tokens
@@ -29,6 +30,7 @@ use Ocpi\Support\Models\Model;
 class PartyRole extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'parent_role_id',
@@ -40,12 +42,9 @@ class PartyRole extends Model
         'endpoints',
     ];
 
-    protected function casts(): array
+    protected static function newFactory(): PartyRoleFactory
     {
-        return [
-            'business_details' => AsArrayObject::class,
-            'role' => Role::class,
-        ];
+        return PartyRoleFactory::new();
     }
 
     /***
@@ -69,6 +68,14 @@ class PartyRole extends Model
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'business_details' => 'array',
+            'role' => Role::class,
+        ];
     }
 
     public function tokens(): HasMany

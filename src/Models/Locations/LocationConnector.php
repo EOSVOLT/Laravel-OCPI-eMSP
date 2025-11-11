@@ -3,7 +3,7 @@
 namespace Ocpi\Models\Locations;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,7 +15,7 @@ use Ocpi\Support\Models\Model;
  * @property int $id
  * @property int $evse_id
  * @property LocationEvse $evse
- * @property AsArrayObject $object
+ * @property array $object
  * @property int $connector_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -25,6 +25,7 @@ use Ocpi\Support\Models\Model;
 class LocationConnector extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     protected $primaryKey = 'id';
 
@@ -33,16 +34,6 @@ class LocationConnector extends Model
         'connector_id',
         'object',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'object' => AsArrayObject::class,
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
-    }
 
     /***
      * Relations.
@@ -66,5 +57,15 @@ class LocationConnector extends Model
             'id',
             'tariff_id'
         );
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
     }
 }
