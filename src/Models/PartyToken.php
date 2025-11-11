@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models;
 
+use Database\Factories\PartyRoleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -34,11 +35,9 @@ class PartyToken extends Model
         'registered' => false,
     ];
 
-    protected function casts(): array
+    protected static function newFactory(): PartyRoleFactory
     {
-        return [
-            'registered' => 'bool',
-        ];
+        return PartyRoleFactory::new();
     }
 
     public function party(): BelongsTo
@@ -49,6 +48,13 @@ class PartyToken extends Model
     public function party_role(): BelongsTo
     {
         return $this->belongsTo(PartyRole::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'registered' => 'bool',
+        ];
     }
 
 }

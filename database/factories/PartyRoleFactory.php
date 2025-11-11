@@ -13,7 +13,7 @@ class PartyRoleFactory extends Factory
     public function definition(): array
     {
         return [
-            'party_id' =>  Party::factory(),
+            'party_id' => Party::factory(),
             'code' => 'ABC',
             'country_code' => 'DE',
             'business_details' => [
