@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -10,18 +11,24 @@ return new class extends Migration {
         Schema::disableForeignKeyConstraints();
 
         Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
-            $table->dropForeign('ocpi_cdrs_location_evse_emsp_id_foreign');
+            if ('sqlite' !== DB::connection()->getDriverName()) {
+                $table->dropForeign('ocpi_cdrs_location_evse_emsp_id_foreign');
+            }
             $table->dropColumn('location_evse_emsp_id');
 
         });
         Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
-            $table->dropForeign('ocpi_sessions_location_evse_emsp_id_foreign');
+            if ('sqlite' !== DB::connection()->getDriverName()) {
+                $table->dropForeign('ocpi_sessions_location_evse_emsp_id_foreign');
+            }
             $table->dropColumn('location_evse_emsp_id');
         });
 
         Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
-            $table->dropForeign('ocpi_location_connectors_location_evse_emsp_id_foreign');
-            $table->dropUnique('ocpi_location_connectors_location_evse_emsp_id_id_unique');
+            if ('sqlite' !== DB::connection()->getDriverName()) {
+                $table->dropForeign('ocpi_location_connectors_location_evse_emsp_id_foreign');
+                $table->dropUnique('ocpi_location_connectors_location_evse_emsp_id_id_unique');
+            }
             $table->dropColumn('location_evse_emsp_id');
             $table->renameColumn('id', 'connector_id');
             $table->dropPrimary('emsp_id');
@@ -32,8 +39,10 @@ return new class extends Migration {
             $table->dropPrimary('emsp_id');
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
-            $table->dropForeign('ocpi_location_evses_location_emsp_id_foreign');
-            $table->dropUnique('ocpi_location_evses_location_emsp_id_uid_unique');
+            if ('sqlite' !== DB::connection()->getDriverName()) {
+                $table->dropForeign('ocpi_location_evses_location_emsp_id_foreign');
+                $table->dropUnique('ocpi_location_evses_location_emsp_id_uid_unique');
+            }
             $table->dropColumn('location_emsp_id');
         });
         Schema::table(config('ocpi.database.table.prefix').'locations', function (Blueprint $table) {

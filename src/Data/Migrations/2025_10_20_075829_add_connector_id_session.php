@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Sessions\Session;
@@ -41,7 +42,9 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
-            $table->dropForeign('location_connector_id');
+            if ('sqlite' !== DB::connection()->getDriverName()) {
+                $table->dropForeign('location_connector_id');
+            }
             $table->dropColumn('location_connector_id');
         });
     }
