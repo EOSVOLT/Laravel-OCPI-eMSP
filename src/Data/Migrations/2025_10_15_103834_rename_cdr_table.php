@@ -15,7 +15,7 @@ return new class extends Migration
             $table->dropIndex('ocpi_cdrs_id_index');
             $table->renameColumn('id', 'cdr_id');
             $table->index('cdr_id');
-            $table->dropPrimary('emsp_id');
+            $table->dropPrimary(['emsp_id']);
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
         });

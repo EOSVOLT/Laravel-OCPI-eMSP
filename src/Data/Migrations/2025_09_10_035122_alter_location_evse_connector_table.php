@@ -23,12 +23,12 @@ return new class extends Migration {
             $table->dropUnique(['location_evse_emsp_id', 'id']);
             $table->dropColumn('location_evse_emsp_id');
             $table->renameColumn('id', 'connector_id');
-            $table->dropPrimary('emsp_id');
+            $table->dropPrimary(['emsp_id']);
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
         });
         Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
-            $table->dropPrimary('emsp_id');
+            $table->dropPrimary(['emsp_id']);
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
             $table->dropForeign(['location_emsp_id']);
@@ -37,7 +37,7 @@ return new class extends Migration {
         });
         Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
             $table->renameColumn('id', 'external_id');
-            $table->dropPrimary('emsp_id');
+            $table->dropPrimary(['emsp_id']);
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
         });
