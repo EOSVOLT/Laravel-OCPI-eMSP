@@ -16,7 +16,7 @@ class LocationTest extends TestCase
 
     public function testBuildLocationObject()
     {
-        $partyMocked = $this->getMockPartyWithRoleCPO(false);
+        $partyMocked = $this->getMockParty(false);
         $locationMocked = $this->getMockLocation($partyMocked);
         $locationObject = LocationFactory::fromModel($locationMocked);
         $this->assertEquals($locationObject->getId(), $locationMocked->id);

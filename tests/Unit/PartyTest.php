@@ -16,7 +16,7 @@ class PartyTest extends TestCase
 
     public function testBuildLocationObject()
     {
-        $partyMocked = $this->getMockPartyWithRoleCPO(false);
+        $partyMocked = $this->getMockParty(false);
         $partyObject = PartyFactory::fromModel($partyMocked);
         $this->assertEquals($partyObject->getId(), $partyMocked->id);
     }
