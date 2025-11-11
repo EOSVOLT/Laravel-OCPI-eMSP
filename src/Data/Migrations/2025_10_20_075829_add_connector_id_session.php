@@ -41,7 +41,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
-            $table->dropForeign('location_connector_id');
+            $table->dropForeign(['location_connector_id']);
             $table->dropColumn('location_connector_id');
         });
     }

@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::enableForeignKeyConstraints();
         Schema::table(config('ocpi.database.table.prefix') . "sessions", function (Blueprint $table) {
             $table->dropIndex('ocpi_sessions_id_index');
-            $table->dropForeign('sessions_party_role_id');
+            $table->dropForeign(['party_role_id']);
             $table->dropUnique(['party_role_id', 'id']);
             $table->dropColumn('id');
             $table->string('session_id', 36)->after('party_role_id');
@@ -41,7 +41,7 @@ return new class extends Migration {
             $table->primary('emsp_id');
 
             $table->dropIndex('ocpi_sessions_session_id_index');
-            $table->dropForeign('ocpi_sessions_party_role_id_foreign');
+            $table->dropForeign(['party_role_id']);
             $table->dropUnique(['party_role_id', 'session_id']);
             $table->dropColumn('session_id');
             $table->string('id', 36)->after('party_role_id');

@@ -9,61 +9,64 @@ return new class extends Migration {
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
-            $table->dropForeign('ocpi_cdrs_location_evse_emsp_id_foreign');
-            $table->dropColumn('location_evse_emsp_id');
-
-        });
-        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
-            $table->dropForeign('ocpi_sessions_location_evse_emsp_id_foreign');
+        Schema::table(config('ocpi.database.table.prefix') . 'cdrs', function (Blueprint $table) {
+            $table->dropForeign(['location_evse_emsp_id']);
             $table->dropColumn('location_evse_emsp_id');
         });
+        Schema::table(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
+            $table->dropForeign(['location_evse_emsp_id']);
+            $table->dropColumn('location_evse_emsp_id');
+        });
 
-        Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
-            $table->dropForeign('ocpi_location_connectors_location_evse_emsp_id_foreign');
-            $table->dropUnique('ocpi_location_connectors_location_evse_emsp_id_id_unique');
+        Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
+            $table->dropForeign(['location_evse_emsp_id']);
+            $table->dropUnique(['location_evse_emsp_id', 'id']);
             $table->dropColumn('location_evse_emsp_id');
             $table->renameColumn('id', 'connector_id');
             $table->dropPrimary('emsp_id');
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
         });
-        Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
             $table->dropPrimary('emsp_id');
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
-            $table->dropForeign('ocpi_location_evses_location_emsp_id_foreign');
-            $table->dropUnique('ocpi_location_evses_location_emsp_id_uid_unique');
+            $table->dropForeign(['location_emsp_id']);
+            $table->dropUnique(['location_emsp_id', 'uid']);
             $table->dropColumn('location_emsp_id');
         });
-        Schema::table(config('ocpi.database.table.prefix').'locations', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
             $table->renameColumn('id', 'external_id');
             $table->dropPrimary('emsp_id');
             $table->id()->after('emsp_id');
             $table->dropColumn('emsp_id');
         });
 
-        Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
             $table->foreignId('location_id')->after('id')->constrained('ocpi_locations');
             $table->unique(['location_id', 'uid'], 'location_id_uid_unique');
         });
-        Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
             $table->foreignId('evse_id')->after('id')->constrained('ocpi_location_evses');
             $table->unique(['evse_id', 'connector_id'], 'evse_id_connector_id_unique');
         });
-        Schema::table(config('ocpi.database.table.prefix').'locations', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
             $table->boolean('publish')->after('object');
         });
 
-        Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
             $table->string('status')->after('object');
         });
 
-        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
-            $table->foreignId('location_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+        Schema::table(config('ocpi.database.table.prefix') . 'cdrs', function (Blueprint $table) {
+            $table->foreignId('location_id')->after('party_role_id')->constrained(
+                config('ocpi.database.table.prefix') . 'locations'
+            )->restrictOnDelete();
         });
-        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
-            $table->foreignId('location_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+        Schema::table(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
+            $table->foreignId('location_id')->after('party_role_id')->constrained(
+                config('ocpi.database.table.prefix') . 'locations'
+            )->restrictOnDelete();
         });
 
 
@@ -73,21 +76,20 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'cdrs', function (Blueprint $table) {
             $table->dropConstrainedForeignId('location_id');
             $table->dropColumn('location_id');
-
         });
-        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
             $table->dropConstrainedForeignId('location_id');
             $table->dropColumn('location_id');
         });
         // Reverse of the last operations first (drop new FKs/uniques/columns added in up)
-        Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
             $table->dropUnique('evse_id_connector_id_unique');
             $table->dropConstrainedForeignId('evse_id');
         });
-        Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
             $table->dropUnique('location_id_uid_unique');
             $table->dropConstrainedForeignId('location_id');
         });
@@ -101,7 +103,7 @@ return new class extends Migration {
         });
 
         // Revert ocpi_location_evses changes
-        Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
             $table->string('emsp_id', 36)->first();
             $table->unsignedBigInteger('location_emsp_id')->after('emsp_id');
             $table->dropColumn('id');
@@ -112,7 +114,7 @@ return new class extends Migration {
                 ->onDelete('cascade');
         });
 
-        Schema::table(config('ocpi.database.table.prefix').'location_connectors', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
             $table->string('emsp_id', 36)->first();
             $table->unsignedBigInteger('location_evse_emsp_id')->after('emsp_id');
             $table->dropColumn('id');
@@ -124,19 +126,23 @@ return new class extends Migration {
                 ->onDelete('cascade');
         });
 
-        Schema::table(config('ocpi.database.table.prefix').'locations', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
             $table->dropColumn('publish');
         });
 
-        Schema::table(config('ocpi.database.table.prefix').'location_evses', function (Blueprint $table) {
+        Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
             $table->dropColumn('status');
         });
 
-        Schema::table(config('ocpi.database.table.prefix'). 'cdrs', function (Blueprint $table) {
-            $table->foreignId('location_evse_emsp_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+        Schema::table(config('ocpi.database.table.prefix') . 'cdrs', function (Blueprint $table) {
+            $table->foreignId('location_evse_emsp_id')->after('party_role_id')->constrained(
+                config('ocpi.database.table.prefix') . 'locations'
+            )->restrictOnDelete();
         });
-        Schema::table(config('ocpi.database.table.prefix'). 'sessions', function (Blueprint $table) {
-            $table->foreignId('location_evse_emsp_id')->after('party_role_id')->constrained(config('ocpi.database.table.prefix'). 'locations')->restrictOnDelete();
+        Schema::table(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
+            $table->foreignId('location_evse_emsp_id')->after('party_role_id')->constrained(
+                config('ocpi.database.table.prefix') . 'locations'
+            )->restrictOnDelete();
         });
         Schema::enableForeignKeyConstraints();
     }
