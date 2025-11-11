@@ -4,7 +4,6 @@ namespace Ocpi\Models;
 
 use Database\Factories\PartyRoleFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -18,7 +17,7 @@ use Ocpi\Support\Models\Model;
  * @property Party $party
  * @property Role $role
  * @property string $country_code
- * @property AsArrayObject|null $business_details
+ * @property array|null $business_details
  */
 class PartyRole extends Model
 {
@@ -32,12 +31,9 @@ class PartyRole extends Model
         'business_details',
     ];
 
-    protected function casts(): array
+    protected static function newFactory(): PartyRoleFactory
     {
-        return [
-            'business_details' => AsArrayObject::class,
-            'role' => Role::class,
-        ];
+        return PartyRoleFactory::new();
     }
 
     /***
@@ -63,8 +59,11 @@ class PartyRole extends Model
         return $this->belongsTo(Party::class);
     }
 
-    protected static function newFactory(): PartyRoleFactory
+    protected function casts(): array
     {
-        return PartyRoleFactory::new();
+        return [
+            'business_details' => 'array',
+            'role' => Role::class,
+        ];
     }
 }

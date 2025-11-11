@@ -5,7 +5,6 @@ namespace Ocpi\Models\Locations;
 use Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,7 +16,7 @@ use Ocpi\Support\Models\Model;
 
 /**
  * @property Party $party
- * @property AsArrayObject $object
+ * @property array $object
  * @property int $party_id
  * @property string $external_id
  * @property bool $publish
@@ -39,6 +38,11 @@ class Location extends Model
         'publish',
         'updated_at',
     ];
+
+    protected static function newFactory(): LocationFactory
+    {
+        return LocationFactory::new();
+    }
 
     /***
      * Scopes.
@@ -81,15 +85,10 @@ class Location extends Model
         return $this->belongsTo(Party::class, 'party_id', 'id');
     }
 
-    protected static function newFactory(): LocationFactory
-    {
-        return LocationFactory::new();
-    }
-
     protected function casts(): array
     {
         return [
-            'object' => AsArrayObject::class,
+            'object' => 'array',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',

@@ -4,7 +4,6 @@ namespace Ocpi\Models\Locations;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +17,7 @@ use Ocpi\Support\Models\Model;
  * @property int $id
  * @property int $location_id
  * @property string $uid
- * @property AsArrayObject $object
+ * @property array $object
  * @property EvseStatus $status
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -40,22 +39,8 @@ class LocationEvse extends Model
         'uid',
         'object',
         'status',
-        'updated_at'
+        'updated_at',
     ];
-
-    /**
-     * @return string[]
-     */
-    protected function casts(): array
-    {
-        return [
-            'object' => AsArrayObject::class,
-            'status' => EvseStatus::class,
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
-    }
 
     /***
      * Scopes.
@@ -100,5 +85,19 @@ class LocationEvse extends Model
     {
         return $this->belongsTo(Location::class, 'location_id', 'id')
             ->withTrashed();
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'status' => EvseStatus::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
     }
 }
