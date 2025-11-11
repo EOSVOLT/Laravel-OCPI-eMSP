@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models;
 
+use Database\Factories\PartyFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -155,5 +156,9 @@ class Party extends Model
                 ? self::encodeToken($attributes['server_token'])
                 : $attributes['server_token'],
         );
+    }
+    protected static function newFactory(): PartyFactory
+    {
+        return PartyFactory::new();
     }
 }

@@ -12,14 +12,8 @@ class PartyRoleFactory extends Factory
 
     public function definition(): array
     {
-        /** @var Party $party */
-        $party = Party::factory()->create(
-            [
-                'code' => 'DE*ABC',
-            ]
-        );
         return [
-            'party_id' => $party->id,
+            'party_id' =>  Party::factory(),
             'code' => 'ABC',
             'country_code' => 'DE',
             'business_details' => [

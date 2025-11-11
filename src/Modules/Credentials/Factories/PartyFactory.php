@@ -21,7 +21,6 @@ class PartyFactory
         if (null === $partyToken) {
             $partyToken = $model->tokens->first();
         }
-
         $roles = self::roleRelation($model);
         return new Party(
             $model->id,

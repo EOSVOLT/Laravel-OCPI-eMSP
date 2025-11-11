@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models;
 
+use Database\Factories\PartyRoleFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -60,5 +61,10 @@ class PartyRole extends Model
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class);
+    }
+
+    protected static function newFactory(): PartyRoleFactory
+    {
+        return PartyRoleFactory::new();
     }
 }

@@ -2,13 +2,13 @@
 
 namespace Tests\Unit;
 
-use Ocpi\Modules\Locations\Factories\LocationFactory;
+use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Tests\TestCase;
 use Tests\Traits\SchemaTrait;
 use Tests\Traits\TestLocationTrait;
 use Tests\Traits\TestPartyRoleTrait;
 
-class LocationTest extends TestCase
+class PartyTest extends TestCase
 {
     use TestPartyRoleTrait;
     use TestLocationTrait;
@@ -17,8 +17,7 @@ class LocationTest extends TestCase
     public function testBuildLocationObject()
     {
         $partyMocked = $this->getMockPartyWithRoleCPO(false);
-        $locationMocked = $this->getMockLocation($partyMocked);
-        $locationObject = LocationFactory::fromModel($locationMocked);
-        $this->assertEquals($locationObject->getId(), $locationMocked->id);
+        $partyObject = PartyFactory::fromModel($partyMocked);
+        $this->assertEquals($partyObject->getId(), $partyMocked->id);
     }
 }

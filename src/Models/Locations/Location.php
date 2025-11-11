@@ -2,6 +2,7 @@
 
 namespace Ocpi\Models\Locations;
 
+use Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Ocpi\Models\Party;
 use Ocpi\Support\Models\Model;
 
@@ -23,6 +25,7 @@ use Ocpi\Support\Models\Model;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  * @property int $id
+ * @property Collection|LocationEvse[] $evses
  */
 class Location extends Model
 {
@@ -76,6 +79,11 @@ class Location extends Model
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');
+    }
+
+    protected static function newFactory(): LocationFactory
+    {
+        return LocationFactory::new();
     }
 
     protected function casts(): array
