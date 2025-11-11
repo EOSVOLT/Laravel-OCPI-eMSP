@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
+use Ocpi\Support\Enums\Role;
 
 class PartyRoleFactory extends Factory
 {
@@ -20,6 +21,9 @@ class PartyRoleFactory extends Factory
                 'name' => 'Deutsch',
                 'website' => 'https://eosvolt.com',
             ],
+            'roles' => Role::CPO,
+            'url' => 'www.this_our_url.com',
+            'endpoints' => [],//a list of their endpoints
         ];
     }
 }
