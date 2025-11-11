@@ -10,6 +10,8 @@ use Ocpi\Support\Models\Model;
  * @property int $id
  * @property Party $party
  * @property int $party_id
+ * @property int $party_role_id
+ * @property PartyRole $party_role
  * @property string $name
  * @property string $token
  * @property bool $registered
@@ -20,6 +22,7 @@ class PartyToken extends Model
 
     protected $fillable = [
         'party_id',
+        'party_role_id',
         'name',
         'token',
         'registered',
@@ -29,16 +32,21 @@ class PartyToken extends Model
         'registered' => false,
     ];
 
-    public function party(): BelongsTo
-    {
-        return $this->belongsTo(Party::class);
-    }
-
     protected function casts(): array
     {
         return [
             'registered' => 'bool',
         ];
+    }
+
+    public function party(): BelongsTo
+    {
+        return $this->belongsTo(Party::class);
+    }
+
+    public function party_role(): BelongsTo
+    {
+        return $this->belongsTo(PartyRole::class);
     }
 
 }

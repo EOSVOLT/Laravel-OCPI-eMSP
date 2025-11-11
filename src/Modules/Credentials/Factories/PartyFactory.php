@@ -13,25 +13,16 @@ class PartyFactory
 {
     /**
      * @param \Ocpi\Models\Party $model
-     * @param PartyToken|null $partyToken
      * @return Party
      */
-    public static function fromModel(\Ocpi\Models\Party $model, ?PartyToken $partyToken = null): Party
+    public static function fromModel(\Ocpi\Models\Party $model): Party
     {
-        if (null === $partyToken) {
-            $partyToken = $model->tokens->first();
-        }
-
         $roles = self::roleRelation($model);
         return new Party(
             $model->id,
             $model->code,
-            $partyToken->token,
-            $model->url,
             $model->version,
             $model->version_url,
-            $model->endpoints ?? [],
-            $partyToken->registered,
             $roles,
         );
     }

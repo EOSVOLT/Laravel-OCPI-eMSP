@@ -45,7 +45,7 @@ class IdentifyPartyRole
 
         // Add information to Context.
         Context::add('party_role_id', $partyRole->id);
-        Context::add('party_role_party_id', $partyRole->party->id);
+        Context::add('party_role_party_id', $partyRole->party_id);
 
         return $next($request);
     }

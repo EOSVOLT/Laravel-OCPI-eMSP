@@ -9,19 +9,22 @@ use Ocpi\Modules\Credentials\Object\PartyRoleCollection;
 class PartyRoleFactory
 {
     /**
-     * @param \Ocpi\Models\PartyRole $role
+     * @param \Ocpi\Models\PartyRole $model
      *
      * @return PartyRole
      */
-    public static function fromModel(\Ocpi\Models\PartyRole $role): PartyRole
+    public static function fromModel(\Ocpi\Models\PartyRole $model): PartyRole
     {
         return new PartyRole(
-            $role->id,
-            $role->party_id,
-            $role->code,
-            $role->role,
-            $role->country_code,
-            (array)$role->business_details ?? [],
+            $model->id,
+            $model->party_id,
+            $model->code,
+            $model->role,
+            $model->country_code,
+            (array)$model->business_details ?? [],
+            PartyTokenFactory::fromCollection($model->tokens),
+            $model->url,
+            $model->endpoints,
         );
     }
 
@@ -30,7 +33,7 @@ class PartyRoleFactory
      *
      * @return PartyRoleCollection
      */
-    public static function fromModels(Collection $collection): PartyRoleCollection
+    public static function fromCollection(Collection $collection): PartyRoleCollection
     {
         $roles = new PartyRoleCollection();
         foreach ($collection as $role) {

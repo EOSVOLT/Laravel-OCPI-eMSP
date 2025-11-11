@@ -11,15 +11,24 @@ use Ocpi\Support\Client\Client;
 
 class PartyInformationAndDetailsSynchronizeAction
 {
-    public function handle(Party $party, PartyToken $partyToken): Party
+    /**
+     * @param PartyToken $partyToken
+     *
+     * @return Party
+     * @throws \Throwable
+     */
+    public function handle(PartyToken $partyToken): Party
     {
+        $partyRole = $partyToken->party_role;
+        $partyCode = $partyRole->code;
+        $partyVersion = $partyRole->party->version;
         // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
-        Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Information of the Party on '.$party->url);
-        $client = new Client($party, $partyToken, 'versions.information');
+        Log::channel('ocpi')->info('Party '.$partyCode.' - OCPI GET call for Versions Information of the Party on '. $partyRole->url);
+        $client = new Client($partyRole, $partyToken, 'versions.information');
         $versionList = $client->versions()->information();
         throw_if(
             ! is_array($versionList),
-            new Exception('Party '.$party->code.' - Empty or invalid response for Versions Information.')
+            new Exception('Party '.$partyCode.' - Empty or invalid response for Versions Information.')
         );
 
         // Find supported OCPI versions.
@@ -39,7 +48,7 @@ class PartyInformationAndDetailsSynchronizeAction
         );
         throw_if(
             count($partyVersionList) === 0,
-            new Exception('Party '.$party->code.' - No valid version found for Party.')
+            new Exception('Party '.$partyCode.' - No valid version found for Party.')
         );
 
         // Find latest mutual OCPI version.
@@ -52,49 +61,49 @@ class PartyInformationAndDetailsSynchronizeAction
         }
         throw_if(
             $latestMutualVersion === null,
-            new Exception('Party '.$party->code.' - No mutual version found.')
+            new Exception('Party '.$partyCode.' - No mutual version found.')
         );
 
-        Log::channel('ocpi')->info('Party '.$party->code.' - Set Party OCPI version to '.$latestMutualVersion['version']);
-        $party->version = $latestMutualVersion['version'];
-        $party->version_url = $latestMutualVersion['url'];
+        Log::channel('ocpi')->info('Party '.$partyCode.' - Set Party OCPI version to '.$latestMutualVersion['version']);
+        $partyRole->party->version = $latestMutualVersion['version'];
+        $partyRole->party->version_url = $latestMutualVersion['url'];
         throw_if(
-            ! $party->save(),
-            new Exception('Party '.$party->code.' - Error updating Party OCPI version.')
+            ! $partyRole->party->save(),
+            new Exception('Party '.$partyCode.' - Error updating Party OCPI version.')
         );
 
         // OCPI GET call for Versions Details of the Party, store OCPI endpoints.
-        Log::channel('ocpi')->info('Party '.$party->code.' - OCPI GET call for Versions Details of the Party for version '.$party->version);
+        Log::channel('ocpi')->info('Party '.$partyCode.' - OCPI GET call for Versions Details of the Party for version '.$partyVersion);
         $client->module('versions.details');
         $versionDetails = $client->versions()->details();
         throw_if(
             ! is_array($versionDetails) || ! isset($versionDetails['version']) || ! is_array($versionDetails['endpoints'] ?? null),
-            new Exception('Party '.$party->code.' - Empty or invalid response for Versions Details.')
+            new Exception('Party '.$partyCode.' - Empty or invalid response for Versions Details.')
         );
         throw_if(
-            $versionDetails['version'] !== $party->version,
-            new Exception('Party '.$party->code.' - Version mismatch for Versions Details: requested '.$party->version.' / received '.$versionDetails['version'].'.')
+            $versionDetails['version'] !== $partyVersion,
+            new Exception('Party '.$partyCode.' - Version mismatch for Versions Details: requested '.$partyVersion.' / received '.$versionDetails['version'].'.')
         );
 
         // Set Party OCPI endpoints for version.
-        Log::channel('ocpi')->info('Party '.$party->code.' - Set OCPI endpoints for version '.$party->version);
+        Log::channel('ocpi')->info('Party '.$partyCode.' - Set OCPI endpoints for version '.$partyVersion);
         $endpoints = [];
         foreach ($versionDetails['endpoints'] as $endpoint) {
             $key = $endpoint['identifier'];
             $innerKey = $endpoint['role'];
             $endpoints[$key][$innerKey] = rtrim($endpoint['url'], '/');
         }
-        $party->endpoints = $endpoints;
+        $partyRole->endpoints = $endpoints;
         throw_if(
-            ! Arr::has($party->endpoints, 'credentials'),
-            new Exception('Party '.$party->code.' - Missing required `credentials` Module endpoint.')
+            ! Arr::has($partyRole->endpoints, 'credentials'),
+            new Exception('Party '.$partyCode.' - Missing required `credentials` Module endpoint.')
         );
 
         throw_if(
-            ! $party->save(),
-            new Exception('Party '.$party->code.' - Error updating Party OCPI endpoints.')
+            ! $partyRole->save(),
+            new Exception('Party '.$partyCode.' - Error updating Party OCPI endpoints.')
         );
 
-        return $party;
+        return $partyRole->party;
     }
 }
