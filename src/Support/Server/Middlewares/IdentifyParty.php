@@ -11,6 +11,7 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Traits\Server\Response as ServerResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -44,6 +45,17 @@ class IdentifyParty
             ->when(false !== $decodedTokenA, function (Builder $query) use ($decodedTokenA) {
                 $query->orWhere('token', $decodedTokenA);
             })
+            ->where(function (Builder $query) use ($request) {
+                if (Str::contains($request->getUri(), ['emsp', 'EMSP'])) {
+                    $query->whereHas('party_role', function (Builder $query) {
+                        $query->where('role', Role::EMSP);
+                    });
+                } elseif (Str::contains($request->getUri(), ['cpo', 'CPO'])) {
+                    $query->whereHas('party_role', function (Builder $query) {
+                        $query->where('role', Role::CPO);
+                    });
+                }
+            })
             ->first();
         if (null === $token) {
             return $this->ocpiClientErrorResponse(
@@ -54,9 +66,9 @@ class IdentifyParty
 
         // Add information to Context.
         Context::add('trace_id', Str::uuid()->toString());
-        Context::add('party_code', $token->party->code);
+        Context::add('party_code', $token->party_role->party->code);
         Context::add('token_id', $token->id);
-        $party = PartyFactory::fromModel($token->party, $token);
+        $party = PartyFactory::fromModel($token->party_role->party);
         Context::addHidden('party', $party);
 
         return $next($request);

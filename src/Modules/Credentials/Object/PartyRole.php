@@ -14,8 +14,25 @@ readonly class PartyRole implements Arrayable
         private Role $role,
         private string $countryCode,
         private array $businessDetails,
-    )
+        private PartyTokenCollection $partyTokens,
+        private ?string $url = null,
+        private ?array $endpoints = null,
+    ) {
+    }
+
+    public function getPartyTokens(): PartyTokenCollection
     {
+        return $this->partyTokens;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function getEndpoints(): ?array
+    {
+        return $this->endpoints;
     }
 
     /**
@@ -78,6 +95,8 @@ readonly class PartyRole implements Arrayable
             'role' => $this->getRole()->value,
             'country_code' => $this->getCountryCode(),
             'business_details' => $this->getBusinessDetails(),
+            'url' => $this->getUrl(),
+            'endpoints' => $this->getEndpoints(),
         ];
     }
 }

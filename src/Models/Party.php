@@ -23,13 +23,12 @@ use Ocpi\Support\Models\Model;
  * @property string|null $encoded_client_token
  * @property string|null $encoded_server_token
  * @property string $code
- * @property string|null $url
  * @property string|null $version
  * @property string|null $version_url
  * @property bool $registered
  * @property Collection|PartyRole[] $roles
  * @property PartyRole|null $role_cpo
- * @property array|null $endpoints
+ * @property PartyRole|null $role_emsp
  * @property int|null $parent_id
  * @property Party|null $parent
  * @property Collection|Party[] $children
@@ -45,7 +44,6 @@ class Party extends Model
         'url',
         'version',
         'version_url',
-        'endpoints',
         'parent_id',
     ];
 
@@ -106,10 +104,9 @@ class Party extends Model
     {
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::CPO->value);
     }
-
-    public function tokens(): HasMany
+    public function role_emsp(): HasOne
     {
-        return $this->hasMany(PartyToken::class);
+        return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::EMSP->value);
     }
 
     public function parent(): BelongsTo

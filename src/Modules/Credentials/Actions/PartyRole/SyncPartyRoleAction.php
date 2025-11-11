@@ -17,10 +17,12 @@ readonly class SyncPartyRoleAction
     ) {
     }
 
-    public function handle(Party $parentParty, array $data): void
+    public function handle(PartyToken $parentToken, array $data): void
     {
         $tokenB = $data['token'];
         $url = $data['url'];
+        $parentPartyRole = $parentToken->party_role;
+        $parentParty = $parentPartyRole->party;
         foreach ($data['roles'] as $role) {
             $partyCode = new PartyCode($role['party_id'], $role['country_code']);
 
@@ -33,34 +35,35 @@ readonly class SyncPartyRoleAction
                     [
                         'code' => $partyCode->getCodeFormatted(),
                         'parent_id' => $parentParty->id,
-                        'url' => $url,
                         'version' => $parentParty->version,
                     ]
                 );
-                $childrenPartyToken = new PartyToken();
-                $tokenName = $role['business_details']['name'] ?? '';
-                $childrenPartyToken->fill([
-                    'token' => $tokenB,
-                    'registered' => true,
-                    'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
-                ]);
-                $childrenParty->tokens()->save($childrenPartyToken);
-                // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
-                $childrenParty = $this->detailsSynchronizeAction->handle(
-                    $childrenParty,
-                    $childrenPartyToken
-                );
-                CredentialsCreated::dispatch($childrenParty->id);
             }
-
             $partyRole = new PartyRole;
             $partyRole->fill([
+                'parent_role_id' => $parentPartyRole->id,
                 'code' => $partyCode->getCode(),
                 'role' => $role['role'],
+                'url' => $url,
                 'country_code' => $partyCode->getCountryCode(),
                 'business_details' => $role['business_details'],
             ]);
-            $childrenParty->roles()->save($partyRole);
+            $role = $childrenParty->roles()->save($partyRole);
+
+            $childrenPartyToken = new PartyToken();
+            $tokenName = $role['business_details']['name'] ?? '';
+            $childrenPartyToken->fill([
+                'token' => $tokenB,
+                'registered' => true,
+                'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
+            ]);
+            $role->tokens()->save($childrenPartyToken);
+            $childrenParty->refresh();
+            // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
+            $this->detailsSynchronizeAction->handle(
+                $childrenPartyToken
+            );
+            CredentialsCreated::dispatch($childrenParty->id);
         }
     }
 }
