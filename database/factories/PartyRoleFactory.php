@@ -20,13 +20,13 @@ class PartyRoleFactory extends Factory
             'party_id' => $party->id,
             'code' => $codes[1],
             'country_code' => $codes[0],
-            'business_details' => json_encode([
+            'business_details' => [
                 'name' => 'Deutsch',
                 'website' => 'https://eosvolt.com',
-            ]),
+            ],
             'role' => Role::CPO,
             'url' => 'www.this_our_url.com',
-            'endpoints' => json_encode([]),//a list of their endpoints
+            'endpoints' => [],//a list of their endpoints
         ];
     }
 }
