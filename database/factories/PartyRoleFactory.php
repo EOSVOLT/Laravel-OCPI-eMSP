@@ -21,7 +21,7 @@ class PartyRoleFactory extends Factory
                 'name' => 'Deutsch',
                 'website' => 'https://eosvolt.com',
             ],
-            'roles' => Role::CPO,
+            'role' => Role::CPO,
             'url' => 'www.this_our_url.com',
             'endpoints' => [],//a list of their endpoints
         ];
