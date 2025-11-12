@@ -2,7 +2,7 @@
 
 namespace Ocpi\Models;
 
-use Database\Factories\PartyRoleFactory;
+use Database\Factories\PartyTokenFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,9 +35,9 @@ class PartyToken extends Model
         'registered' => false,
     ];
 
-    protected static function newFactory(): PartyRoleFactory
+    protected static function newFactory(): PartyTokenFactory
     {
-        return PartyRoleFactory::new();
+        return PartyTokenFactory::new();
     }
 
     public function party(): BelongsTo
