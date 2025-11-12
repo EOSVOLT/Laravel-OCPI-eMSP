@@ -9,10 +9,11 @@ class PartyFactory extends Factory
 {
 
     protected $model = Party::class;
+
     public function definition(): array
     {
         return [
-            'code' => 'DE*ABC',
+            'code' => $this->faker->unique()->countryCode() . '*' . $this->faker->unique()->ean8(),
             'parent_id' => null,
             'cpo_id' => 1,
             'version' => '2.2.1',

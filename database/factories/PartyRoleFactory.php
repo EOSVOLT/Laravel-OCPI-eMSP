@@ -13,10 +13,13 @@ class PartyRoleFactory extends Factory
 
     public function definition(): array
     {
+        /** @var Party $party */
+        $party = Party::factory()->create();
+        $codes = explode('*', $party->code);
         return [
-            'party_id' => Party::factory(),
-            'code' => 'ABC',
-            'country_code' => 'DE',
+            'party_id' => $party->id,
+            'code' => $codes[1],
+            'country_code' => $codes[0],
             'business_details' => json_encode([
                 'name' => 'Deutsch',
                 'website' => 'https://eosvolt.com',
