@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -18,7 +19,7 @@ return new class extends Migration {
             $table->dropColumn('location_evse_emsp_id');
         });
 
-        if ('sqlite' === $this->connection->getDriverName()) {
+        if ('sqlite' === DB::connection()->getDriverName()) {
             Schema::dropIfExists(config('ocpi.database.table.prefix') . 'location_connectors');
             Schema::create(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
                 $table->id();
@@ -51,7 +52,7 @@ return new class extends Migration {
             $table->renameColumn('id', 'connector_id');
         });
 
-        if ('sqlite' === $this->connection->getDriverName()) {
+        if ('sqlite' === DB::connection()->getDriverName()) {
             Schema::dropIfExists(config('ocpi.database.table.prefix') . 'location_evses');
             Schema::create(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
                 $table->id();
@@ -83,7 +84,7 @@ return new class extends Migration {
             $table->dropColumn('location_emsp_id');
         });
 
-        if ('sqlite' === $this->connection->getDriverName()) {
+        if ('sqlite' === DB::connection()->getDriverName()) {
             Schema::dropIfExists(config('ocpi.database.table.prefix') . 'locations');
             Schema::create(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
                 $table->id();
