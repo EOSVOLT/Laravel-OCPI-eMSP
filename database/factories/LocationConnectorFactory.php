@@ -18,7 +18,7 @@ class LocationConnectorFactory extends Factory
         return [
             'evse_id' => LocationEvse::factory(),
             'connector_id' => 1,
-            'object' => self::getJsonResource(__DIR__ . "/../../tests/Resources/location_connector_object.json"),
+            'object' => self::getJsonResourceString(__DIR__ . "/../../tests/Resources/location_connector_object.json"),
         ];
     }
 }

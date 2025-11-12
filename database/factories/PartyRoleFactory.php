@@ -17,13 +17,13 @@ class PartyRoleFactory extends Factory
             'party_id' => Party::factory(),
             'code' => 'ABC',
             'country_code' => 'DE',
-            'business_details' => [
+            'business_details' => json_encode([
                 'name' => 'Deutsch',
                 'website' => 'https://eosvolt.com',
-            ],
+            ]),
             'role' => Role::CPO,
             'url' => 'www.this_our_url.com',
-            'endpoints' => [],//a list of their endpoints
+            'endpoints' => json_encode([]),//a list of their endpoints
         ];
     }
 }

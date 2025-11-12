@@ -18,7 +18,7 @@ class LocationFactory extends Factory
         return [
             'party_id' => Party::factory(),
             'external_id' => $this->faker->uuid,
-            'object' => self::getJsonResource(__DIR__ . "/../../tests/Resources/location.json"),
+            'object' => self::getJsonResourceString(__DIR__ . "/../../tests/Resources/location.json"),
             'publish' => true,
         ];
     }
