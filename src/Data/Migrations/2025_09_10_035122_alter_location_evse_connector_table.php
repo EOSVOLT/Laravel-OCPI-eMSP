@@ -18,29 +18,98 @@ return new class extends Migration {
             $table->dropColumn('location_evse_emsp_id');
         });
 
+        if ('sqlite' === $this->connection->getDriverName()) {
+            Schema::dropIfExists(config('ocpi.database.table.prefix') . 'location_connectors');
+            Schema::create(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
+                $table->id();
+                $table->foreignUuid('location_evse_emsp_id')
+                    ->constrained(
+                        table: config('ocpi.database.table.prefix') . 'location_evses',
+                        column: 'emsp_id',
+                    )
+                    ->cascadeOnDelete();
+
+                $table->string('id', length: 36);
+                $table->json('object');
+                $table->timestamps();
+                $table->softDeletes();
+
+                $table->unique(['location_evse_emsp_id', 'id']);
+                $table->index('id');
+            });
+        } else {
+            Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
+                $table->dropPrimary(['emsp_id']);
+                $table->id()->after('emsp_id');
+                $table->dropColumn('emsp_id');
+            });
+        }
         Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
             $table->dropForeign(['location_evse_emsp_id']);
             $table->dropUnique(['location_evse_emsp_id', 'id']);
             $table->dropColumn('location_evse_emsp_id');
             $table->renameColumn('id', 'connector_id');
-            $table->dropPrimary(['emsp_id']);
-            $table->id()->after('emsp_id');
-            $table->dropColumn('emsp_id');
         });
+
+        if ('sqlite' === $this->connection->getDriverName()) {
+            Schema::dropIfExists(config('ocpi.database.table.prefix') . 'location_evses');
+            Schema::create(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
+                $table->id();
+                $table->foreignUuid('location_emsp_id')
+                    ->constrained(
+                        table: config('ocpi.database.table.prefix') . 'locations',
+                        column: 'emsp_id',
+                    )
+                    ->cascadeOnDelete();
+
+                $table->string('uid', length: 39);
+                $table->json('object');
+                $table->timestamps();
+                $table->softDeletes();
+
+                $table->unique(['location_emsp_id', 'uid']);
+                $table->index('uid');
+            });
+        } else {
+            Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
+                $table->dropPrimary(['emsp_id']);
+                $table->id()->after('emsp_id');
+                $table->dropColumn('emsp_id');
+            });
+        }
         Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
-            $table->dropPrimary(['emsp_id']);
-            $table->id()->after('emsp_id');
-            $table->dropColumn('emsp_id');
             $table->dropForeign(['location_emsp_id']);
             $table->dropUnique(['location_emsp_id', 'uid']);
             $table->dropColumn('location_emsp_id');
         });
-        Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
-            $table->renameColumn('id', 'external_id');
-            $table->dropPrimary(['emsp_id']);
-            $table->id()->after('emsp_id');
-            $table->dropColumn('emsp_id');
-        });
+
+        if ('sqlite' === $this->connection->getDriverName()) {
+            Schema::dropIfExists(config('ocpi.database.table.prefix') . 'locations');
+            Schema::create(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('party_role_id')
+                    ->constrained(
+                        table: config('ocpi.database.table.prefix') . 'party_roles',
+                        indexName: 'locations_party_role_id',
+                    )
+                    ->cascadeOnDelete();
+
+                $table->string('external_id', length: 39);
+                $table->json('object');
+                $table->timestamps();
+                $table->softDeletes();
+
+                $table->unique(['party_role_id', 'id']);
+                $table->index('id');
+            });
+        } else {
+            Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
+                $table->renameColumn('id', 'external_id');
+                $table->dropPrimary(['emsp_id']);
+                $table->id()->after('emsp_id');
+                $table->dropColumn('emsp_id');
+            });
+        }
 
         Schema::table(config('ocpi.database.table.prefix') . 'location_evses', function (Blueprint $table) {
             $table->foreignId('location_id')->after('id')->constrained('ocpi_locations');
@@ -68,7 +137,6 @@ return new class extends Migration {
                 config('ocpi.database.table.prefix') . 'locations'
             )->restrictOnDelete();
         });
-
 
         Schema::enableForeignKeyConstraints();
     }
