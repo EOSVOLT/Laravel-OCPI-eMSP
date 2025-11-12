@@ -18,7 +18,7 @@ class LocationEvseFactory extends Factory
         return [
             'location_id' => Location::factory(),
             'uid' => $this->faker->uuid,
-            'object' => self::getJsonResourceString(__DIR__ . "/../../tests/Resources/location_evse_object.json"),
+            'object' => $this->getJsonResourceArray(__DIR__ . "/../../tests/Resources/location_evse_object.json"),
             'status' => EvseStatus::AVAILABLE
         ];
     }
