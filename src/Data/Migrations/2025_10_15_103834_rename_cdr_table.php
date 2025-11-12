@@ -26,13 +26,13 @@ return new class extends Migration
                     config('ocpi.database.table.prefix') . 'locations'
                 )->restrictOnDelete();
 
-                $table->string('id', length: 39);
+                $table->string('cdr_id', length: 39);
                 $table->json('object');
                 $table->timestamps();
                 $table->softDeletes();
 
                 $table->unique(['party_role_id', 'id']);
-                $table->index('id');
+                $table->index('cdr_id');
             });
         }else{
             Schema::table(config('ocpi.database.table.prefix').'cdrs', function (Blueprint $table) {

@@ -30,26 +30,27 @@ return new class extends Migration {
                     )
                     ->cascadeOnDelete();
 
-                $table->string('id', length: 36);
+                $table->string('connector_id', length: 36);
                 $table->json('object');
                 $table->timestamps();
                 $table->softDeletes();
 
                 $table->unique(['location_evse_emsp_id', 'id']);
-                $table->index('id');
+                $table->index('connector_id');
             });
         } else {
             Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
                 $table->dropPrimary(['emsp_id']);
                 $table->id()->after('emsp_id');
                 $table->dropColumn('emsp_id');
+                $table->renameColumn('id', 'connector_id');
             });
         }
         Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
             $table->dropForeign(['location_evse_emsp_id']);
             $table->dropUnique(['location_evse_emsp_id', 'id']);
             $table->dropColumn('location_evse_emsp_id');
-            $table->renameColumn('id', 'connector_id');
+
         });
 
         if ('sqlite' === DB::connection()->getDriverName()) {
@@ -101,7 +102,7 @@ return new class extends Migration {
                 $table->softDeletes();
 
                 $table->unique(['party_role_id', 'id']);
-                $table->index('id');
+                $table->index('external_id');
             });
         } else {
             Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
