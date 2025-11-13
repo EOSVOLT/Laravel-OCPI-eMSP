@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Unit;
+namespace Ocpi\Tests\Unit;
 
 use Ocpi\Modules\Credentials\Factories\PartyFactory;
-use Tests\TestCase;
-use Tests\Traits\SchemaTrait;
-use Tests\Traits\TestLocationTrait;
-use Tests\Traits\TestPartyRoleTrait;
+use Ocpi\Tests\TestCase;
+use Ocpi\Tests\Traits\SchemaTrait;
+use Ocpi\Tests\Traits\TestLocationTrait;
+use Ocpi\Tests\Traits\TestPartyRoleTrait;
 
 class PartyTest extends TestCase
 {

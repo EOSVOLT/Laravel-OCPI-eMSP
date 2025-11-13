@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Traits;
+namespace Ocpi\Tests\Traits;
 
 trait SchemaTrait
 {

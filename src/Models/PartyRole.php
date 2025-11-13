@@ -2,7 +2,7 @@
 
 namespace Ocpi\Models;
 
-use Database\Factories\PartyRoleFactory;
+use Ocpi\Database\Factories\PartyRoleFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

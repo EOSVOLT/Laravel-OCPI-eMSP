@@ -2,7 +2,7 @@
 
 namespace Ocpi\Models;
 
-use Database\Factories\PartyTokenFactory;
+use Ocpi\Database\Factories\PartyTokenFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;

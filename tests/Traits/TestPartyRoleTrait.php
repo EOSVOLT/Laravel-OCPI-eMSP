@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Traits;
+namespace Ocpi\Tests\Traits;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Ocpi\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Cdrs\Cdr;
