@@ -5,7 +5,7 @@ namespace Ocpi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Party;
-use Tests\Traits\SchemaTrait;
+use Ocpi\Tests\Traits\SchemaTrait;
 
 class LocationFactory extends Factory
 {

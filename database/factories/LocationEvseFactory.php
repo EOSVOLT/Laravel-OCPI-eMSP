@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
-use Tests\Traits\SchemaTrait;
+use Ocpi\Tests\Traits\SchemaTrait;
 
 class LocationEvseFactory extends Factory
 {

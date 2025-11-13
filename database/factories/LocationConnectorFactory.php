@@ -5,7 +5,7 @@ namespace Ocpi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Locations\LocationEvse;
-use Tests\Traits\SchemaTrait;
+use Ocpi\Tests\Traits\SchemaTrait;
 
 class LocationConnectorFactory extends Factory
 {
