@@ -89,10 +89,10 @@ return new class extends Migration {
             Schema::dropIfExists(config('ocpi.database.table.prefix') . 'locations');
             Schema::create(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('party_role_id')
+                $table->foreignId('party_id')
                     ->constrained(
-                        table: config('ocpi.database.table.prefix') . 'party_roles',
-                        indexName: 'locations_party_role_id',
+                        table: config('ocpi.database.table.prefix') . 'parties',
+                        indexName: 'locations_party_id',
                     )
                     ->cascadeOnDelete();
 
@@ -101,7 +101,7 @@ return new class extends Migration {
                 $table->timestamps();
                 $table->softDeletes();
 
-                $table->unique(['party_role_id', 'id']);
+                $table->unique(['party_id', 'id']);
                 $table->index('external_id');
             });
         } else {
