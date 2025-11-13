@@ -1,12 +1,12 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Events;
+namespace Ocpi\Modules\Locations\Events\EMSP;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Ocpi\Modules\Locations\Objects\Location;
 
-class LocationUpdated implements ShouldDispatchAfterCommit
+class LocationUpdated implements ReceiverLocationEventInterface, ShouldDispatchAfterCommit
 {
     use Dispatchable;
 

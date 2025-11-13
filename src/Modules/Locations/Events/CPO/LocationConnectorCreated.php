@@ -1,12 +1,12 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Events;
+namespace Ocpi\Modules\Locations\Events\CPO;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Ocpi\Modules\Locations\Objects\Connector;
 
-class LocationConnectorReplaced implements ShouldDispatchAfterCommit
+class LocationConnectorCreated implements SenderLocationEventInterface, ShouldDispatchAfterCommit
 {
     use Dispatchable;
 
