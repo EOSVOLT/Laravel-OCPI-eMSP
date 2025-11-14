@@ -25,7 +25,6 @@ use Ocpi\Support\Models\Model;
  * @property string $code
  * @property string|null $version
  * @property string|null $version_url
- * @property bool $registered
  * @property Collection|PartyRole[] $roles
  * @property PartyRole|null $role_cpo
  * @property PartyRole|null $role_emsp
@@ -33,24 +32,23 @@ use Ocpi\Support\Models\Model;
  * @property Party|null $parent
  * @property Collection|Party[] $children
  * @property Collection|PartyToken[] $tokens
+ * @property bool $is_external_party
  */
 class Party extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'code',
-        'url',
         'version',
         'version_url',
         'parent_id',
+        'is_external_party',
+        'cpo_id',
     ];
 
     /**
-     * @param string $token
-     *
-     * @return string
      * @todo move to helper or static factory
      */
     public static function encodeToken(string $token): string
@@ -59,10 +57,6 @@ class Party extends Model
     }
 
     /**
-     * @param string $token
-     * @param Party|null $party
-     *
-     * @return false|string
      * @todo move to helper or static factory
      */
     public static function decodeToken(string $token, ?Party $party = null): false|string
@@ -71,9 +65,10 @@ class Party extends Model
             return $token;
         }
 
-        if (true === Base64Helper::isBase64Encoded($token)) {
+        if (Base64Helper::isBase64Encoded($token) === true) {
             return base64_decode($token, true);
         }
+
         return $token;
     }
 
@@ -104,6 +99,7 @@ class Party extends Model
     {
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::CPO->value);
     }
+
     public function role_emsp(): HasOne
     {
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::EMSP->value);
@@ -125,15 +121,7 @@ class Party extends Model
 
     public function generateToken(): string
     {
-        return $this->code . '_' . Str::uuid();
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'endpoints' => 'array',
-            'registered' => 'boolean',
-        ];
+        return $this->code.'_'.Str::uuid();
     }
 
     /***
@@ -143,7 +131,7 @@ class Party extends Model
     protected function encodedClientToken(): Attribute
     {
         return Attribute::make(
-            get: fn(mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
                 ? self::encodeToken($attributes['client_token'])
                 : $attributes['client_token'],
         );
@@ -152,7 +140,7 @@ class Party extends Model
     protected function encodedServerToken(): Attribute
     {
         return Attribute::make(
-            get: fn(mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
                 ? self::encodeToken($attributes['server_token'])
                 : $attributes['server_token'],
         );

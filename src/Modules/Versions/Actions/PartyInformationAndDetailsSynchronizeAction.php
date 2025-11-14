@@ -24,7 +24,7 @@ class PartyInformationAndDetailsSynchronizeAction
         $partyVersion = $partyRole->party->version;
         // OCPI GET call for Versions Information of the Party, store OCPI version and URL.
         Log::channel('ocpi')->info('Party '.$partyCode.' - OCPI GET call for Versions Information of the Party on '. $partyRole->url);
-        $client = new Client($partyRole, $partyToken, 'versions.information');
+        $client = new Client($partyToken, 'versions.information');
         $versionList = $client->versions()->information();
         throw_if(
             ! is_array($versionList),

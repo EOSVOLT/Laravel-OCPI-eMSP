@@ -29,10 +29,11 @@ use Ocpi\Support\Models\Model;
  */
 class PartyRole extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
+        'party_id',
         'parent_role_id',
         'code',
         'role',

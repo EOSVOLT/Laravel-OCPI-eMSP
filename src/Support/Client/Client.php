@@ -5,15 +5,14 @@ namespace Ocpi\Support\Client;
 use Exception;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
-use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Client\Resource as CdrsResource;
 use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
 use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
 use Ocpi\Modules\Locations\Client\V2_2_1\Resource as LocationsResource;
 use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;
-use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Modules\Tariffs\Client\V2_2_1\Resource as TariffResource;
+use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
 use Ocpi\Support\Enums\InterfaceRole;
@@ -28,13 +27,13 @@ class Client extends Connector
     use AcceptsJson;
 
     protected InterfaceRole $interfaceRole;
+
     public function __construct(
-        protected readonly PartyRole $partyRole,
         protected readonly PartyToken $partyToken,
         protected string $module,
     ) {
         Context::add('trace_id', Str::uuid()->toString());
-        Context::add('party_code', $partyRole?->code);
+        Context::add('party_code', $partyToken->party_role?->code);
 
         $this->middleware()->onRequest(new LogRequest);
         $this->middleware()->onResponse(new LogResponse);
@@ -42,7 +41,7 @@ class Client extends Connector
 
     public function hasRequestFailed(Response $response): ?bool
     {
-        if (true === $response->isJson() || (null !== $response->header('content-type'))) {
+        if ($response->isJson() === true || ($response->header('content-type') !== null)) {
             try {
                 $responseObject = $response->object();
 
@@ -58,12 +57,11 @@ class Client extends Connector
     public function resolveBaseUrl(): string
     {
         return match ($this->module) {
-            'versions.information' => $this->partyRole->url,
-            'versions.details' => $this->partyRole->party?->version_url,
+            'versions.information' => $this->partyToken->party_role->url,
+            'versions.details' => $this->partyToken->party_role->party?->version_url,
             default => $this->partyRole?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
         };
     }
-
 
     /***
      * Methods.
@@ -131,7 +129,8 @@ class Client extends Connector
 
     protected function defaultAuth(): TokenAuthenticator
     {
-        $token = GeneratorHelper::encodeToken($this->partyToken->token, $this->partyRole->party->version);
+        $token = GeneratorHelper::encodeToken($this->partyToken->token, $this->partyToken->party_role->party->version);
+
         return new TokenAuthenticator($token, 'Token');
     }
 }

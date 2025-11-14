@@ -2,7 +2,6 @@
 
 namespace Ocpi\Support\Client\Requests;
 
-
 class ListRequest extends PaginationRequest
 {
     public function rules(): array

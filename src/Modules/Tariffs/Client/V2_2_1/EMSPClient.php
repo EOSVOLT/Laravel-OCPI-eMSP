@@ -8,8 +8,8 @@ use Ocpi\Support\Client\ReceiverClient;
 
 class EMSPClient extends ReceiverClient
 {
-    public function __construct(PartyRole $partyRole, PartyToken $partyToken)
+    public function __construct(PartyToken $partyToken)
     {
-        parent::__construct($partyRole, $partyToken, 'tariffs');
+        parent::__construct($partyToken, 'tariffs');
     }
 }

@@ -75,4 +75,9 @@ class LocationFactory
         }
         return $collection;
     }
+
+    public static function fromArray(array $data): Location
+    {
+        
+    }
 }

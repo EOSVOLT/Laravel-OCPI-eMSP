@@ -40,7 +40,7 @@ class Update extends Command implements PromptsForMissingInput
         $this->info('Starting credentials update with '.$partyCode.($generateNewClientToken ? ' with' : ' without').' new OCPI Client Token');
 
         // Retrieve the Party.
-        $party = Party::where('code', $partyCode)->first();
+        $party = Party::where('code', $partyCode)->withWhereHas('role_cpo')->first();
         if ($party === null) {
             $this->error('Party not found.');
 
@@ -52,13 +52,13 @@ class Update extends Command implements PromptsForMissingInput
 
             return Command::FAILURE;
         }
-
+        $partyToken = $party->tokens->first();
         try {
             DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
             $this->info('  - Call Party OCPI - GET - Versions Information and Details, store OCPI endpoints');
-            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party);
+            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($partyToken);
 
             // Generate new Client Token for the Party.
             if ($generateNewClientToken) {
@@ -73,8 +73,8 @@ class Update extends Command implements PromptsForMissingInput
 
             // OCPI PUT call to update the Credentials and get new Server Token.
             $this->info('  - Call Party OCPI - PUT - Credentials endpoint with new Client Token');
-            $ocpiClient = new Client($party, 'credentials');
-            $credentialsPutData = $ocpiClient->credentials()->put($selfCredentialsGetAction->handle($party));
+            $ocpiClient = new Client($partyToken, 'credentials');
+            $credentialsPutData = $ocpiClient->credentials()->put($selfCredentialsGetAction->handle($partyToken));
             $credentialsInput = CredentialsValidator::validate($credentialsPutData);
 
             // Store received OCPI Server Token.

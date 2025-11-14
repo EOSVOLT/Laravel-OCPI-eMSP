@@ -3,11 +3,14 @@
 namespace Ocpi\Support\Client;
 
 use ArrayObject;
+use Carbon\Carbon;
 use Ocpi\Support\Client\Requests\DeleteRequest;
 use Ocpi\Support\Client\Requests\GetRequest;
 use Ocpi\Support\Client\Requests\PatchRequest;
 use Ocpi\Support\Client\Requests\PostRequest;
 use Ocpi\Support\Client\Requests\PutRequest;
+use Ocpi\Support\Objects\OCPIResponse;
+use Ocpi\Support\Objects\PaginationOCPIResponse;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\BaseResource;
@@ -17,16 +20,14 @@ use Throwable;
 class Resource extends BaseResource
 {
     /**
-     * @param string|null $endpoint
-     * @param array|null $query
-     *
-     * @return array|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws Throwable
      */
-    public function requestGetSend(?string $endpoint = null, ?array $query = null): ?array
-    {
+    public function requestGetSend(
+        ?string $endpoint = null,
+        ?array $query = null,
+    ): PaginationOCPIResponse|OCPIResponse|null {
         $response = $this->connector->send(
             (new GetRequest)
                 ->withEndpoint($endpoint)
@@ -39,10 +40,6 @@ class Resource extends BaseResource
     }
 
     /**
-     * @param array|ArrayObject|null $payload
-     * @param string|null $endpoint
-     *
-     * @return array|string|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws Throwable
@@ -61,10 +58,6 @@ class Resource extends BaseResource
     }
 
     /**
-     * @param array|ArrayObject|null $payload
-     * @param string|null $endpoint
-     *
-     * @return array|string|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws Throwable
@@ -83,10 +76,6 @@ class Resource extends BaseResource
     }
 
     /**
-     * @param array|ArrayObject|null $payload
-     * @param string|null $endpoint
-     *
-     * @return array|string|null
      * @throws FatalRequestException
      * @throws RequestException
      * @throws Throwable
@@ -117,29 +106,41 @@ class Resource extends BaseResource
     }
 
     /**
-     * @param Response $response
-     *
-     * @return array|null
+     * @return PaginationOCPIResponse|Response|null
      */
-    public function responseGetProcess(Response $response): ?array
-    {
-        if (!$response->successful()) {
+    public function responseGetProcess(
+        Response $response,
+    ): PaginationOCPIResponse|OCPIResponse|null {
+        if (! $response->successful()) {
             return null;
         }
-
         $responseArray = $response->array();
+        $data = $responseArray['data'] ?? $responseArray ?? null;
+        $total = $response->header('X-Total-Count');
+        $limit = $response->header('X-Limit');
+        if ($total !== null && $limit !== null) {
+            return new PaginationOCPIResponse(
+                $responseArray['status_code'],
+                Carbon::parse($responseArray['timestamp']),
+                $total,
+                $limit,
+                $data,
+                $responseArray['status_message'],
+                $response->header('Link')
+            );
+        }
 
-        return $responseArray['data'] ?? $responseArray ?? null;
+        return new OCPIResponse(
+            $responseArray['status_code'],
+            Carbon::parse($responseArray['timestamp']),
+            $data,
+            $responseArray['status_message'],
+        );
     }
 
-    /**
-     * @param Response $response
-     *
-     * @return array|string|null
-     */
     public function responsePostProcess(Response $response): array|string|null
     {
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
@@ -148,14 +149,9 @@ class Resource extends BaseResource
         return $responseArray['data'] ?? $responseArray ?? null;
     }
 
-    /**
-     * @param Response $response
-     *
-     * @return array|string|null
-     */
     public function responsePutProcess(Response $response): array|string|null
     {
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
@@ -164,13 +160,9 @@ class Resource extends BaseResource
         return $responseArray['data'] ?? $responseArray ?? null;
     }
 
-    /**
-     * @param Response $response
-     * @return array|string|null
-     */
     public function responsePatchProcess(Response $response): array|string|null
     {
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
@@ -179,14 +171,9 @@ class Resource extends BaseResource
         return $responseArray['data'] ?? $responseArray ?? null;
     }
 
-    /**
-     * @param Response $response
-     *
-     * @return array|string|null
-     */
     public function responseDeleteProcess(Response $response): array|string|null
     {
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 

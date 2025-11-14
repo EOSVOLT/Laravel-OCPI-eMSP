@@ -70,7 +70,7 @@ class Register extends Command implements PromptsForMissingInput
             $this->info('  - Call Party OCPI - GET - Versions Information and Details, store OCPI endpoints');
             /** @var PartyToken $token */
             $token = $party->tokens->first();
-            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($party, $token);
+            $party = $versionsPartyInformationAndDetailsSynchronizeAction->handle($token);
             $party->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();
@@ -79,9 +79,9 @@ class Register extends Command implements PromptsForMissingInput
 
             // OCPI POST call to update the Credentials and get new Server Token.
             $this->info('  - Call Party OCPI - POST - Credentials endpoint with a parent token');
-            $ocpiClient = new ReceiverClient($party, $token, 'credentials');
+            $ocpiClient = new ReceiverClient($token, 'credentials');
             $credentialsPostData = $ocpiClient->credentials()->post(
-                $selfCredentialsGetAction->handle($parentParty, $parentToken)
+                $selfCredentialsGetAction->handle($parentToken)
             );
             $credentialsInput = CredentialsValidator::validate($credentialsPostData);
 
@@ -95,7 +95,7 @@ class Register extends Command implements PromptsForMissingInput
 
             //sync roles from OCPI server.
             $this->info('  - Creating party roles from OCPI server');
-            $syncPartyRoleAction->handle($parentParty, $credentialsInput);
+            $syncPartyRoleAction->handle($parentToken, $credentialsInput);
 
             $parentToken->registered = true;
             $parentToken->save();
