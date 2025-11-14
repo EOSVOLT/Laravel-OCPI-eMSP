@@ -5,7 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\Sessions\Session;
-use Ocpi\Modules\Sessions\Factories\SessionFactory;
 
 return new class extends Migration {
     /**
@@ -37,7 +36,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
-            $table->dropForeign('location_evse_id');
+            $table->dropForeign(['location_evse_id']);
             $table->dropColumn('location_evse_id');
         });
     }

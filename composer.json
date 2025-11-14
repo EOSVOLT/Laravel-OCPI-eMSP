@@ -35,12 +35,12 @@
     "autoload": {
         "psr-4": {
             "Ocpi\\": "src/",
-            "Database\\Factories\\": "database/factories/"
+            "Ocpi\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Ocpi\\Tests\\": "tests/"
         }
     },
     "extra": {

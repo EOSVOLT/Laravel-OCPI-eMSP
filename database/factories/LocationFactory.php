@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories;
+namespace Ocpi\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Party;
-use Tests\Traits\SchemaTrait;
+use Ocpi\Tests\Traits\SchemaTrait;
 
 class LocationFactory extends Factory
 {
@@ -18,7 +18,7 @@ class LocationFactory extends Factory
         return [
             'party_id' => Party::factory(),
             'external_id' => $this->faker->uuid,
-            'object' => self::getJsonResource(__DIR__ . "/../../tests/Resources/location.json"),
+            'object' => $this->getJsonResourceArray(__DIR__ . "/../../tests/Resources/location.json"),
             'publish' => true,
         ];
     }

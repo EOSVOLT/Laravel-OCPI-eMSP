@@ -1,11 +1,11 @@
 <?php
 
-namespace Database\Factories;
+namespace Ocpi\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Locations\LocationEvse;
-use Tests\Traits\SchemaTrait;
+use Ocpi\Tests\Traits\SchemaTrait;
 
 class LocationConnectorFactory extends Factory
 {
@@ -18,7 +18,7 @@ class LocationConnectorFactory extends Factory
         return [
             'evse_id' => LocationEvse::factory(),
             'connector_id' => 1,
-            'object' => self::getJsonResource(__DIR__ . "/../../tests/Resources/location_connector_object.json"),
+            'object' => $this->getJsonResourceArray(__DIR__ . "/../../tests/Resources/location_connector_object.json"),
         ];
     }
 }
