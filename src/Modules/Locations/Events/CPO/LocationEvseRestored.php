@@ -12,7 +12,8 @@ class LocationEvseRestored implements SenderLocationEventInterface, ShouldDispat
 
     public function __construct(
         private readonly Evse $evse,
-    ) {}
+    ) {
+    }
 
     public function getEvse(): Evse
     {

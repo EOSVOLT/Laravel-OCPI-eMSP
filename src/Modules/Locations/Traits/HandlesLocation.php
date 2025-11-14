@@ -5,7 +5,6 @@ namespace Ocpi\Modules\Locations\Traits;
 use Illuminate\Support\Facades\Validator;
 use Ocpi\Models\Locations\Location as LocationModel;
 use Ocpi\Models\PartyRole;
-use Ocpi\Modules\Locations\Events\EMSP\LocationCreated;
 use Ocpi\Modules\Locations\Factories\LocationFactory;
 use Ocpi\Modules\Locations\Objects\ConnectorCollection;
 use Ocpi\Modules\Locations\Objects\Evse;

@@ -7,11 +7,9 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\Party;
-use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
 use Ocpi\Modules\Credentials\Actions\PartyRole\SyncPartyRoleAction;
-use Ocpi\Modules\Credentials\Object\PartyCode;
 use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\ReceiverClient;
@@ -45,7 +43,7 @@ class Register extends Command implements PromptsForMissingInput
         SyncPartyRoleAction $syncPartyRoleAction,
     ) {
         $partyCode = $this->argument('party_code');
-        $this->info('Starting credentials exchange with a sender party ' . $partyCode);
+        $this->info('Starting credentials exchange with a sender party '.$partyCode);
 
         // Retrieve the Party.
         /** @var Party $party */
@@ -87,7 +85,7 @@ class Register extends Command implements PromptsForMissingInput
 
             // Store received OCPI Server Token, mark the Party as registered.
             $this->info(
-                '  - Store received OCPI Server Token: ' . $credentialsInput['token'] . ', mark the Party as registered'
+                '  - Store received OCPI Server Token: '.$credentialsInput['token'].', mark the Party as registered'
             );
             $token->token = GeneratorHelper::decodeToken($credentialsInput['token'], $party->version);
             $token->registered = true;
@@ -101,7 +99,7 @@ class Register extends Command implements PromptsForMissingInput
             $parentToken->save();
 
             DB::connection(config('ocpi.database.connection'))->commit();
-            $this->info('OCPI party ' . $party->code . ' Registration completed.');
+            $this->info('OCPI party '.$party->code.' Registration completed.');
             return Command::SUCCESS;
         } catch (Exception $e) {
             DB::connection(config('ocpi.database.connection'))->rollback();

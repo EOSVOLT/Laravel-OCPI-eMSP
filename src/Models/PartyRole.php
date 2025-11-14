@@ -71,14 +71,6 @@ class PartyRole extends Model
         return $this->belongsTo(Party::class);
     }
 
-    protected function casts(): array
-    {
-        return [
-            'business_details' => 'array',
-            'role' => Role::class,
-        ];
-    }
-
     public function tokens(): HasMany
     {
         return $this->hasMany(PartyToken::class, 'party_role_id');
@@ -92,5 +84,13 @@ class PartyRole extends Model
     public function children_role(): HasMany
     {
         return $this->hasMany(PartyRole::class, 'parent_role_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'business_details' => 'array',
+            'role' => Role::class,
+        ];
     }
 }

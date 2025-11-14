@@ -35,15 +35,15 @@ readonly class PaginationOCPIResponse extends OCPIResponse
 
     public function isNextPage(): bool
     {
-        return (bool) $this->link;
+        return (bool)$this->link;
     }
 
     public function toArray(): array
     {
         return parent::toArray() + [
-            'total' => $this->total,
-            'limit' => $this->limit,
-            'link' => $this->link,
-        ];
+                'total' => $this->total,
+                'limit' => $this->limit,
+                'link' => $this->link,
+            ];
     }
 }

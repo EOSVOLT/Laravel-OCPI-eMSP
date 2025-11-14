@@ -22,31 +22,6 @@ abstract class PaginatedCollection extends TypeCollection
         parent::__construct($items);
     }
 
-    public function getPage(): int
-    {
-        return $this->page;
-    }
-
-    public function getPerPage(): int
-    {
-        return $this->perPage;
-    }
-
-    public function getTotalPages(): int
-    {
-        return $this->totalPages;
-    }
-
-    public function getTotalResults(): int
-    {
-        return $this->totalResults;
-    }
-
-    public function getNextPage(): ?int
-    {
-        return $this->page < $this->totalPages ? $this->page + 1 : null;
-    }
-
     public function getPagination(): array
     {
         return [
@@ -56,5 +31,30 @@ abstract class PaginatedCollection extends TypeCollection
             'per_page' => $this->getPerPage(),
             'results' => $this->getTotalResults(),
         ];
+    }
+
+    public function getPage(): int
+    {
+        return $this->page;
+    }
+
+    public function getNextPage(): ?int
+    {
+        return $this->page < $this->totalPages ? $this->page + 1 : null;
+    }
+
+    public function getTotalPages(): int
+    {
+        return $this->totalPages;
+    }
+
+    public function getPerPage(): int
+    {
+        return $this->perPage;
+    }
+
+    public function getTotalResults(): int
+    {
+        return $this->totalResults;
     }
 }

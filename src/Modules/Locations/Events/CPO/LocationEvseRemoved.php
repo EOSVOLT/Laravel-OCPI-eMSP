@@ -12,7 +12,8 @@ class LocationEvseRemoved implements SenderLocationEventInterface, ShouldDispatc
 
     public function __construct(
         private readonly Evse $evse,
-    ) {}
+    ) {
+    }
 
     public function getEvse(): Evse
     {

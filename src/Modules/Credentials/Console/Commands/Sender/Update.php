@@ -36,8 +36,10 @@ class Update extends Command implements PromptsForMissingInput
         SelfCredentialsGetAction $selfCredentialsGetAction,
     ) {
         $partyCode = $this->argument('party_code');
-        $generateNewClientToken = ! ($this->option('without_new_client_token') ?? false);
-        $this->info('Starting credentials update with '.$partyCode.($generateNewClientToken ? ' with' : ' without').' new OCPI Client Token');
+        $generateNewClientToken = !($this->option('without_new_client_token') ?? false);
+        $this->info(
+            'Starting credentials update with '.$partyCode.($generateNewClientToken ? ' with' : ' without').' new OCPI Client Token'
+        );
 
         // Retrieve the Party.
         $party = Party::where('code', $partyCode)->withWhereHas('role_cpo')->first();
@@ -92,7 +94,6 @@ class Update extends Command implements PromptsForMissingInput
 
             return Command::FAILURE;
         }
-
     }
 
     protected function promptForMissingArgumentsUsing(): array

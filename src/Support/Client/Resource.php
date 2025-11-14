@@ -40,78 +40,12 @@ class Resource extends BaseResource
     }
 
     /**
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function requestPostSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
-    {
-        $response = $this->connector->send(
-            (new PostRequest)
-                ->withEndpoint($endpoint)
-                ->withPayload($payload)
-        );
-
-        $response->throw();
-
-        return $this->responsePostProcess($response);
-    }
-
-    /**
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function requestPutSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
-    {
-        $response = $this->connector->send(
-            (new PutRequest)
-                ->withEndpoint($endpoint)
-                ->withPayload($payload)
-        );
-
-        $response->throw();
-
-        return $this->responsePutProcess($response);
-    }
-
-    /**
-     * @throws FatalRequestException
-     * @throws RequestException
-     * @throws Throwable
-     */
-    public function requestPatchSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
-    {
-        $response = $this->connector->send(
-            (new PatchRequest)
-                ->withEndpoint($endpoint)
-                ->withPayload($payload)
-        );
-
-        $response->throw();
-
-        return $this->responsePatchProcess($response);
-    }
-
-    public function requestDeleteSend(?string $endpoint = null): array|string|null
-    {
-        $response = $this->connector->send(
-            (new DeleteRequest)
-                ->withEndpoint($endpoint)
-        );
-
-        $response->throw();
-
-        return $this->responseDeleteProcess($response);
-    }
-
-    /**
      * @return PaginationOCPIResponse|Response|null
      */
     public function responseGetProcess(
         Response $response,
     ): PaginationOCPIResponse|OCPIResponse|null {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
         $responseArray = $response->array();
@@ -138,31 +72,85 @@ class Resource extends BaseResource
         );
     }
 
+    /**
+     * @throws FatalRequestException
+     * @throws RequestException
+     * @throws Throwable
+     */
+    public function requestPostSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
+    {
+        $response = $this->connector->send(
+            (new PostRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+
+        return $this->responsePostProcess($response);
+    }
+
     public function responsePostProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
 
         return $responseArray['data'] ?? $responseArray ?? null;
+    }
+
+    /**
+     * @throws FatalRequestException
+     * @throws RequestException
+     * @throws Throwable
+     */
+    public function requestPutSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
+    {
+        $response = $this->connector->send(
+            (new PutRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+
+        return $this->responsePutProcess($response);
     }
 
     public function responsePutProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
 
         return $responseArray['data'] ?? $responseArray ?? null;
+    }
+
+    /**
+     * @throws FatalRequestException
+     * @throws RequestException
+     * @throws Throwable
+     */
+    public function requestPatchSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
+    {
+        $response = $this->connector->send(
+            (new PatchRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+
+        return $this->responsePatchProcess($response);
     }
 
     public function responsePatchProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 
@@ -171,9 +159,21 @@ class Resource extends BaseResource
         return $responseArray['data'] ?? $responseArray ?? null;
     }
 
+    public function requestDeleteSend(?string $endpoint = null): array|string|null
+    {
+        $response = $this->connector->send(
+            (new DeleteRequest)
+                ->withEndpoint($endpoint)
+        );
+
+        $response->throw();
+
+        return $this->responseDeleteProcess($response);
+    }
+
     public function responseDeleteProcess(Response $response): array|string|null
     {
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return null;
         }
 

@@ -2,7 +2,6 @@
 
 namespace Ocpi\Modules\Tariffs\Client\V2_2_1;
 
-use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Support\Client\ReceiverClient;
 

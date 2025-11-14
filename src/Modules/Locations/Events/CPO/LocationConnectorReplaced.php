@@ -12,7 +12,8 @@ class LocationConnectorReplaced implements SenderLocationEventInterface, ShouldD
 
     public function __construct(
         private readonly Connector $connector,
-    ) {}
+    ) {
+    }
 
     public function getConnector(): Connector
     {

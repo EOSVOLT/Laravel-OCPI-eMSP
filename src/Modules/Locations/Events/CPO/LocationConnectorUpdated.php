@@ -12,7 +12,8 @@ class LocationConnectorUpdated implements SenderLocationEventInterface, ShouldDi
 
     public function __construct(
         private readonly Connector $connector,
-    ) {}
+    ) {
+    }
 
     public function getConnector(): Connector
     {

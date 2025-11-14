@@ -51,14 +51,6 @@ class Party extends Model
     /**
      * @todo move to helper or static factory
      */
-    public static function encodeToken(string $token): string
-    {
-        return base64_encode($token);
-    }
-
-    /**
-     * @todo move to helper or static factory
-     */
     public static function decodeToken(string $token, ?Party $party = null): false|string
     {
         if ($party && version_compare($party->version, '2.2', '<')) {
@@ -131,16 +123,24 @@ class Party extends Model
     protected function encodedClientToken(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+            get: fn(mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
                 ? self::encodeToken($attributes['client_token'])
                 : $attributes['client_token'],
         );
     }
 
+    /**
+     * @todo move to helper or static factory
+     */
+    public static function encodeToken(string $token): string
+    {
+        return base64_encode($token);
+    }
+
     protected function encodedServerToken(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
+            get: fn(mixed $value, array $attributes) => version_compare($this->version, '2.2', '>=')
                 ? self::encodeToken($attributes['server_token'])
                 : $attributes['server_token'],
         );

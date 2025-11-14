@@ -19,7 +19,6 @@ use Ocpi\Support\Models\Model;
  */
 class PartyToken extends Model
 {
-    use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
@@ -33,13 +32,6 @@ class PartyToken extends Model
         'registered' => false,
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'registered' => 'bool',
-        ];
-    }
-
     public function party_role(): BelongsTo
     {
         return $this->belongsTo(PartyRole::class);
@@ -48,5 +40,12 @@ class PartyToken extends Model
     public function registered(Builder $query): Builder
     {
         return $query->where('registered', true);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'registered' => 'bool',
+        ];
     }
 }
