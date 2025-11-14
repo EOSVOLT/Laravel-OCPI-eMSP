@@ -4,6 +4,7 @@ namespace Ocpi\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Party;
+use Ocpi\Support\Helpers\GeneratorHelper;
 
 class PartyFactory extends Factory
 {
@@ -12,8 +13,9 @@ class PartyFactory extends Factory
 
     public function definition(): array
     {
+        $partyCode = GeneratorHelper::generateUniquePartyCode($this->faker->unique()->countryCode());
         return [
-            'code' => $this->faker->unique()->countryCode() . '*' . $this->faker->unique()->ean8(),
+            'code' => $partyCode->getCodeFormatted(),
             'parent_id' => null,
             'cpo_id' => 1,
             'version' => '2.2.1',
