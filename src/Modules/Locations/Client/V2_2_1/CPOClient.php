@@ -3,9 +3,9 @@
 namespace Ocpi\Modules\Locations\Client\V2_2_1;
 
 use Ocpi\Models\PartyToken;
-use Ocpi\Support\Client\ReceiverClient;
+use Ocpi\Support\Client\SenderClient;
 
-class EMSPClient extends ReceiverClient
+class CPOClient extends SenderClient
 {
     public function __construct(PartyToken $partyToken)
     {

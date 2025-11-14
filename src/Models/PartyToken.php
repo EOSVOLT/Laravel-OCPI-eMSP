@@ -2,16 +2,15 @@
 
 namespace Ocpi\Models;
 
-use Ocpi\Database\Factories\PartyTokenFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ocpi\Modules\Credentials\Factories\PartyTokenFactory;
 use Ocpi\Support\Models\Model;
 
 /**
  * @property int $id
  * @property Party $party
- * @property int $party_id
  * @property int $party_role_id
  * @property PartyRole $party_role
  * @property string $name
@@ -21,10 +20,8 @@ use Ocpi\Support\Models\Model;
 class PartyToken extends Model
 {
     use SoftDeletes;
-    use HasFactory;
 
     protected $fillable = [
-        'party_id',
         'party_role_id',
         'name',
         'token',
@@ -35,14 +32,16 @@ class PartyToken extends Model
         'registered' => false,
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'registered' => 'bool',
+        ];
+    }
+
     protected static function newFactory(): PartyTokenFactory
     {
         return PartyTokenFactory::new();
-    }
-
-    public function party(): BelongsTo
-    {
-        return $this->belongsTo(Party::class);
     }
 
     public function party_role(): BelongsTo
@@ -50,11 +49,9 @@ class PartyToken extends Model
         return $this->belongsTo(PartyRole::class);
     }
 
-    protected function casts(): array
+    public function registered(Builder $query): Builder
     {
-        return [
-            'registered' => 'bool',
-        ];
+        return $query->where('registered', true);
     }
 
 }

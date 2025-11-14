@@ -1,19 +1,19 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Events;
+namespace Ocpi\Modules\Locations\Events\EMSP;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Ocpi\Modules\Locations\Objects\Evse;
-use Ocpi\Modules\Locations\Objects\Location;
 
-class LocationEvseReplaced implements ShouldDispatchAfterCommit
+class LocationEvseUpdated implements ReceiverLocationEventInterface, ShouldDispatchAfterCommit
 {
     use Dispatchable;
 
     public function __construct(
         private readonly Evse $evse,
-    ) {}
+    ) {
+    }
 
     public function getEvse(): Evse
     {

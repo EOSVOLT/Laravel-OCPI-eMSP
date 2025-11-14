@@ -5,8 +5,11 @@ namespace Ocpi\Helpers;
 abstract class PaginatedCollection extends TypeCollection
 {
     public const DEFAULT_FIRST_PAGE = 1;
+
     public const DEFAULT_PER_PAGE = 20;
+
     public const DEFAULT_LAST_VIEW_PER_PAGE = 10;
+
     public const DEFAULT_NO_RESULTS_TOTAL = 0;
 
     public function __construct(
@@ -19,50 +22,6 @@ abstract class PaginatedCollection extends TypeCollection
         parent::__construct($items);
     }
 
-    /**
-     * @return int
-     */
-    public function getPage(): int
-    {
-        return $this->page;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPerPage(): int
-    {
-        return $this->perPage;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalPages(): int
-    {
-        return $this->totalPages;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalResults(): int
-    {
-        return $this->totalResults;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getNextPage(): ?int
-    {
-        return $this->page < $this->totalPages ? $this->page + 1 : null;
-    }
-
-
-    /**
-     * @return array
-     */
     public function getPagination(): array
     {
         return [
@@ -72,5 +31,30 @@ abstract class PaginatedCollection extends TypeCollection
             'per_page' => $this->getPerPage(),
             'results' => $this->getTotalResults(),
         ];
+    }
+
+    public function getPage(): int
+    {
+        return $this->page;
+    }
+
+    public function getNextPage(): ?int
+    {
+        return $this->page < $this->totalPages ? $this->page + 1 : null;
+    }
+
+    public function getTotalPages(): int
+    {
+        return $this->totalPages;
+    }
+
+    public function getPerPage(): int
+    {
+        return $this->perPage;
+    }
+
+    public function getTotalResults(): int
+    {
+        return $this->totalResults;
     }
 }

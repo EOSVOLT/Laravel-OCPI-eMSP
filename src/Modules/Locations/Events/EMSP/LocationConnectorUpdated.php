@@ -1,18 +1,19 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Events;
+namespace Ocpi\Modules\Locations\Events\EMSP;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Ocpi\Modules\Locations\Objects\Connector;
 
-class LocationConnectorUpdated implements ShouldDispatchAfterCommit
+class LocationConnectorUpdated implements ReceiverLocationEventInterface, ShouldDispatchAfterCommit
 {
     use Dispatchable;
 
     public function __construct(
         private readonly Connector $connector,
-    ) {}
+    ) {
+    }
 
     public function getConnector(): Connector
     {

@@ -15,6 +15,21 @@ use Ocpi\Modules\Locations\Objects\LocationsCollection;
 class LocationFactory
 {
     /**
+     * @param LengthAwarePaginator $paginator
+     *
+     * @return LocationsCollection
+     */
+    public static function fromPaginator(LengthAwarePaginator $paginator): LocationsCollection
+    {
+        $collection = new LocationsCollection();
+        foreach ($paginator->items() as $location) {
+            $data = self::fromModel($location);
+            $collection->add($data);
+        }
+        return $collection;
+    }
+
+    /**
      * @param LocationModel $location
      *
      * @return Location
@@ -55,21 +70,6 @@ class LocationFactory
     {
         $collection = new LocationsCollection();
         foreach ($locations as $location) {
-            $data = self::fromModel($location);
-            $collection->add($data);
-        }
-        return $collection;
-    }
-
-    /**
-     * @param LengthAwarePaginator $paginator
-     *
-     * @return LocationsCollection
-     */
-    public static function fromPaginator(LengthAwarePaginator $paginator): LocationsCollection
-    {
-        $collection = new LocationsCollection();
-        foreach ($paginator->items() as $location) {
             $data = self::fromModel($location);
             $collection->add($data);
         }

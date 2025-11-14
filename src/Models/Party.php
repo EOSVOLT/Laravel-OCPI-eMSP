@@ -2,7 +2,6 @@
 
 namespace Ocpi\Models;
 
-use Ocpi\Database\Factories\PartyFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Ocpi\Database\Factories\PartyFactory;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\Base64Helper;
 use Ocpi\Support\Models\Model;
@@ -25,7 +25,6 @@ use Ocpi\Support\Models\Model;
  * @property string $code
  * @property string|null $version
  * @property string|null $version_url
- * @property bool $registered
  * @property Collection|PartyRole[] $roles
  * @property PartyRole|null $role_cpo
  * @property PartyRole|null $role_emsp
@@ -33,36 +32,23 @@ use Ocpi\Support\Models\Model;
  * @property Party|null $parent
  * @property Collection|Party[] $children
  * @property Collection|PartyToken[] $tokens
+ * @property bool $is_external_party
  */
 class Party extends Model
 {
-    use SoftDeletes;
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'code',
-        'url',
         'version',
         'version_url',
         'parent_id',
+        'is_external_party',
+        'cpo_id',
     ];
 
     /**
-     * @param string $token
-     *
-     * @return string
-     * @todo move to helper or static factory
-     */
-    public static function encodeToken(string $token): string
-    {
-        return base64_encode($token);
-    }
-
-    /**
-     * @param string $token
-     * @param Party|null $party
-     *
-     * @return false|string
      * @todo move to helper or static factory
      */
     public static function decodeToken(string $token, ?Party $party = null): false|string
@@ -74,7 +60,16 @@ class Party extends Model
         if (true === Base64Helper::isBase64Encoded($token)) {
             return base64_decode($token, true);
         }
+
         return $token;
+    }
+
+    /**
+     * @todo move to helper or static factory
+     */
+    public static function encodeToken(string $token): string
+    {
+        return base64_encode($token);
     }
 
     protected static function newFactory(): PartyFactory
@@ -104,6 +99,7 @@ class Party extends Model
     {
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::CPO->value);
     }
+
     public function role_emsp(): HasOne
     {
         return $this->hasOne(PartyRole::class, 'party_id', 'id')->where('role', Role::EMSP->value);
@@ -126,14 +122,6 @@ class Party extends Model
     public function generateToken(): string
     {
         return $this->code . '_' . Str::uuid();
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'endpoints' => 'array',
-            'registered' => 'boolean',
-        ];
     }
 
     /***

@@ -2,7 +2,6 @@
 
 namespace Ocpi\Support\Client\Requests;
 
-
 use Illuminate\Foundation\Http\FormRequest;
 
 class PaginationRequest extends FormRequest
@@ -15,9 +14,6 @@ class PaginationRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return void
-     */
     protected function prepareForValidation(): void
     {
         $this->merge([
