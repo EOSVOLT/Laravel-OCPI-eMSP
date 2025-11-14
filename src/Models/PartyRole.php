@@ -47,6 +47,7 @@ class PartyRole extends Model
     {
         return [
             'business_details' => 'array',
+            'endpoints' => 'array',
             'role' => Role::class,
         ];
     }
