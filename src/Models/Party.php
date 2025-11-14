@@ -57,7 +57,7 @@ class Party extends Model
             return $token;
         }
 
-        if (Base64Helper::isBase64Encoded($token) === true) {
+        if (true === Base64Helper::isBase64Encoded($token)) {
             return base64_decode($token, true);
         }
 
