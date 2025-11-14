@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Traits;
+namespace Ocpi\Tests\Traits;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -21,7 +21,7 @@ trait TestLocationTrait
             $mock->shouldReceive('getAttribute')->with('party_id')->andReturn($partyMock->id);
             $mock->shouldReceive('getAttribute')->with('party')->andReturn($partyMock);
             $mock->shouldReceive('getAttribute')->with('object')->andReturn(
-                self::getJsonResource(__DIR__ . '/../Resources/location_object.json')
+                $this->getJsonResourceArray(__DIR__ . '/../Resources/location_object.json')
             );
             $mock->shouldReceive('getAttribute')->with('publish')->andReturnTrue();
             $mock->shouldReceive('getAttribute')->with('evses')->andReturn(new Collection());

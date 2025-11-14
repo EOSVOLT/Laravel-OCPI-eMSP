@@ -1,12 +1,12 @@
 <?php
 
-namespace Database\Factories;
+namespace Ocpi\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
-use Tests\Traits\SchemaTrait;
+use Ocpi\Tests\Traits\SchemaTrait;
 
 class LocationEvseFactory extends Factory
 {
@@ -18,7 +18,7 @@ class LocationEvseFactory extends Factory
         return [
             'location_id' => Location::factory(),
             'uid' => $this->faker->uuid,
-            'object' => self::getJsonResource(__DIR__ . "/../../tests/Resources/location_evse_object.json"),
+            'object' => $this->getJsonResourceArray(__DIR__ . "/../../tests/Resources/location_evse_object.json"),
             'status' => EvseStatus::AVAILABLE
         ];
     }

@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Traits;
+namespace Ocpi\Tests\Traits;
 
 trait SchemaTrait
 {
-    public static function getJsonResource(string $fileName): array
+    public function getJsonResourceArray(string $fileName): array
     {
         $schema = file_get_contents($fileName);
         return json_decode($schema, true);

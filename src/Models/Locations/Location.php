@@ -2,7 +2,7 @@
 
 namespace Ocpi\Models\Locations;
 
-use Database\Factories\LocationFactory;
+use Ocpi\Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
