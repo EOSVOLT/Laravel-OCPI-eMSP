@@ -16,7 +16,7 @@ class Resource extends OcpiResource
      */
     public function information(): ?array
     {
-        return $this->requestGetSend()->toArray();
+        return $this->requestGetSend()->getData();
     }
 
     /**
@@ -27,6 +27,6 @@ class Resource extends OcpiResource
      */
     public function details(): ?array
     {
-        return $this->requestGetSend()->toArray();
+        return $this->requestGetSend()->getData();
     }
 }

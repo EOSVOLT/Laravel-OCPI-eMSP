@@ -16,7 +16,7 @@ class Resource extends OcpiResource
      */
     public function all(): ?array
     {
-        return $this->requestGetSend()->toArray();
+        return $this->requestGetSend()->getData();
     }
 
     /**
