@@ -44,7 +44,7 @@ trait HandlesLocation
             'party_id' => 'required|string|size:3',
             'id' => 'required|string|max:36',
             'publish' => 'required|boolean',
-            'publish_allowed_to ' => 'nullable|array'
+            'publish_allowed_to ' => 'nullable|array',
 
         ]);
     }

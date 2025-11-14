@@ -32,16 +32,16 @@ class PartyToken extends Model
         'registered' => false,
     ];
 
-    protected static function newFactory(): PartyTokenFactory
-    {
-        return PartyTokenFactory::new();
-    }
-
     protected function casts(): array
     {
         return [
             'registered' => 'bool',
         ];
+    }
+
+    protected static function newFactory(): PartyTokenFactory
+    {
+        return PartyTokenFactory::new();
     }
 
     public function party_role(): BelongsTo

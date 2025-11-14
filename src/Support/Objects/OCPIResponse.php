@@ -15,16 +15,6 @@ readonly class OCPIResponse implements Arrayable
     ) {
     }
 
-    public function toArray(): array
-    {
-        return [
-            'status_code' => $this->getStatusCode(),
-            'timestamp' => $this->getTimestamp()->toISOString(),
-            'data' => $this->getData(),
-            'status_message' => $this->getStatusMessage(),
-        ];
-    }
-
     public function getStatusCode(): int
     {
         return $this->statusCode;
@@ -43,5 +33,15 @@ readonly class OCPIResponse implements Arrayable
     public function getStatusMessage(): ?string
     {
         return $this->statusMessage;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'status_code' => $this->getStatusCode(),
+            'timestamp' => $this->getTimestamp()->toISOString(),
+            'data' => $this->getData(),
+            'status_message' => $this->getStatusMessage(),
+        ];
     }
 }

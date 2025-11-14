@@ -2,13 +2,13 @@
 
 namespace Ocpi\Models;
 
-use Ocpi\Database\Factories\PartyRoleFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Ocpi\Database\Factories\PartyRoleFactory;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Models\Model;
 
@@ -42,6 +42,14 @@ class PartyRole extends Model
         'url',
         'endpoints',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'business_details' => 'array',
+            'role' => Role::class,
+        ];
+    }
 
     protected static function newFactory(): PartyRoleFactory
     {
@@ -84,13 +92,5 @@ class PartyRole extends Model
     public function children_role(): HasMany
     {
         return $this->hasMany(PartyRole::class, 'parent_role_id');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'business_details' => 'array',
-            'role' => Role::class,
-        ];
     }
 }

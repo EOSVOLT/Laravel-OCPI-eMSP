@@ -15,7 +15,7 @@ use Ocpi\Modules\Locations\Objects\LocationsCollection;
 class LocationFactory
 {
     /**
-     * @param  LengthAwarePaginator  $paginator
+     * @param LengthAwarePaginator $paginator
      *
      * @return LocationsCollection
      */
@@ -30,7 +30,7 @@ class LocationFactory
     }
 
     /**
-     * @param  LocationModel  $location
+     * @param LocationModel $location
      *
      * @return Location
      */
@@ -62,7 +62,7 @@ class LocationFactory
     }
 
     /**
-     * @param  Collection  $locations
+     * @param Collection $locations
      *
      * @return LocationsCollection
      */

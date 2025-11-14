@@ -11,7 +11,7 @@ class ListRequest extends PaginationRequest
             'date_to' => [
                 'nullable',
                 'date_format:"Y-m-d\TH:i:s\Z","Y-m-d\TH:i:s.u\Z","Y-m-d\TH:i:s"',
-                'after:date_from'
+                'after:date_from',
             ],
         ];
     }

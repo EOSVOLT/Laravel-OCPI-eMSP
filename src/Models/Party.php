@@ -2,7 +2,6 @@
 
 namespace Ocpi\Models;
 
-use Ocpi\Database\Factories\PartyFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Ocpi\Database\Factories\PartyFactory;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\Base64Helper;
 use Ocpi\Support\Models\Model;
@@ -64,6 +64,14 @@ class Party extends Model
         return $token;
     }
 
+    /**
+     * @todo move to helper or static factory
+     */
+    public static function encodeToken(string $token): string
+    {
+        return base64_encode($token);
+    }
+
     protected static function newFactory(): PartyFactory
     {
         return PartyFactory::new();
@@ -113,7 +121,7 @@ class Party extends Model
 
     public function generateToken(): string
     {
-        return $this->code.'_'.Str::uuid();
+        return $this->code . '_' . Str::uuid();
     }
 
     /***
@@ -127,14 +135,6 @@ class Party extends Model
                 ? self::encodeToken($attributes['client_token'])
                 : $attributes['client_token'],
         );
-    }
-
-    /**
-     * @todo move to helper or static factory
-     */
-    public static function encodeToken(string $token): string
-    {
-        return base64_encode($token);
     }
 
     protected function encodedServerToken(): Attribute
