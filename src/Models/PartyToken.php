@@ -5,7 +5,7 @@ namespace Ocpi\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Ocpi\Modules\Credentials\Factories\PartyTokenFactory;
+use Ocpi\Database\Factories\PartyTokenFactory;
 use Ocpi\Support\Models\Model;
 
 /**
