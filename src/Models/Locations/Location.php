@@ -37,6 +37,7 @@ class Location extends Model
         'external_id',
         'publish',
         'updated_at',
+        'deleted_at',
     ];
 
     protected function casts(): array

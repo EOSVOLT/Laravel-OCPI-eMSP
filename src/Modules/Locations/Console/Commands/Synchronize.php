@@ -85,7 +85,7 @@ class Synchronize extends Command
 
                         DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
-                        $location = $this->searchByExternalId(
+                        $location = $this->searchLocation(
                             $partyRole,
                             $ocpiLocationId,
                         );
