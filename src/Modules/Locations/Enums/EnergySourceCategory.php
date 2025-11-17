@@ -2,11 +2,14 @@
 
 namespace Ocpi\Modules\Locations\Enums;
 
+use Eosvolt\Foundation\EnumArrayable;
+
 /**
  * Categories of energy sources.
  */
 enum EnergySourceCategory: string
 {
+    use EnumArrayable;
     case NUCLEAR = 'NUCLEAR';
     case GENERAL_FOSSIL = 'GENERAL_FOSSIL';
     case COAL = 'COAL';

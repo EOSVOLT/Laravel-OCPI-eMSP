@@ -42,6 +42,20 @@ class LocationEvse extends Model
         'updated_at',
     ];
 
+    /**
+     * @return string[]
+     */
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'status' => EvseStatus::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
+    }
+
     /***
      * Scopes.
      ***/
@@ -85,19 +99,5 @@ class LocationEvse extends Model
     {
         return $this->belongsTo(Location::class, 'location_id', 'id')
             ->withTrashed();
-    }
-
-    /**
-     * @return string[]
-     */
-    protected function casts(): array
-    {
-        return [
-            'object' => 'array',
-            'status' => EvseStatus::class,
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
     }
 }

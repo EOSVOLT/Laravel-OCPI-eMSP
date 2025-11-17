@@ -2,8 +2,11 @@
 
 namespace Ocpi\Modules\Locations\Enums;
 
+use Eosvolt\Foundation\EnumArrayable;
+
 enum Facility: string
 {
+    use EnumArrayable;
     case AIRPORT = 'AIRPORT';
     case BIKE_SHARING = 'BIKE_SHARING';
     case BUS_STOP = 'BUS_STOP';

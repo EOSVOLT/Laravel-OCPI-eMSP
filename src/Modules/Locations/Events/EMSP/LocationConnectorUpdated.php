@@ -3,20 +3,27 @@
 namespace Ocpi\Modules\Locations\Events\EMSP;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
-use Illuminate\Foundation\Events\Dispatchable;
-use Ocpi\Modules\Locations\Objects\Connector;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\InteractsWithQueue;
 
-class LocationConnectorUpdated implements ReceiverLocationEventInterface, ShouldDispatchAfterCommit
+class LocationConnectorUpdated implements ReceiverLocationEventInterface, ShouldDispatchAfterCommit, ShouldQueue
 {
-    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+
+    public $connection = 'database';
+
+    public $queue = 'connector:updated';
 
     public function __construct(
-        private readonly Connector $connector,
+        private readonly int $connectorId,
     ) {
     }
 
-    public function getConnector(): Connector
+
+    public function getConnectorId(): int
     {
-        return $this->connector;
+        return $this->connectorId;
     }
 }

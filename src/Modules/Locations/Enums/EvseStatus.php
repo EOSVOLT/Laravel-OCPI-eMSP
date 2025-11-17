@@ -2,8 +2,11 @@
 
 namespace Ocpi\Modules\Locations\Enums;
 
+use Eosvolt\Foundation\EnumArrayable;
+
 enum EvseStatus: string
 {
+    use EnumArrayable;
     case AVAILABLE = 'AVAILABLE';
     case BLOCKED = 'BLOCKED';
     case CHARGING = 'CHARGING';
