@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Locations\Client\V2_2_1\EMSPClient;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Client\Client;
 use Ocpi\Support\Enums\Role;
@@ -38,12 +39,15 @@ class Synchronize extends Command
         $optionParty = $this->option('party');
 
         $partyRoles = PartyRole::query()
-            ->withWhereHas('party', function (Builder $query) use ($optionParty) {
-                $query->when($optionParty, function (Builder $query) use ($optionParty) {
+            ->withWhereHas('party', function ($query) use ($optionParty) {
+                $query->when($optionParty, function ($query) use ($optionParty) {
                     $query->whereIn('code', explode(',', $optionParty));
                 });
                 $query->where('is_external_party', true);
-            })->withWhereHas('tokens', function (Builder $query) {
+                $query->whereHas('parent.roles', function ($query) {
+                    $query->where('role', Role::EMSP);
+                });
+            })->withWhereHas('tokens', function ($query) {
                 $query->where('registered', true);
             })
             ->where('role', Role::CPO)
@@ -61,7 +65,7 @@ class Synchronize extends Command
             $party = $role->party;
             $this->info('  - Processing Party '.$party->code);
 
-            $ocpiClient = new Client($party, 'locations');
+            $ocpiClient = new EMSPClient($party->tokens->first()->token);
 
             if (empty($ocpiClient->resolveBaseUrl())) {
                 $this->warn('Party '.$party->code.' is not configured to use the Locations module.');
