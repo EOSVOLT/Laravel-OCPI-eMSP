@@ -42,11 +42,12 @@ class Synchronize extends Command
                     $query->whereIn('code', explode(',', $optionParty));
                 });
                 $query->where('is_external_party', true);
-                $query->whereHas('parent.roles', function ($query) {
-                    $query->where('role', Role::EMSP);
-                });
-            })->withWhereHas('tokens', function ($query) {
+            })
+            ->withWhereHas('tokens', function ($query) {
                 $query->where('registered', true);
+            })
+            ->whereHas('parent_role', function ($query) {
+                $query->where('role', Role::EMSP);
             })
             ->where('role', Role::CPO)
             ->get();
