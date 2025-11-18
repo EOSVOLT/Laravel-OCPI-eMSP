@@ -594,7 +594,7 @@ trait HandlesLocation
                 $payloadConnector
             )) {
                 return false;
-            };
+            }
         }
         // Delete missing EVSE Connectors.
         $payloadConnectorIdList = collect($payloadConnectorList)->pluck('id')->toArray();
@@ -709,10 +709,11 @@ trait HandlesLocation
             ->where('evse_id', $locationEvse->id)
             ->where('connector_id', $connectorId)
             ->first();
-
+        $temp = $connector->object;
         foreach ($payload as $field => $value) {
-            $connector->object[$field] = $value;
+            $temp[$field] = $value;
         }
+        $connector->object = $temp;
         $connector->save();
         $connector->refresh();
         LocationConnectorUpdated::dispatch($connector->id);
