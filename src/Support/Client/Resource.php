@@ -50,7 +50,7 @@ class Resource extends BaseResource
         }
         $responseArray = $response->array();
         $data = $responseArray['data'] ?? $responseArray ?? null;
-        $total = $response->header('X-Total-Count');
+        $total = $response->header('X-Total-Count') ?? 0;
         $limit = $response->header('X-Limit');
         if (null !== $limit) {
             return new PaginationOCPIResponse(
