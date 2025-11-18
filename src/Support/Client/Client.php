@@ -59,7 +59,7 @@ class Client extends Connector
         return match ($this->module) {
             'versions.information' => $this->partyToken->party_role->url,
             'versions.details' => $this->partyToken->party_role->party?->version_url,
-            default => $this->partyRole?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
+            default => $this->partyToken->party_role?->endpoints[$this->module][$this->interfaceRole->value] ?? '',
         };
     }
 

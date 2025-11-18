@@ -3,12 +3,10 @@
 namespace Ocpi\Modules\Locations\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\PartyRole;
-use Ocpi\Modules\Locations\Client\V2_2_1\EMSPClient;
+use Ocpi\Modules\Locations\Client\V2_2_1\CPOClient;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
-use Ocpi\Support\Client\Client;
 use Ocpi\Support\Enums\Role;
 
 class Synchronize extends Command
@@ -63,19 +61,19 @@ class Synchronize extends Command
 
         foreach ($partyRoles as $role) {
             $party = $role->party;
-            $this->info('  - Processing Party '.$party->code);
+            $this->info('  - Processing Party ' . $party->code);
 
-            $ocpiClient = new EMSPClient($party->tokens->first()->token);
+            $ocpiClient = new CPOClient($party->tokens->first()->token);
 
             if (empty($ocpiClient->resolveBaseUrl())) {
-                $this->warn('Party '.$party->code.' is not configured to use the Locations module.');
+                $this->warn('Party ' . $party->code . ' is not configured to use the Locations module.');
 
                 continue;
             }
 
             foreach ($party->roles as $partyRole) {
                 $this->info(
-                    '    - Call '.$partyRole->code.' / '.$partyRole->country_code.' - OCPI - Locations GET'
+                    '    - Call ' . $partyRole->code . ' / ' . $partyRole->country_code . ' - OCPI - Locations GET'
                 );
                 $offset = 0;
                 $limit = 100;
@@ -83,7 +81,7 @@ class Synchronize extends Command
                     $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: $limit);
                     $locationProcessedList = [];
 
-                    $this->info('    - '.count($ocpiLocationList?->getData()).' Location(s) retrieved');
+                    $this->info('    - ' . count($ocpiLocationList?->getData()) . ' Location(s) retrieved');
 
                     foreach ($ocpiLocationList as $ocpiLocation) {
                         $ocpiLocationId = $ocpiLocation['id'] ?? null;
@@ -96,7 +94,7 @@ class Synchronize extends Command
                         );
 
                         $this->info(
-                            '      > Processing '.($location === null ? 'new' : 'existing').' Location '.$ocpiLocationId
+                            '      > Processing ' . ($location === null ? 'new' : 'existing') . ' Location ' . $ocpiLocationId
                         );
 
                         // New Location.
@@ -107,7 +105,7 @@ class Synchronize extends Command
                                 $ocpiLocation,
                             )) {
                                 $hasError = true;
-                                $this->error('Error creating Location '.$ocpiLocationId.'.');
+                                $this->error('Error creating Location ' . $ocpiLocationId . '.');
 
                                 DB::connection(config('ocpi.database.connection'))->rollback();
 
@@ -120,7 +118,7 @@ class Synchronize extends Command
                                 $ocpiLocation
                             )) {
                                 $hasError = true;
-                                $this->error('Error replacing Location '.$ocpiLocationId.'.');
+                                $this->error('Error replacing Location ' . $ocpiLocationId . '.');
 
                                 DB::connection(config('ocpi.database.connection'))->rollback();
 
@@ -136,7 +134,7 @@ class Synchronize extends Command
                 } while (null !== $ocpiLocationList->getLink());
 
 
-                $this->info('    - '.count($locationProcessedList).' Location(s) synchronized');
+                $this->info('    - ' . count($locationProcessedList) . ' Location(s) synchronized');
             }
 
             return $hasError
