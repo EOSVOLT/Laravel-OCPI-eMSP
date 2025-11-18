@@ -74,11 +74,12 @@ class Synchronize extends Command
                     '    - Call '.$partyRole->code.' / '.$partyRole->country_code.' - OCPI - Locations GET'
                 );
                 $offset = 0;
+                $limit = 100;
                 do {
-                    $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: 100);
+                    $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: $limit);
                     $locationProcessedList = [];
 
-                    $this->info('    - '.count($ocpiLocationList).' Location(s) retrieved');
+                    $this->info('    - '.count($ocpiLocationList?->getData()).' Location(s) retrieved');
 
                     foreach ($ocpiLocationList as $ocpiLocation) {
                         $ocpiLocationId = $ocpiLocation['id'] ?? null;
@@ -97,9 +98,9 @@ class Synchronize extends Command
                         // New Location.
                         if ($location === null) {
                             if (!$this->locationCreate(
-                                payload: $ocpiLocation,
-                                party_role_id: $partyRole->id,
-                                location_id: $ocpiLocationId,
+                                $partyRole,
+                                $ocpiLocationId,
+                                $ocpiLocation,
                             )) {
                                 $hasError = true;
                                 $this->error('Error creating Location '.$ocpiLocationId.'.');
@@ -111,8 +112,8 @@ class Synchronize extends Command
                         } else {
                             // Replaced Location.
                             if (!$this->locationReplace(
-                                payload: $ocpiLocation,
-                                location: $location,
+                                $location,
+                                $ocpiLocation
                             )) {
                                 $hasError = true;
                                 $this->error('Error replacing Location '.$ocpiLocationId.'.');
@@ -127,7 +128,8 @@ class Synchronize extends Command
 
                         DB::connection(config('ocpi.database.connection'))->commit();
                     }
-                } while (true);
+                    $offset += $limit;
+                } while (null !== $ocpiLocationList->getLink());
 
 
                 $this->info('    - '.count($locationProcessedList).' Location(s) synchronized');
