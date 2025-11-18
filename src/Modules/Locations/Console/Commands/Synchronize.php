@@ -78,12 +78,13 @@ class Synchronize extends Command
                 $offset = 0;
                 $limit = 100;
                 do {
-                    $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: $limit)?->getData() ?? [];
+                    $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: $limit);
+                    $data = $ocpiLocationList?->getData() ?? [];
                     $locationProcessedList = [];
 
-                    $this->info('    - ' . count($ocpiLocationList) . ' Location(s) retrieved');
+                    $this->info('    - ' . count($data) . ' Location(s) retrieved');
 
-                    foreach ($ocpiLocationList as $ocpiLocation) {
+                    foreach ($data as $ocpiLocation) {
                         $ocpiLocationId = $ocpiLocation['id'] ?? null;
 
                         DB::connection(config('ocpi.database.connection'))->beginTransaction();
