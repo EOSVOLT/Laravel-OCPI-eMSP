@@ -63,7 +63,7 @@ class Synchronize extends Command
             $party = $role->party;
             $this->info('  - Processing Party ' . $party->code);
 
-            $ocpiClient = new CPOClient($party->tokens->first()->token);
+            $ocpiClient = new CPOClient($party->tokens->first());
 
             if (empty($ocpiClient->resolveBaseUrl())) {
                 $this->warn('Party ' . $party->code . ' is not configured to use the Locations module.');
