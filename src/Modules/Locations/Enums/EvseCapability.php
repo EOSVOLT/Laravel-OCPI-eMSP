@@ -2,8 +2,11 @@
 
 namespace Ocpi\Modules\Locations\Enums;
 
+use Eosvolt\Foundation\EnumArrayable;
+
 enum EvseCapability: string
 {
+    use EnumArrayable;
     case CHARGING_PROFILE_CAPABLE = 'CHARGING_PROFILE_CAPABLE';
     case CHARGING_PREFERENCES_CAPABLE = 'CHARGING_PREFERENCES_CAPABLE';
     case CHIP_CARD_SUPPORT = 'CHIP_CARD_SUPPORT';

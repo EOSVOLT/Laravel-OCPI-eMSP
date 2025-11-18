@@ -2,8 +2,11 @@
 
 namespace Ocpi\Modules\Locations\Enums;
 
+use Eosvolt\Foundation\EnumArrayable;
+
 enum PowerType: string
 {
+    use EnumArrayable;
     case AC_1_PHASE = 'AC_1_PHASE';
     case AC_2_PHASE = 'AC_2_PHASE';
     case AC_2_PHASE_SPLIT = 'AC_2_PHASE_SPLIT';

@@ -4,10 +4,11 @@ namespace Ocpi\Modules\Locations\Server\Controllers\EMSP\V2_2_1;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Locations\Server\Requests\LocationUpsertRequest;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
@@ -17,82 +18,86 @@ class PutController extends Controller
     use HandlesLocation;
 
     public function __invoke(
-        Request $request,
-        string $country_code,
-        string $party_id,
-        string $location_id,
-        ?string $evse_uid = null,
-        ?string $connector_id = null,
+        LocationUpsertRequest $request,
+        string $countryCode,
+        string $partyId,
+        string $locationId,
+        ?string $evseUid = null,
+        ?string $connectorId = null,
     ): JsonResponse {
         try {
-            $payload = $request->json()->all();
+            $payload = $request->all();
+            $partyRole = PartyRole::find(Context::get('party_role_id'));
+            if ($partyRole->country_code !== $countryCode || $partyRole->code !== $partyId) {
+                return $this->ocpiClientErrorResponse(
+                    statusCode: OcpiClientErrorCode::UnknownLocation,
+                    statusMessage: 'Unknown Location.',
+                );
+            }
 
-            $location = $this->locationSearch(
-                party_role_id: Context::get('party_role_id'),
-                location_id: $location_id,
-                withTrashed: true,
+            $location = $this->searchLocation(
+                $partyRole,
+                $locationId,
             );
 
             // EVSE or Connector.
-            if ($evse_uid !== null) {
+            if (null !== $evseUid) {
                 $locationEvse = $this->evseSearch(
-                    party_role_id: Context::get('party_role_id'),
-                    location_id: $location_id,
-                    evse_uid: $evse_uid,
-                    withTrashed: true,
+                    $partyRole->party_id,
+                    $location->id,
+                    $evseUid,
                 );
 
-                if (
-                    ($locationEvse !== null && $location?->id !== $location_id)
-                    || ($locationEvse === null && $connector_id !== null)
-                ) {
+                if (null === $locationEvse && null !== $connectorId) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::UnknownLocation,
-                        statusMessage: 'Unknown Location or EVSE.',
+                        statusMessage: 'Unknown EVSE.',
                     );
                 }
 
                 // New EVSE.
-                if ($locationEvse === null) {
+                if (null === $locationEvse) {
                     if (
                         !DB::connection(config('ocpi.database.connection'))
-                            ->transaction(function () use ($payload, $location, $evse_uid) {
+                            ->transaction(function () use ($payload, $location, $evseUid) {
                                 return $this->evseCreate(
-                                    payload: $payload,
-                                    location: $location,
-                                    evse_uid: $evse_uid,
+                                    $location,
+                                    $evseUid,
+                                    $payload,
                                 );
                             })
                     ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
+                            statusMessage: 'Failed to create EVSE.',
                         );
                     }
                 } else {
                     // Replaced EVSE.
-                    if ($connector_id === null) {
+                    if (null === $connectorId) {
                         if (
                             !DB::connection(config('ocpi.database.connection'))
                                 ->transaction(function () use ($payload, $locationEvse) {
                                     return $this->evseReplace(
-                                        payload: $payload,
-                                        locationEvse: $locationEvse,
+                                        $locationEvse,
+                                        $payload
                                     );
                                 })
                         ) {
                             return $this->ocpiClientErrorResponse(
                                 statusCode: OcpiClientErrorCode::NotEnoughInformation,
+                                statusMessage: 'Failed to replace EVSE.',
                             );
                         }
                     } // New or replaced Connector.
                     else {
                         if (
                             !DB::connection(config('ocpi.database.connection'))
-                                ->transaction(function () use ($payload, $connector_id, $locationEvse) {
+                                ->transaction(function () use ($payload, $connectorId, $locationEvse) {
                                     return $this->connectorCreateOrReplace(
-                                        payload: $payload,
-                                        connector_id: $connector_id,
-                                        locationEvse: $locationEvse,
+                                       $locationEvse,
+                                        $connectorId,
+                                        $payload
                                     );
                                 })
                         ) {
@@ -105,19 +110,20 @@ class PutController extends Controller
             } // Location.
             else {
                 // New Location.
-                if ($location === null) {
+                if (null === $location) {
                     if (
                         !DB::connection(config('ocpi.database.connection'))
-                            ->transaction(function () use ($payload, $location_id) {
+                            ->transaction(function () use ($partyRole, $payload, $locationId) {
                                 return $this->locationCreate(
-                                    payload: $payload,
-                                    party_role_id: Context::get('party_role_id'),
-                                    location_id: $location_id,
+                                    $partyRole,
+                                    $locationId,
+                                    $payload,
                                 );
                             })
                     ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
+                            statusMessage: 'Failed to create Location.',
                         );
                     }
                 } else {
@@ -126,13 +132,14 @@ class PutController extends Controller
                         !DB::connection(config('ocpi.database.connection'))
                             ->transaction(function () use ($payload, $location) {
                                 return $this->locationReplace(
-                                    payload: $payload,
-                                    location: $location,
+                                    $location,
+                                    $payload,
                                 );
                             })
                     ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
+                            statusMessage: 'Failed to replace Location.',
                         );
                     }
                 }

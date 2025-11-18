@@ -2,8 +2,11 @@
 
 namespace Ocpi\Modules\Locations\Enums;
 
+use Eosvolt\Foundation\EnumArrayable;
+
 enum ConnectorType: string
 {
+    use EnumArrayable;
     case CHADEMO = 'CHADEMO';
     case CHAOJI = 'CHAOJI';
     case DOMESTIC_A = 'DOMESTIC_A';

@@ -33,7 +33,18 @@ class LocationConnector extends Model
         'evse_id',
         'connector_id',
         'object',
+        'updated_at'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
+    }
 
     /***
      * Relations.
@@ -57,15 +68,5 @@ class LocationConnector extends Model
             'id',
             'tariff_id'
         );
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'object' => 'array',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
     }
 }

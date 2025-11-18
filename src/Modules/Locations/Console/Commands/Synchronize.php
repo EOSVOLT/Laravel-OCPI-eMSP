@@ -3,11 +3,10 @@
 namespace Ocpi\Modules\Locations\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Locations\Client\V2_2_1\CPOClient;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
-use Ocpi\Support\Client\Client;
 use Ocpi\Support\Enums\Role;
 
 class Synchronize extends Command
@@ -38,13 +37,17 @@ class Synchronize extends Command
         $optionParty = $this->option('party');
 
         $partyRoles = PartyRole::query()
-            ->withWhereHas('party', function (Builder $query) use ($optionParty) {
-                $query->when($optionParty, function (Builder $query) use ($optionParty) {
+            ->withWhereHas('party', function ($query) use ($optionParty) {
+                $query->when($optionParty, function ($query) use ($optionParty) {
                     $query->whereIn('code', explode(',', $optionParty));
                 });
                 $query->where('is_external_party', true);
-            })->withWhereHas('tokens', function (Builder $query) {
+            })
+            ->withWhereHas('tokens', function ($query) {
                 $query->where('registered', true);
+            })
+            ->whereHas('parent_role', function ($query) {
+                $query->where('role', Role::EMSP);
             })
             ->where('role', Role::CPO)
             ->get();
@@ -59,50 +62,52 @@ class Synchronize extends Command
 
         foreach ($partyRoles as $role) {
             $party = $role->party;
-            $this->info('  - Processing Party '.$party->code);
+            $this->info('  - Processing Party ' . $party->code);
 
-            $ocpiClient = new Client($party, 'locations');
+            $ocpiClient = new CPOClient($role->tokens->first());
 
             if (empty($ocpiClient->resolveBaseUrl())) {
-                $this->warn('Party '.$party->code.' is not configured to use the Locations module.');
+                $this->warn('Party ' . $party->code . ' is not configured to use the Locations module.');
 
                 continue;
             }
 
             foreach ($party->roles as $partyRole) {
                 $this->info(
-                    '    - Call '.$partyRole->code.' / '.$partyRole->country_code.' - OCPI - Locations GET'
+                    '    - Call ' . $partyRole->code . ' / ' . $partyRole->country_code . ' - OCPI - Locations GET'
                 );
                 $offset = 0;
+                $limit = 100;
                 do {
-                    $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: 100);
+                    $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: $limit);
+                    $data = $ocpiLocationList?->getData() ?? [];
                     $locationProcessedList = [];
 
-                    $this->info('    - '.count($ocpiLocationList).' Location(s) retrieved');
+                    $this->info('    - ' . count($data) . ' Location(s) retrieved');
 
-                    foreach ($ocpiLocationList as $ocpiLocation) {
+                    foreach ($data as $ocpiLocation) {
                         $ocpiLocationId = $ocpiLocation['id'] ?? null;
 
                         DB::connection(config('ocpi.database.connection'))->beginTransaction();
 
-                        $location = $this->searchByExternalId(
+                        $location = $this->searchLocation(
                             $partyRole,
                             $ocpiLocationId,
                         );
 
                         $this->info(
-                            '      > Processing '.($location === null ? 'new' : 'existing').' Location '.$ocpiLocationId
+                            '      > Processing ' . ($location === null ? 'new' : 'existing') . ' Location ' . $ocpiLocationId
                         );
 
                         // New Location.
                         if ($location === null) {
                             if (!$this->locationCreate(
-                                payload: $ocpiLocation,
-                                party_role_id: $partyRole->id,
-                                location_id: $ocpiLocationId,
+                                $partyRole,
+                                $ocpiLocationId,
+                                $ocpiLocation,
                             )) {
                                 $hasError = true;
-                                $this->error('Error creating Location '.$ocpiLocationId.'.');
+                                $this->error('Error creating Location ' . $ocpiLocationId . '.');
 
                                 DB::connection(config('ocpi.database.connection'))->rollback();
 
@@ -111,11 +116,11 @@ class Synchronize extends Command
                         } else {
                             // Replaced Location.
                             if (!$this->locationReplace(
-                                payload: $ocpiLocation,
-                                location: $location,
+                                $location,
+                                $ocpiLocation
                             )) {
                                 $hasError = true;
-                                $this->error('Error replacing Location '.$ocpiLocationId.'.');
+                                $this->error('Error replacing Location ' . $ocpiLocationId . '.');
 
                                 DB::connection(config('ocpi.database.connection'))->rollback();
 
@@ -127,10 +132,11 @@ class Synchronize extends Command
 
                         DB::connection(config('ocpi.database.connection'))->commit();
                     }
-                } while (true);
+                    $offset += $limit;
+                } while (null !== $ocpiLocationList->getLink());
 
 
-                $this->info('    - '.count($locationProcessedList).' Location(s) synchronized');
+                $this->info('    - ' . count($locationProcessedList) . ' Location(s) synchronized');
             }
 
             return $hasError

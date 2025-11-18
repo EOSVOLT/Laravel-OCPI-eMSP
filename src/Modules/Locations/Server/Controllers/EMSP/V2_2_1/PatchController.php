@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Server\Controllers\Controller;
@@ -18,25 +19,30 @@ class PatchController extends Controller
 
     public function __invoke(
         Request $request,
-        string $country_code,
-        string $party_id,
-        string $location_id,
-        ?string $evse_uid = null,
-        ?string $connector_id = null,
+        string $countryCode,
+        string $partyId,
+        string $locationId,
+        ?string $evseUid = null,
+        ?string $connectorId = null,
     ): JsonResponse {
         try {
-            $payload = $request->json()->all();
-
+            $payload = $request->all();
+            $partyRole = PartyRole::find(Context::get('party_role_id'));
+            if ($partyRole->country_code !== $countryCode || $partyRole->code !== $partyId) {
+                return $this->ocpiClientErrorResponse(
+                    statusCode: OcpiClientErrorCode::UnknownLocation,
+                    statusMessage: 'Unknown Location.',
+                );
+            }
             // EVSE or Connector.
-            if ($evse_uid !== null) {
+            if ($evseUid !== null) {
                 $locationEvse = $this->evseSearch(
-                    party_role_id: Context::get('party_role_id'),
-                    location_id: $location_id,
-                    evse_uid: $evse_uid,
-                    withTrashed: true,
+                    $partyId,
+                    $locationId,
+                    $evseUid,
                 );
 
-                if ($locationEvse === null || $locationEvse->locationWithTrashed?->id !== $location_id) {
+                if (null === $locationEvse || $locationEvse->locationWithTrashed?->id !== $locationId) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::UnknownLocation,
                         statusMessage: 'Unknown Location or EVSE.',
@@ -44,7 +50,7 @@ class PatchController extends Controller
                 }
 
                 // Updated EVSE.
-                if ($connector_id === null) {
+                if (null === $connectorId) {
                     if (
                         !DB::connection(config('ocpi.database.connection'))
                             ->transaction(function () use ($payload, $locationEvse) {
@@ -62,7 +68,7 @@ class PatchController extends Controller
                 else {
                     $locationConnector = $locationEvse
                         ->connectorsWithTrashed
-                        ->where('id', $connector_id)
+                        ->where('connector_id', $connectorId)
                         ->first();
 
                     if ($locationConnector === null) {
@@ -84,18 +90,18 @@ class PatchController extends Controller
                     ) {
                         return $this->ocpiClientErrorResponse(
                             statusCode: OcpiClientErrorCode::NotEnoughInformation,
+                            statusMessage: 'Failed to update Connector.',
                         );
                     }
                 }
             } // Location.
             else {
-                $location = $this->locationSearch(
-                    party_role_id: Context::get('party_role_id'),
-                    location_id: $location_id,
-                    withTrashed: true,
+                $location = $this->searchLocation(
+                    $partyRole,
+                    $locationId
                 );
 
-                if ($location === null) {
+                if (null === $location) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::UnknownLocation,
                         statusMessage: 'Unknown Location.',
@@ -114,6 +120,7 @@ class PatchController extends Controller
                 ) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::NotEnoughInformation,
+                        statusMessage: 'Failed to update Location.',
                     );
                 }
             }

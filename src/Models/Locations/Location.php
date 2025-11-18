@@ -2,7 +2,6 @@
 
 namespace Ocpi\Models\Locations;
 
-use Ocpi\Database\Factories\LocationFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Ocpi\Database\Factories\LocationFactory;
 use Ocpi\Models\Party;
 use Ocpi\Support\Models\Model;
 
@@ -37,21 +37,22 @@ class Location extends Model
         'external_id',
         'publish',
         'updated_at',
+        'deleted_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
+    }
 
     protected static function newFactory(): LocationFactory
     {
         return LocationFactory::new();
-    }
-
-    /***
-     * Scopes.
-     ***/
-
-    #[Scope]
-    public function partyRole(Builder $query, int $party_role_id): void
-    {
-        $query->where('party_role_id', $party_role_id);
     }
 
     #[Scope]
@@ -83,16 +84,6 @@ class Location extends Model
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'object' => 'array',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
     }
 
 

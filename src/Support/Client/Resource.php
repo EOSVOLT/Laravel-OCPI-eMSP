@@ -50,16 +50,16 @@ class Resource extends BaseResource
         }
         $responseArray = $response->array();
         $data = $responseArray['data'] ?? $responseArray ?? null;
-        $total = $response->header('X-Total-Count');
+        $total = $response->header('X-Total-Count') ?? 0;
         $limit = $response->header('X-Limit');
-        if ($total !== null && $limit !== null) {
+        if (null !== $limit) {
             return new PaginationOCPIResponse(
                 $responseArray['status_code'],
                 Carbon::parse($responseArray['timestamp']),
                 $total,
                 $limit,
                 $data,
-                $responseArray['status_message'],
+                $responseArray['status_message'] ?? null,
                 $response->header('Link')
             );
         }
@@ -68,7 +68,7 @@ class Resource extends BaseResource
             $responseArray['status_code'],
             Carbon::parse($responseArray['timestamp']),
             $data,
-            $responseArray['status_message'],
+            $responseArray['status_message'] ?? null,
         );
     }
 
