@@ -4,16 +4,15 @@ namespace Ocpi\Modules\Locations\Events\EMSP;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 
 class LocationEvseUpdated implements ReceiverLocationEventInterface, ShouldDispatchAfterCommit, ShouldQueue
 {
 
-    use Queueable;
+    
 
-    public $connection = 'database';
+    public string $connection = 'database';
 
-    public $queue = 'evse:updated';
+    public string $queue = 'evse:updated';
 
     public function __construct(
         private readonly int $evseId,

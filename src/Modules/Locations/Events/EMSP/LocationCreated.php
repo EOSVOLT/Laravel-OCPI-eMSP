@@ -4,16 +4,15 @@ namespace Ocpi\Modules\Locations\Events\EMSP;
 
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 
 class LocationCreated implements ReceiverLocationEventInterface, ShouldDispatchAfterCommit, ShouldQueue
 {
 
-    use Queueable;
+    
 
-    public $connection = 'database';
+    public string $connection = 'database';
 
-    public $queue = 'location:created';
+    public string $queue = 'location:created';
 
 
     public function __construct(
