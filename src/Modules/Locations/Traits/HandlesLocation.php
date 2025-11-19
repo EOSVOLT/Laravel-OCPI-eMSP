@@ -264,12 +264,12 @@ trait HandlesLocation
                 $prefix . 'floor_level' => 'nullable|string|max:4',
                 $prefix . 'coordinated' => 'nullable|array',
                 $prefix . 'coordinated.latitude' => [
-                    'required',
+                    'required_with:' . $prefix . 'coordinated',
                     'string',
                     'regex:/^-?[0-9]{1,2}\.[0-9]{5,7}$/',
                 ],
                 $prefix . 'coordinated.longitude' => [
-                    'required',
+                    'required_with:' . $prefix . 'coordinated',
                     'string',
                     'regex:/^-?[0-9]{1,3}\.[0-9]{5,7}$/',
                 ],
