@@ -86,18 +86,18 @@ trait HandlesLocation
 
             'related_locations' => 'nullable|array',
             'related_locations.latitude' => [
-                'required',
+                'required_with:related_locations.longitude',
                 'string',
                 'regex:/^-?[0-9]{1,2}\.[0-9]{5,7}$/',
             ],
             'related_locations.longitude' => [
-                'required',
+                'required_with:related_locations.latitude',
                 'string',
                 'regex:/^-?[0-9]{1,3}\.[0-9]{5,7}$/',
             ],
             'related_locations.name' => 'nullable|array',
-            'related_locations.name.language' => 'required|string|max:2',
-            'related_locations.name.text' => 'required|string|max:512',
+            'related_locations.name.language' => 'required_with::related_locations.name.text,nullable|string|max:2',
+            'related_locations.name.text' => 'required_with:related_locations.name.language,nullable|string|max:512',
 
             'parking_type' => ['nullable', 'string', Rule::in(ParkingType::stringCases())],
 
