@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Ocpi\Models\Party;
@@ -34,17 +35,19 @@ return new class extends Migration {
                     $partyRole->update(['parent_role_id' => $party->parent->roles()->where('role', Role::CPO)->first()?->id]);
                 }
                 foreach ($currentTokens as $token) {
-                    PartyToken::create([
+                    PartyToken::insert([
                         'party_id' => $party->id,
                         'party_role_id' => $partyRole->id,
                         'name' => $token->name,
                         'token' => $token->token,
                         'registered' => $token->registered,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
                     ]);
                 }
             });
             $currentTokens->each(function ($token) {
-                PartyToken::find($token->id)->forceDelete();
+                PartyToken::find($token->id)?->forceDelete();
             });
         });
         Schema::table(config('ocpi.database.table.prefix') . 'party_tokens', function (Blueprint $table) {
@@ -65,10 +68,20 @@ return new class extends Migration {
         PartyRole::all()->each(function (PartyRole $partyRole) {
             PartyToken::where('party_role_id', $partyRole->id)->whereNull('party_id')->get()->each(
                 function (PartyToken $token) use ($partyRole) {
-                    PartyToken::updateOrCreate([
-                        'party_id' => $partyRole->party_id,
-                        'token' => $token->token,
-                    ], [
+                    $check = PartyToken::where('party_id', $partyRole->party_id)->where('token', $token->token)->first();
+                    if (null === $check) {
+                        PartyToken::insert([
+                            'party_id' => $partyRole->party_id,
+                            'token' => $token->token,
+                            'party_role_id' => $partyRole->id,
+                            'name' => $token->name,
+                            'registered' => $token->registered,
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]);
+                        return;
+                    }
+                    $check->update([
                         'party_role_id' => $partyRole->id,
                         'name' => $token->name,
                         'registered' => $token->registered,

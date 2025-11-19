@@ -12,7 +12,8 @@ Route::middleware([
     ->prefix('locations')
     ->name('locations')
     ->group(function () {
-        Route::get('{country_code}/{party_id}/{location_id}/{evse_uid?}/{connector_id?}', GetController::class);
+        Route::get('/', GetMockedController::class);
+        Route::get('{country_code}/{party_id}/{location_id}/{evse_uid?}/{connector_id?}', GetController::class)->name('.get');
         Route::put('{country_code}/{party_id}/{location_id}/{evse_uid?}/{connector_id?}', PutController::class)->name('.put');
         Route::patch('{country_code}/{party_id}/{location_id}/{evse_uid?}/{connector_id?}', PatchController::class)->name('.patch');
     });
