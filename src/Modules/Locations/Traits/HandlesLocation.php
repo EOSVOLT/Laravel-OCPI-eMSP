@@ -147,7 +147,7 @@ trait HandlesLocation
                 'string',
                 Rule::in(ImageCategory::stringCases()),
             ],
-            'owner.logo.type' => 'required|string|max:4',
+            'owner.logo.type' => 'required_with:owner.logo|string|max:4',
             'owner.logo.width' => 'nullable|int|max:5',
             'owner.logo.height' => 'nullable|int|max:5',
 
@@ -193,7 +193,7 @@ trait HandlesLocation
 
             'charging_when_closed' => 'nullable|boolean', // default true
             'images' => 'nullable|array',
-            'images.url' => 'required|string|max:255',
+            'images.*.url' => 'required|string|max:255',
             'images.*.thumbnail' => 'nullable|string|max:255',
             'images.*.category' => [
                 'required',
