@@ -96,39 +96,39 @@ trait HandlesLocation
                 'regex:/^-?[0-9]{1,3}\.[0-9]{5,7}$/',
             ],
             'related_locations.name' => 'nullable|array',
-            'related_locations.name.language' => 'required_with::related_locations.name.text,nullable|string|max:2',
+            'related_locations.name.language' => 'required_with:related_locations.name.text,nullable|string|max:2',
             'related_locations.name.text' => 'required_with:related_locations.name.language,nullable|string|max:512',
 
             'parking_type' => ['nullable', 'string', Rule::in(ParkingType::stringCases())],
 
 
             'directions' => 'nullable|array',
-            'directions.language' => 'required|string|max:2',
-            'directions.text' => 'required|string|max:512',
+            'directions.language' => 'required_with:directions.text|string|max:2',
+            'directions.text' => 'required_with:directions.language|string|max:512',
 
             'operator' => 'nullable|array',
-            'operator.name' => 'required|string|max:100',
+            'operator.name' => 'required_with:operator|string|max:100',
             'operator.website' => 'nullable|string|max:255',
             'operator.logo' => 'nullable|array',
-            'operator.logo.url' => 'required|string|max:255',
+            'operator.logo.url' => 'required_with:operator.logo.type|string|max:255',
             'operator.logo.thumbnail' => 'nullable|string|max:255',
             'operator.logo.category' => [
                 'required',
                 'string',
                 Rule::in(ImageCategory::stringCases()),
             ],
-            'operator.logo.type' => 'required|string|max:4',
+            'operator.logo.type' => 'required_with:operator.logo.url|string|max:4',
             'operator.logo.width' => 'nullable|int|max:5',
             'operator.logo.height' => 'nullable|int|max:5',
 
             'suboperator' => 'nullable|array',
-            'suboperator.name' => 'required|string|max:100',
+            'suboperator.name' => 'required_with:suboperator|string|max:100',
             'suboperator.website' => 'nullable|string|max:255',
             'suboperator.logo' => 'nullable|array',
-            'suboperator.logo.url' => 'required|string|max:255',
+            'suboperator.logo.url' => 'required_with:suboperator.logo|string|max:255',
             'suboperator.logo.thumbnail' => 'nullable|string|max:255',
             'suboperator.logo.category' => [
-                'required',
+                'required_with:suboperator.logo',
                 'string',
                 Rule::in(ImageCategory::stringCases()),
             ],
@@ -137,13 +137,13 @@ trait HandlesLocation
             'suboperator.logo.height' => 'nullable|int|max:5',
 
             'owner' => 'nullable|array',
-            'owner.name' => 'required|string|max:100',
+            'owner.name' => 'required_with:owner|string|max:100',
             'owner.website' => 'nullable|string|max:255',
             'owner.logo' => 'nullable|array',
-            'owner.logo.url' => 'required|string|max:255',
+            'owner.logo.url' => 'required_with:owner.logo|string|max:255',
             'owner.logo.thumbnail' => 'nullable|string|max:255',
             'owner.logo.category' => [
-                'required',
+                'required_with:owner.logo',
                 'string',
                 Rule::in(ImageCategory::stringCases()),
             ],
@@ -157,7 +157,7 @@ trait HandlesLocation
             'time_zone' => 'required|string|max:255',
 
             'opening_times' => 'nullable|array',
-            'opening_times.twentyfourseven' => 'required|boolean',
+            'opening_times.twentyfourseven' => 'required_with:opening_times|boolean',
             'opening_times.regular_hours' => 'nullable|array',
             'opening_times.regular_hours.*.weekday' => 'required|numeric|min:1|max:7',
             'opening_times.regular_hours.*.period_begin' => [
@@ -193,7 +193,7 @@ trait HandlesLocation
 
             'charging_when_closed' => 'nullable|boolean', // default true
             'images' => 'nullable|array',
-            'images.*.url' => 'required|string|max:255',
+            'images.url' => 'required|string|max:255',
             'images.*.thumbnail' => 'nullable|string|max:255',
             'images.*.category' => [
                 'required',
@@ -205,7 +205,7 @@ trait HandlesLocation
             'images.*.height' => 'nullable|int|max:5',
 
             'energy_mix' => 'nullable|array',
-            'energy_mix.is_green_energy' => 'required|boolean',
+            'energy_mix.is_green_energy' => 'required_with:energy_mix|boolean',
             'energy_mix.energy_sources' => 'nullable|array',
             'energy_mix.energy_sources.*.source' => [
                 'required',
