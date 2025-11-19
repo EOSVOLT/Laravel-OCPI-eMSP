@@ -132,7 +132,7 @@ trait HandlesLocation
                 'string',
                 Rule::in(ImageCategory::stringCases()),
             ],
-            'suboperator.logo.type' => 'required|string|max:4',
+            'suboperator.logo.type' => 'required_with:suboperator.logo|string|max:4',
             'suboperator.logo.width' => 'nullable|int|max:5',
             'suboperator.logo.height' => 'nullable|int|max:5',
 
