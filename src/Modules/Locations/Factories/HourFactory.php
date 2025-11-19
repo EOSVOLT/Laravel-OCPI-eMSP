@@ -3,13 +3,12 @@
 namespace Ocpi\Modules\Locations\Factories;
 
 use Ocpi\Modules\Locations\Objects\Hours;
-use Ocpi\Modules\Locations\Objects\RegularHoursCollection;
 
 class HourFactory
 {
     public static function fromArray(array $hour): Hours
     {
-        $hoursObj = new Hours($hour['twentyfourseven']);
+        $hoursObj = new Hours($hour['twentyfourseven'] ?? false);
         if (true === $hoursObj->isTwentyfourseven()) {
             return $hoursObj;
         }
