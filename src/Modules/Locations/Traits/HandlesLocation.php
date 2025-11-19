@@ -29,6 +29,7 @@ use Ocpi\Modules\Locations\Events\EMSP\LocationEvseRemoved;
 use Ocpi\Modules\Locations\Events\EMSP\LocationEvseReplaced;
 use Ocpi\Modules\Locations\Events\EMSP\LocationEvseRestored;
 use Ocpi\Modules\Locations\Events\EMSP\LocationEvseUpdated;
+use Ocpi\Modules\Locations\Events\EMSP\LocationFullyCreated;
 use Ocpi\Modules\Locations\Events\EMSP\LocationRemoved;
 use Ocpi\Modules\Locations\Events\EMSP\LocationReplaced;
 use Ocpi\Modules\Locations\Events\EMSP\LocationRestored;
@@ -355,7 +356,7 @@ trait HandlesLocation
                 return false;
             }
         }
-
+        LocationFullyCreated::dispatch($location->id);
         return true;
     }
 
