@@ -8,7 +8,7 @@ class HourFactory
 {
     public static function fromArray(array $hour): Hours
     {
-        $hoursObj = new Hours($hour['twentyfourseven'] ?? false);
+        $hoursObj = new Hours($hour['twentyfourseven'] ?? true);
         if (true === $hoursObj->isTwentyfourseven()) {
             return $hoursObj;
         }
