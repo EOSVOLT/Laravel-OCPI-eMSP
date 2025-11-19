@@ -113,7 +113,7 @@ trait HandlesLocation
             'operator.logo.url' => 'required_with:operator.logo.type|string|max:255',
             'operator.logo.thumbnail' => 'nullable|string|max:255',
             'operator.logo.category' => [
-                'required',
+                'required_with:operator.logo.type',
                 'string',
                 Rule::in(ImageCategory::stringCases()),
             ],
