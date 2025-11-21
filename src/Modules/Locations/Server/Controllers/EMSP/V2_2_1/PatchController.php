@@ -20,7 +20,7 @@ class PatchController extends Controller
     public function __invoke(
         Request $request,
         string $countryCode,
-        string $partyId,
+        string $partyCode,
         string $locationId,
         ?string $evseUid = null,
         ?string $connectorId = null,
@@ -28,7 +28,7 @@ class PatchController extends Controller
         try {
             $payload = $request->all();
             $partyRole = PartyRole::find(Context::get('party_role_id'));
-            if ($partyRole->country_code !== $countryCode || $partyRole->code !== $partyId) {
+            if ($partyRole->country_code !== $countryCode || $partyRole->code !== $partyCode) {
                 return $this->ocpiClientErrorResponse(
                     statusCode: OcpiClientErrorCode::UnknownLocation,
                     statusMessage: 'Unknown Location.',
@@ -37,7 +37,7 @@ class PatchController extends Controller
             // EVSE or Connector.
             if ($evseUid !== null) {
                 $locationEvse = $this->evseSearch(
-                    $partyId,
+                    $partyRole->party_id,
                     $locationId,
                     $evseUid,
                 );
