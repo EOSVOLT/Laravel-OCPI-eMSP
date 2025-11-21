@@ -21,7 +21,7 @@ class PatchController extends Controller
         Request $request,
         string $countryCode,
         string $partyCode,
-        string $locationId,
+        string $locationExternalId,
         ?string $evseUid = null,
         ?string $connectorId = null,
     ): JsonResponse {
@@ -38,11 +38,11 @@ class PatchController extends Controller
             if ($evseUid !== null) {
                 $locationEvse = $this->evseSearch(
                     $partyRole->party_id,
-                    $locationId,
+                    $locationExternalId,
                     $evseUid,
                 );
 
-                if (null === $locationEvse || $locationEvse->locationWithTrashed?->id !== $locationId) {
+                if (null === $locationEvse || $locationEvse->locationWithTrashed?->external_id !== $locationExternalId) {
                     return $this->ocpiClientErrorResponse(
                         statusCode: OcpiClientErrorCode::UnknownLocation,
                         statusMessage: 'Unknown Location or EVSE.',
@@ -98,7 +98,7 @@ class PatchController extends Controller
             else {
                 $location = $this->searchLocation(
                     $partyRole,
-                    $locationId
+                    $locationExternalId
                 );
 
                 if (null === $location) {
