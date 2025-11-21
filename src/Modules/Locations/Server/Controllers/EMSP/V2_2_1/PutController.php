@@ -79,7 +79,7 @@ class PutController extends Controller
                         );
                     }
                 } else {
-                    // Replaced EVSE.
+                    // Replaced EVSE and Connectors in payload.
                     if (null === $connectorId) {
                         if (
                             !DB::connection(config('ocpi.database.connection'))
