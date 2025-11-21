@@ -30,6 +30,7 @@ use Ocpi\Modules\Locations\Events\EMSP\LocationEvseReplaced;
 use Ocpi\Modules\Locations\Events\EMSP\LocationEvseRestored;
 use Ocpi\Modules\Locations\Events\EMSP\LocationEvseUpdated;
 use Ocpi\Modules\Locations\Events\EMSP\LocationFullyCreated;
+use Ocpi\Modules\Locations\Events\EMSP\LocationFullyReplaced;
 use Ocpi\Modules\Locations\Events\EMSP\LocationRemoved;
 use Ocpi\Modules\Locations\Events\EMSP\LocationReplaced;
 use Ocpi\Modules\Locations\Events\EMSP\LocationRestored;
@@ -342,7 +343,10 @@ trait HandlesLocation
         $location->object = $payload;
         $location->save();
         $location->refresh();
-        LocationCreated::dispatch($location->id);
+        if (true === empty($payloadEvseList)) {
+            LocationCreated::dispatch($location->id);//evese null as alway
+            return true;
+        }
 
         // Create EVSEs.
         foreach ($payloadEvseList as $payloadEvse) {
@@ -351,7 +355,8 @@ trait HandlesLocation
                 $location,
                 $evseUid,
                 $payloadEvse,
-                updateLocation: false
+                updateLocation: false,
+                dispatchEvent: false
             )) {
                 return false;
             }
@@ -377,7 +382,10 @@ trait HandlesLocation
         $location->object = $payload;
         $location->save();
         $location->refresh();
-        LocationReplaced::dispatch($location->id);
+        if (true === empty($payloadEvseList)) {
+            LocationReplaced::dispatch($location->id);
+            return true;
+        }
 
         // Create or Replace EVSEs, Connectors.
         foreach ($payloadEvseList as $payloadEvse) {
@@ -394,6 +402,7 @@ trait HandlesLocation
                     $evseUid,
                     $payloadEvse,
                     updateLocation: false,
+                    dispatchEvent: false
                 )) {
                     return false;
                 }
@@ -420,7 +429,7 @@ trait HandlesLocation
                 );
             });
         }
-
+        LocationFullyReplaced::dispatch($location->id);
         return true;
     }
 
@@ -431,7 +440,7 @@ trait HandlesLocation
             $location->object[$field] = $value;
         }
 
-        if (! $location->save()) {
+        if (!$location->save()) {
             return false;
         }
 
@@ -456,8 +465,13 @@ trait HandlesLocation
             ->first();
     }
 
-    private function evseCreate(Location $location, string $evseUid, array $payload, bool $updateLocation = true): LocationEvse
-    {
+    private function evseCreate(
+        Location $location,
+        string $evseUid,
+        array $payload,
+        bool $updateLocation = true,
+        bool $dispatchEvent = true
+    ): LocationEvse {
         // Create EVSE.
         $locationEvse = new LocationEvse;
         $locationEvse->fill([
@@ -472,7 +486,9 @@ trait HandlesLocation
         $locationEvse->object = $payload;
         $locationEvse->save();
         $locationEvse->refresh();
-        LocationEvseCreated::dispatch($locationEvse->id);
+        if (true === $dispatchEvent) {
+            LocationEvseCreated::dispatch($locationEvse->id);
+        }
 
         // Update Location.
         if ($updateLocation) {
@@ -496,7 +512,9 @@ trait HandlesLocation
             $locationConnector->object = $payloadConnector;
             $locationConnector->save();
             $locationConnector->refresh();
-            LocationConnectorCreated::dispatch($locationConnector->id);
+            if (true === $dispatchEvent) {
+                LocationConnectorCreated::dispatch($locationConnector->id);
+            }
         }
 
         return $locationEvse->refresh();
@@ -507,13 +525,10 @@ trait HandlesLocation
         if (EvseStatus::REMOVED === EvseStatus::tryFrom($payload['status'] ?? '')) {
             $locationEvse->delete();
             $locationEvse->connectors()->delete();
-
-
             LocationEvseRemoved::dispatch($locationEvse->id);
 
             if ($locationEvse->locationWithTrashed->evses()->count() === 0) {
                 $locationEvse->locationWithTrashed->delete();
-
                 LocationRemoved::dispatch($locationEvse->location_id);
             }
 
