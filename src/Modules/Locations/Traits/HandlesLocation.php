@@ -542,18 +542,10 @@ trait HandlesLocation
             LocationEvseRestored::dispatch($locationEvse->id);
         }
 
-        $locationEvse->object = $payload;
-        $locationEvse->save();
-        $locationEvse->refresh();
-        if (true === $dispatchEvent) {
-            LocationEvseReplaced::dispatch($locationEvse->id);
-        }
-
         // Touch Location.
         if ($updateLocation) {
             if ($locationEvse->locationWithTrashed->trashed()) {
                 $locationEvse->locationWithTrashed->restore();
-
                 LocationRestored::dispatch($locationEvse->location_id);
             }
             $locationEvse->locationWithTrashed->updated_at = $payload['last_updated'] ?? Carbon::now();
@@ -588,23 +580,25 @@ trait HandlesLocation
                 if ($locationConnector->trashed()) {
                     $locationConnector->restore();
                 }
+                $locationConnector->updated_at = $lastUpdated;
+                $locationConnector->object = $payloadConnector;
+                $locationConnector->save();
+                $locationConnector->refresh();
                 if (true === $dispatchEvent) {
                     LocationConnectorReplaced::dispatch($locationConnector->id);
                 }
-            }
-
-            if (!$this->connectorUpdate(
-                $locationEvse,
-                $connectorId,
-                $payloadConnector
-            )) {
-                return false;
             }
         }
         // Delete missing EVSE Connectors.
         $payloadConnectorIdList = collect($payloadConnectorList)->pluck('id')->toArray();
         $locationEvse->connectors()->whereNotIn('connector_id', $payloadConnectorIdList)->delete();
 
+        $locationEvse->object = $payload;
+        $locationEvse->save();
+        $locationEvse->refresh();
+        if (true === $dispatchEvent) {
+            LocationEvseReplaced::dispatch($locationEvse->id);
+        }
         return true;
     }
 
@@ -628,8 +622,6 @@ trait HandlesLocation
             return false;
         }
 
-        LocationEvseUpdated::dispatch($locationEvse->id);
-
         if ($locationEvse->trashed()) {
             $locationEvse->restore();
 
@@ -642,11 +634,10 @@ trait HandlesLocation
 
             if ($locationEvse->locationWithTrashed->trashed()) {
                 $locationEvse->locationWithTrashed->restore();
-
                 LocationRestored::dispatch($locationEvse->locationWithTrashed->id);
             }
         }
-
+        LocationEvseUpdated::dispatch($locationEvse->id);
         return true;
     }
 
@@ -654,6 +645,7 @@ trait HandlesLocation
     {
         $locationEvse->loadMissing('connectorsWithTrashed');
 
+        /** @var LocationConnector $locationConnector */
         $locationConnector = $locationEvse
             ->connectorsWithTrashed
             ->where('connector_id', $connectorId)
@@ -674,16 +666,16 @@ trait HandlesLocation
             $locationConnector->refresh();
 
             LocationConnectorCreated::dispatch($locationConnector->id);
+        }else{
+            if ($locationConnector->trashed()) {
+                $locationConnector->restore();
+            }
+            $locationConnector->updated_at = $lastUpdated;
+            $locationConnector->object = $payload;
+            $locationConnector->save();
+            $locationConnector->refresh();
+            LocationConnectorReplaced::dispatch($locationConnector->id);
         }
-        if ($locationConnector->trashed()) {
-            $locationConnector->restore();
-        }
-        $this->connectorUpdate(
-            $locationEvse,
-            $connectorId,
-            $payload
-        );
-        LocationConnectorReplaced::dispatch($locationConnector->id);
 
         $locationEvse->updated_at = $lastUpdated;
         $locationEvse->save();
@@ -733,10 +725,6 @@ trait HandlesLocation
             $locationEvse,
             $locationConnector->connector_id,
             $payload
-        );
-
-        LocationConnectorUpdated::dispatch(
-            $locationConnector->id
         );
 
         return $locationConnector->refresh();
