@@ -8,6 +8,7 @@ use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Events\CredentialsCreated;
 use Ocpi\Modules\Credentials\Object\PartyCode;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
+use Throwable;
 
 readonly class SyncPartyRoleAction
 {
@@ -17,6 +18,9 @@ readonly class SyncPartyRoleAction
     ) {
     }
 
+    /**
+     * @throws Throwable
+     */
     public function handle(PartyToken $parentToken, array $data): void
     {
         $tokenB = $data['token'];

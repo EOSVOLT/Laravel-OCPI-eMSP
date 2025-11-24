@@ -18,7 +18,7 @@ use Ocpi\Support\Models\Model;
  * @property int|null $parent_role_id
  * @property Collection|PartyRole[] $children_role
  * @property string $code
- * @property string $party_id
+ * @property int $party_id
  * @property Party $party
  * @property Role $role
  * @property string $country_code

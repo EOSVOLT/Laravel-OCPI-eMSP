@@ -35,7 +35,7 @@ return new class extends Migration {
                     $partyRole->update(['parent_role_id' => $party->parent->roles()->where('role', Role::CPO)->first()?->id]);
                 }
                 foreach ($currentTokens as $token) {
-                    PartyToken::insert([
+                    PartyToken::query()->insert([
                         'party_id' => $party->id,
                         'party_role_id' => $partyRole->id,
                         'name' => $token->name,
