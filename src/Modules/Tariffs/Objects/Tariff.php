@@ -7,6 +7,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Locations\Objects\DisplayTextCollection;
 use Ocpi\Modules\Locations\Objects\EnergyMix;
 use Ocpi\Modules\Tariffs\Enums\TariffType;
+use Ocpi\Support\Objects\Price;
 
 class Tariff implements Arrayable
 {
