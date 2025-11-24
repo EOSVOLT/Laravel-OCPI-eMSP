@@ -433,6 +433,7 @@ trait HandlesLocation
 
     private function locationObjectUpdate(array $payload, Location $location): bool
     {
+        $location->publish = $payload['publish'] ?? $location->publish;
         unset($payload['evses'], $payload['last_updated'], $payload['publish']);
         foreach ($payload as $field => $value) {
             $location->object[$field] = $value;
