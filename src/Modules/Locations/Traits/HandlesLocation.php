@@ -36,6 +36,8 @@ use Ocpi\Modules\Locations\Events\EMSP\LocationReplaced;
 use Ocpi\Modules\Locations\Events\EMSP\LocationRestored;
 use Ocpi\Modules\Locations\Events\EMSP\LocationUpdated;
 
+use function Symfony\Component\Clock\now;
+
 trait HandlesLocation
 {
     public function searchLocation(PartyRole $partyRole, ?string $externalId, bool $withTrashed = true): ?Location
@@ -667,7 +669,7 @@ trait HandlesLocation
             $locationConnector->refresh();
 
             LocationConnectorCreated::dispatch($locationConnector->id);
-        }else{
+        } else {
             if ($locationConnector->trashed()) {
                 $locationConnector->restore();
             }
@@ -754,7 +756,9 @@ trait HandlesLocation
         }
 
         if (0 === $locationEvse->locationWithTrashed->evses()->count()) {
-            $locationEvse->locationWithTrashed->delete();
+            $location = $locationEvse->locationWithTrashed;
+            $location->update(['publish' => false]);
+            $location->delete();
             if (true === $dispatchEvent) {
                 LocationRemoved::dispatch($locationEvse->location_id);
             }
