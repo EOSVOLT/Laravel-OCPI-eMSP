@@ -42,9 +42,15 @@ class PutController extends Controller
 
             // EVSE or Connector.
             if (null !== $evseUid) {
+                if (null === $location) {
+                    return $this->ocpiClientErrorResponse(
+                        statusCode: OcpiClientErrorCode::UnknownLocation,
+                        statusMessage: 'Unknown Location.',
+                    );
+                }
                 $locationEvse = $this->evseSearch(
                     $partyRole->party_id,
-                    $location->id,
+                    $location->external_id,
                     $evseUid,
                 );
 
@@ -73,7 +79,7 @@ class PutController extends Controller
                         );
                     }
                 } else {
-                    // Replaced EVSE.
+                    // Replaced EVSE and Connectors in payload.
                     if (null === $connectorId) {
                         if (
                             !DB::connection(config('ocpi.database.connection'))
