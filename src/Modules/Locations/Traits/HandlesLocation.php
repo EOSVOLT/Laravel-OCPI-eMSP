@@ -227,7 +227,7 @@ trait HandlesLocation
             'last_updated' => [
                 'required',
                 'string',
-                'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/',
+                'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z)?$/',
             ],
 
         ];
@@ -250,12 +250,12 @@ trait HandlesLocation
                 $prefix . 'status_schedule.*.period_begin' => [
                     'required',
                     'string',
-                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/',
+                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z)?$/',
                 ],
                 $prefix . 'status_schedule.*.period_end' => [
                     'nullable',
                     'string',
-                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/',
+                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z)?$/',
                 ],
 
                 $prefix . 'capabilities' => 'nullable|array',
@@ -290,7 +290,7 @@ trait HandlesLocation
                 $prefix . 'last_updated' => [
                     'required',
                     'string',
-                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/',
+                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z)?$/',
                 ],
                 // End EVSE object
             ];
@@ -318,7 +318,7 @@ trait HandlesLocation
                 $prefix . 'last_updated' => [
                     'required',
                     'string',
-                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/',
+                    'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z)?$/',
                 ],
                 // End connector object
             ];

@@ -7,10 +7,10 @@ class ListRequest extends PaginationRequest
     public function rules(): array
     {
         return [
-            'date_from' => ['nullable', 'date_format:"Y-m-d\TH:i:s\Z","Y-m-d\TH:i:s.u\Z","Y-m-d\TH:i:s"'],
+            'date_from' => ['nullable', 'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z)?$/'],
             'date_to' => [
                 'nullable',
-                'date_format:"Y-m-d\TH:i:s\Z","Y-m-d\TH:i:s.u\Z","Y-m-d\TH:i:s"',
+                'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z)?$/',
                 'after:date_from',
             ],
         ];
