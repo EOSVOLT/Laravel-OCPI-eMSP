@@ -74,7 +74,7 @@ class SessionFactory
             $data['kwh'],
             CdrTokenFactory::fromArray($data['cdr_token']),
             AuthMethod::tryFrom($data['auth_method']),
-            $data['authorization_reference'],
+            $data['authorization_reference'] ?? null,
             $data['location_id'],
             $data['evse_uid'],
             $data['connector_id'],

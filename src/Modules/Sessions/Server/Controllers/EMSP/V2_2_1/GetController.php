@@ -15,23 +15,17 @@ class GetController extends Controller
 
     public function __invoke(
         Request $request,
-        ?string $country_code = null,
-        ?string $party_id = null,
-        ?string $session_id = null,
+        string $countryCode,
+        string $partyId,
+        string $sessionId,
     ): JsonResponse {
-        if ($session_id === null) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::NotEnoughInformation,
-                statusMessage: 'Session ID is missing.',
-            );
-        }
 
         $session = $this->sessionById(
-            session_id: $session_id,
-            party_role_id: Context::get('party_role_id'),
+            externalSessionId: $sessionId,
+            partyRoleId: Context::get('party_role_id'),
         );
 
-        if ($session === null) {
+        if (null === $session) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::InvalidParameters,
                 statusMessage: 'Unknown Session.',

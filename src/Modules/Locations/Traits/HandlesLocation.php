@@ -733,13 +733,19 @@ trait HandlesLocation
         return $locationConnector->refresh();
     }
 
-    private function connectorSearch(string $connectorId, string $evseUid): ?LocationConnector
-    {
+    private function connectorSearch(
+        string $externalLocationId,
+        string $evseUid,
+        string $connectorId
+    ): ?LocationConnector {
         return LocationConnector::query()
             ->withWhereHas(
                 'evse',
-                function ($query) use ($evseUid) {
-                    $query->where('uid', $evseUid);
+                function ($evseQuery) use ($evseUid, $externalLocationId) {
+                    $evseQuery->where('uid', $evseUid);
+                    $evseQuery->withWhereHas('location', function ($locationQuery) use ($externalLocationId) {
+                        $locationQuery->where('external_id', $externalLocationId);
+                    });
                 }
             )
             ->where('connector_id', $connectorId)

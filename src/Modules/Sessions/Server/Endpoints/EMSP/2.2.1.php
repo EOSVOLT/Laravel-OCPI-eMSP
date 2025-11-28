@@ -12,7 +12,7 @@ Route::middleware([
     ->prefix('sessions')
     ->name('sessions')
     ->group(function () {
-        Route::get('{country_code?}/{party_id?}/{session_id?}', GetController::class);
-        Route::put('{country_code}/{party_id}/{session_id}', PutController::class)->name('.put');
-        Route::patch('{country_code}/{party_id}/{session_id}', PatchController::class)->name('.patch');
+        Route::get('{countryCode}/{partyId}/{sessionId}', GetController::class);
+        Route::put('{countryCode}/{partyId}/{sessionId}', PutController::class)->name('.put');
+        Route::patch('{countryCode}/{partyId}/{sessionId}', PatchController::class)->name('.patch');
     });

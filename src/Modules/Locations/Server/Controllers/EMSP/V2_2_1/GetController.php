@@ -41,7 +41,7 @@ class GetController extends Controller
             );
         }
         if (null !== $connectorId) {
-            $connector = $this->connectorSearch($connectorId, $evseUid);
+            $connector = $this->connectorSearch($locationId, $evseUid, $connectorId);
             if (null !== $connector) {
                 $connectorObj = ConnectorFactory::fromModel($connector);
                 return $this->ocpiSuccessResponse(new ConnectorResource($connectorObj));

@@ -12,5 +12,5 @@ Route::middleware([
     ->name('sessions')
     ->group(function () {
         Route::get('', GetController::class);
-        Route::put('{session_id}/charging_preferences', PutController::class)->name('.put');
+        Route::put('{sessionId}/charging_preferences', PutController::class)->name('.put');
     });

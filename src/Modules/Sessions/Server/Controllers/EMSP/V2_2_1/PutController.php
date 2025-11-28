@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Modules\Sessions\Traits\HandlesSession;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
@@ -18,43 +19,53 @@ class PutController extends Controller
     use HandlesLocation,
         HandlesSession;
 
+    /**
+     * @param Request $request
+     * @param string $countryCode
+     * @param string $partyId
+     * @param string $externalSessionId
+     * @return JsonResponse
+     * @throws \Throwable
+     */
     public function __invoke(
         Request $request,
-        string $country_code,
-        string $party_id,
-        string $session_id,
+        string $countryCode,
+        string $partyId,
+        string $externalSessionId,
     ): JsonResponse {
         try {
-            $payload = $request->json()->all();
+            $payload = $request->all();
 
             $session = $this->sessionById(
-                session_id: $session_id,
-                party_role_id: Context::get('party_role_id'),
+                externalSessionId: $externalSessionId,
+                partyRoleId: Context::get('party_role_id'),
             );
 
             // New Session.
             if ($session === null) {
-                // Find LocationEvse.
-                $locationEvse = null;
-                $location_id = data_get($payload, 'location.id');
-                $location_evse_uid = data_get($payload, 'location.evses.0.uid');
-                if ($location_id && $location_evse_uid) {
-                    $locationEvse = $this->evseSearch(
-                        party_role_id: Context::get('party_role_id'),
-                        location_id: $location_id,
-                        evse_uid: $location_evse_uid,
+                // Find LocationConnector.
+                $connector = null;
+                // Regarding the current flow, location_id, evse_uid, connector_id are required for session.
+                $externalLocationId = $payload['location_id'];
+                $locationEvseUid = $payload['evse_uid'];
+                $connectorId = $payload['connector_id'];
+                if ($externalLocationId && $locationEvseUid) {
+                    $connector = $this->connectorSearch(
+                        externalLocationId: $externalLocationId,
+                        evseUid: $locationEvseUid,
+                        connectorId: $connectorId
                     );
                 }
 
                 // New Session.
                 if (
                     !DB::connection(config('ocpi.database.connection'))
-                        ->transaction(function () use ($payload, $session_id, $locationEvse) {
+                        ->transaction(function () use ($payload, $externalSessionId, $connector) {
                             return $this->sessionCreate(
                                 payload: $payload,
-                                party_role_id: Context::get('party_role_id'),
-                                session_id: $session_id,
-                                location_id: $locationEvse?->emsp_id,
+                                partyRoleId: Context::get('party_role_id'),
+                                externalSessionId: $externalSessionId,
+                                connector: $connector,
                             );
                         })
                 ) {

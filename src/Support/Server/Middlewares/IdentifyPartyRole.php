@@ -20,8 +20,8 @@ class IdentifyPartyRole
     public function handle(Request $request, Closure $next): Response
     {
         // Retrieve PartyRole information from route.
-        $partyRoleCountryCode = $request->route('country_code');
-        $partyRoleCode = $request->route('party_id');
+        $partyRoleCountryCode = $request->route('countryCode');
+        $partyRoleCode = $request->route('partyId');
 
         if ($partyRoleCountryCode === null || $partyRoleCode === null) {
             return $this->ocpiClientErrorResponse(
