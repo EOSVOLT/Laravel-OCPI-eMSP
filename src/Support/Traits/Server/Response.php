@@ -14,9 +14,11 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Objects\DisplayText;
+use Ocpi\Support\Traits\DateFormat;
 
 trait Response
 {
+    use DateFormat;
     protected function ocpiSuccessPaginateResponse(
         array $data,
         int $offset,
