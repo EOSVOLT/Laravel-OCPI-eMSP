@@ -176,7 +176,7 @@ readonly class Token implements Arrayable
             'language' => $this->getLanguage(),
             'default_profile_type' => $this->getDefaultProfileType()?->value,
             'energy_contract' => $this->getEnergyContract()?->toArray(),
-            'last_updated' => $this->getUpdatedAt()->toIsoString(),
+            'last_updated' => $this->getUpdatedAt()->format('Y-m-d\TH:i:s.v\Z'),
         ];
     }
 }

@@ -27,8 +27,8 @@ class ExceptionalPeriod implements Arrayable
     public function toArray(): array
     {
         return [
-            'period_begin' => $this->getPeriodBegin()->toISOString(),
-            'period_end' => $this->getPeriodEnd()->toISOString(),
+            'period_begin' => $this->getPeriodBegin()->format('Y-m-d\TH:i:s.v\Z'),
+            'period_end' => $this->getPeriodEnd()->format('Y-m-d\TH:i:s.v\Z'),
         ];
     }
 }

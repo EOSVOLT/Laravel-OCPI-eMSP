@@ -193,7 +193,7 @@ class Connector implements Arrayable
             'max_electric_power' => $this->getMaxElectricPower(),
             'tariff_ids' => $this->getTariffIds(),
             'terms_and_conditions' => $this->getTermsAndConditions(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
         ];
     }
 }

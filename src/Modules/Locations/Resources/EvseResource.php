@@ -31,7 +31,7 @@ class EvseResource extends JsonResource
             'directions' => $this->resource->getDirections()?->toArray(),
             'parking_restrictions' => $this->resource->getParkingRestrictions(),
             'images' => $this->resource->getImages()?->toArray(),
-            'last_updated' => $this->resource->getLastUpdated()->toISOString(),
+            'last_updated' => $this->resource->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
         ]);
     }
 }

@@ -48,7 +48,7 @@ class LocationResource extends JsonResource
             'charging_when_closed' => $this->resource->isChargingWhenClosed(),
             'images' => $this->resource->getImages()?->toArray(),
             'energy_mix' => $this->resource->getEnergyMix()?->toArray(),
-            'last_updated' => $this->resource->getLastUpdated()->toISOString(),
+            'last_updated' => $this->resource->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
         ]);
     }
 }

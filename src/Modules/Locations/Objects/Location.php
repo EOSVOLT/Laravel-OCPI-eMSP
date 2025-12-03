@@ -530,7 +530,7 @@ class Location implements Arrayable
             'charging_when_closed' => $this->isChargingWhenClosed(),
             'images' => $this->getImages()?->toArray(),
             'energy_mix' => $this->getEnergyMix()?->toArray(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
         ];
     }
 }

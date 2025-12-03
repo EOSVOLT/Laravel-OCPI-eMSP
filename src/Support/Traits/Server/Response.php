@@ -93,7 +93,7 @@ trait Response
             ->when($statusMessage !== null, function ($payload) use ($statusMessage) {
                 return $payload->put('status_message', $statusMessage);
             })
-            ->put('timestamp', Carbon::now()->toISOString());
+            ->put('timestamp', Carbon::now()->format('Y-m-d\TH:i:s.v\Z'));
 
         $headers = [
             'Content-Type' => 'application/json',

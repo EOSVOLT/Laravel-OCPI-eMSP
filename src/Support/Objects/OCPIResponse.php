@@ -39,7 +39,7 @@ readonly class OCPIResponse implements Arrayable
     {
         return [
             'status_code' => $this->getStatusCode(),
-            'timestamp' => $this->getTimestamp()->toISOString(),
+            'timestamp' => $this->getTimestamp()->format('Y-m-d\TH:i:s.v\Z'),
             'data' => $this->getData(),
             'status_message' => $this->getStatusMessage(),
         ];

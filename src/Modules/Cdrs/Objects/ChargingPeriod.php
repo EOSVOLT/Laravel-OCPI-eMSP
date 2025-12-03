@@ -50,7 +50,7 @@ readonly class ChargingPeriod implements Arrayable
     public function toArray(): array
     {
         return [
-            'start_date_time' => $this->getStartDate()->toISOString(),
+            'start_date_time' => $this->getStartDate()->format('Y-m-d\TH:i:s.v\Z'),
             'dimensions' => $this->getDimensions()->toArray(),
             'tariff_id' => $this->getTariffId(),
         ];

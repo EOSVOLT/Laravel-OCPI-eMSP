@@ -305,7 +305,7 @@ class Evse implements Arrayable
             'directions' => $this->getDirections()?->toArray(),
             'parking_restrictions' => $this->getParkingRestrictions(),
             'images' => $this->getImages()?->toArray(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
         ];
     }
 }

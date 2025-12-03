@@ -30,7 +30,7 @@ class ConnectorResource extends JsonResource
             'max_electric_power' => $this->resource->getMaxElectricPower(),
             'tariff_ids' => $this->resource->getTariffIds(),
             'terms_and_conditions' => $this->resource->getTermsAndConditions(),
-            'last_updated' => $this->resource->getLastUpdated()->toISOString(),
+            'last_updated' => $this->resource->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
         ]);
     }
 }

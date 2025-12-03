@@ -287,10 +287,10 @@ class Tariff implements Arrayable
             'min_price' => $this->getMinPrice()?->toArray(),
             'max_price' => $this->getMaxPrice()?->toArray(),
             'elements' => $this->getElements()->toArray(),
-            'start_date_time' => $this->getStartDateTime()?->toISOString(),
-            'end_date_time' => $this->getEndDateTime()?->toISOString(),
+            'start_date_time' => $this->getStartDateTime()?->format('Y-m-d\TH:i:s.v\Z'),
+            'end_date_time' => $this->getEndDateTime()?->format('Y-m-d\TH:i:s.v\Z'),
             'energy_mix' => $this->getEnergyMix()?->toArray(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
         ];
     }
 }
