@@ -6,9 +6,11 @@ namespace Ocpi\Modules\Locations\Objects;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
+use Ocpi\Support\Traits\DateFormat;
 
 class StatusSchedule implements Arrayable
 {
+    use DateFormat;
     /**
      * @var Carbon|null
      */
@@ -61,8 +63,8 @@ class StatusSchedule implements Arrayable
     public function toArray(): array
     {
         return [
-            'period_begin' => $this->getPeriodBegin()->format('Y-m-d\TH:i:s.v\Z'),
-            'period_end' => $this->getPeriodEnd()?->format('Y-m-d\TH:i:s.v\Z'),
+            'period_begin' => $this->getPeriodBegin()->format(self::RFC3339),
+            'period_end' => $this->getPeriodEnd()?->format(self::RFC3339),
             'status' => $this->getStatus()->value,
         ];
     }

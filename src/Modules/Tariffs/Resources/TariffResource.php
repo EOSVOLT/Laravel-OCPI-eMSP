@@ -5,6 +5,7 @@ namespace Ocpi\Modules\Tariffs\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Tariffs\Objects\Tariff;
+use Ocpi\Support\Traits\DateFormat;
 use Ocpi\Support\Traits\RemoveEmptyField;
 
 /**
@@ -13,7 +14,7 @@ use Ocpi\Support\Traits\RemoveEmptyField;
 class TariffResource extends JsonResource
 {
     use RemoveEmptyField;
-
+    use DateFormat;
     /**
      * @param Tariff $resource
      */
@@ -40,10 +41,10 @@ class TariffResource extends JsonResource
             'min_price' => $this->getMinPrice()?->toArray(),
             'max_price' => $this->getMaxPrice()?->toArray(),
             'elements' => new TariffElementResourceList($this->getElements())->toArray(),
-            'start_date_time' => $this->getStartDateTime()?->format('Y-m-d\TH:i:s.v\Z'),
-            'end_date_time' => $this->getEndDateTime()?->format('Y-m-d\TH:i:s.v\Z'),
+            'start_date_time' => $this->getStartDateTime()?->format(self::RFC3339),
+            'end_date_time' => $this->getEndDateTime()?->format(self::RFC3339),
             'energy_mix' => $this->getEnergyMix()?->toArray(),
-            'last_updated' => $this->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
+            'last_updated' => $this->getLastUpdated()->format(self::RFC3339),
         ]);
     }
 }

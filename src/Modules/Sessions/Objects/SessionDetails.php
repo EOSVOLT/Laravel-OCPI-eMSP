@@ -9,9 +9,11 @@ use Ocpi\Modules\Cdrs\Objects\ChargingPeriodCollection;
 use Ocpi\Support\Enums\AuthMethod;
 use Ocpi\Support\Enums\SessionStatus;
 use Ocpi\Support\Objects\Price;
+use Ocpi\Support\Traits\DateFormat;
 
 readonly class SessionDetails implements Arrayable
 {
+    use DateFormat;
     /**
      * @param string $id
      * @param string $countryCode
@@ -208,8 +210,8 @@ readonly class SessionDetails implements Arrayable
             'id' => $this->getId(),
             'country_code' => $this->getCountryCode(),
             'party_id' => $this->getPartyId(),
-            'start_date_time' => $this->getStartDate()->format('Y-m-d\TH:i:s.v\Z'),
-            'end_date_time' => $this->getEndDate()?->format('Y-m-d\TH:i:s.v\Z'),
+            'start_date_time' => $this->getStartDate()->format(self::RFC3339),
+            'end_date_time' => $this->getEndDate()?->format(self::RFC3339),
             'kwh' => $this->getKwh(),
             'cdr_token' => $this->getCdrToken()->toArray(),
             'auth_method' => $this->getAuthMethod()->value,
@@ -222,7 +224,7 @@ readonly class SessionDetails implements Arrayable
             'charging_periods' => $this->getChargingPeriods()->toArray(),
             'total_cost' => $this->getTotalCost()->toArray(),
             'status' => $this->getStatus()->value,
-            'last_updated' => $this->getLastUpdated()->format('Y-m-d\TH:i:s.v\Z'),
+            'last_updated' => $this->getLastUpdated()->format(self::RFC3339),
         ];
     }
 }

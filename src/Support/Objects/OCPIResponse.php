@@ -4,9 +4,11 @@ namespace Ocpi\Support\Objects;
 
 use Carbon\CarbonInterface;
 use Illuminate\Contracts\Support\Arrayable;
+use Ocpi\Support\Traits\DateFormat;
 
 readonly class OCPIResponse implements Arrayable
 {
+    use DateFormat;
     public function __construct(
         private int $statusCode,
         private CarbonInterface $timestamp,
@@ -39,7 +41,7 @@ readonly class OCPIResponse implements Arrayable
     {
         return [
             'status_code' => $this->getStatusCode(),
-            'timestamp' => $this->getTimestamp()->format('Y-m-d\TH:i:s.v\Z'),
+            'timestamp' => $this->getTimestamp()->format(self::RFC3339),
             'data' => $this->getData(),
             'status_message' => $this->getStatusMessage(),
         ];
