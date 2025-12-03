@@ -19,7 +19,6 @@ use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
-use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Ocpi\Support\Server\Controllers\Controller;
 
@@ -87,33 +86,25 @@ class PutController extends Controller
                                     [
                                         'code' => $partyCode->getCodeFormatted(),
                                         'parent_id' => $parentParty->id,
-                                        'url' => $newUrl,
                                         'version' => $parentParty->version,
                                     ]
                                 );
-                                $childrenParty->tokens()->save($childrenPartyToken);
-                            } else {
-                                $childrenParty->update([
-                                    'url' => $newUrl,
-                                ]);
-                                $childrenParty->tokens()->delete();
-                                $childrenParty->tokens()->save($childrenPartyToken);
                             }
-                            $partyRole = new PartyRole;
-                            $partyRole->fill([
+                            $childrenPartyRole = new PartyRole;
+                            $childrenPartyRole->fill([
                                 'code' => $partyCode->getCode(),
                                 'role' => $role['role'],
+                                'url' => $newUrl,
                                 'country_code' => $partyCode->getCountryCode(),
                                 'business_details' => $role['business_details'],
                             ]);
-                            $childrenParty->roles()->save($partyRole);
+                            $childrenPartyRole = $childrenParty->roles()->save($childrenPartyRole);
+                            $childrenPartyRole->tokens()->delete();
+                            $childrenPartyRole->tokens()->save($childrenPartyToken);
                             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
                             $versionsPartyInformationAndDetailsSynchronizeAction->handle(
-                                $partyRole,
                                 $childrenPartyToken,
                             );
-
-
                         }
                         // regenerate a new Token C for the client Party.
                         $partyToken->token = GeneratorHelper::generateToken($parentParty->code);
@@ -124,10 +115,9 @@ class PutController extends Controller
                     }
                 );
 
-            Events\CredentialsUpdated::dispatch($parentParty->id, $request->json()->all());
-            $parentPartyRole = $parentParty->roles()->where('role', Role::CPO->value)->first();
+            Events\CredentialsUpdated::dispatch($parentParty->id);
             return $this->ocpiSuccessResponse(
-                $selfCredentialsGetAction->handle($parentPartyRole, $partyToken)
+                $selfCredentialsGetAction->handle($partyToken->party_role->tokens->first())
             );
         } catch (ValidationException $e) {
             Log::channel('ocpi')->error($e->getMessage());
