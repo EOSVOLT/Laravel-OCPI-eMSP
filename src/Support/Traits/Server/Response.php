@@ -14,9 +14,11 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Objects\DisplayText;
+use Ocpi\Support\Traits\DateFormat;
 
 trait Response
 {
+    use DateFormat;
     protected function ocpiSuccessPaginateResponse(
         array $data,
         int $offset,
@@ -93,7 +95,7 @@ trait Response
             ->when($statusMessage !== null, function ($payload) use ($statusMessage) {
                 return $payload->put('status_message', $statusMessage);
             })
-            ->put('timestamp', Carbon::now()->toISOString());
+            ->put('timestamp', Carbon::now()->format(self::RFC3339));
 
         $headers = [
             'Content-Type' => 'application/json',

@@ -6,12 +6,13 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Modules\Locations\Enums\ParkingRestriction;
+use Ocpi\Support\Traits\DateFormat;
 use Ocpi\Trait\ValidateArrayEnum;
 
 class Evse implements Arrayable
 {
     use ValidateArrayEnum;
-
+    use DateFormat;
     /**
      * @var string|null
      */
@@ -305,7 +306,7 @@ class Evse implements Arrayable
             'directions' => $this->getDirections()?->toArray(),
             'parking_restrictions' => $this->getParkingRestrictions(),
             'images' => $this->getImages()?->toArray(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format(self::RFC3339),
         ];
     }
 }

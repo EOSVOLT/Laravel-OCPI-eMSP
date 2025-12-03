@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Credentials\Object\PartyRole;
 use Ocpi\Modules\Locations\Objects\Location;
+use Ocpi\Support\Traits\DateFormat;
 use Ocpi\Support\Traits\RemoveEmptyField;
 
 /** @property Location $resource */
 class LocationResource extends JsonResource
 {
     use RemoveEmptyField;
+    use DateFormat;
     public function __construct(Location $location)
     {
         parent::__construct($location);
@@ -48,7 +50,7 @@ class LocationResource extends JsonResource
             'charging_when_closed' => $this->resource->isChargingWhenClosed(),
             'images' => $this->resource->getImages()?->toArray(),
             'energy_mix' => $this->resource->getEnergyMix()?->toArray(),
-            'last_updated' => $this->resource->getLastUpdated()->toISOString(),
+            'last_updated' => $this->resource->getLastUpdated()->format(self::RFC3339),
         ]);
     }
 }

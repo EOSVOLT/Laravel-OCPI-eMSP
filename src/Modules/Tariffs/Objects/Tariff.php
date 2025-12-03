@@ -8,9 +8,11 @@ use Ocpi\Modules\Locations\Objects\DisplayTextCollection;
 use Ocpi\Modules\Locations\Objects\EnergyMix;
 use Ocpi\Modules\Tariffs\Enums\TariffType;
 use Ocpi\Support\Objects\Price;
+use Ocpi\Support\Traits\DateFormat;
 
 class Tariff implements Arrayable
 {
+    use DateFormat;
     /**
      * @var TariffType|null
      */
@@ -287,10 +289,10 @@ class Tariff implements Arrayable
             'min_price' => $this->getMinPrice()?->toArray(),
             'max_price' => $this->getMaxPrice()?->toArray(),
             'elements' => $this->getElements()->toArray(),
-            'start_date_time' => $this->getStartDateTime()?->toISOString(),
-            'end_date_time' => $this->getEndDateTime()?->toISOString(),
+            'start_date_time' => $this->getStartDateTime()?->format(self::RFC3339),
+            'end_date_time' => $this->getEndDateTime()?->format(self::RFC3339),
             'energy_mix' => $this->getEnergyMix()?->toArray(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format(self::RFC3339),
         ];
     }
 }
