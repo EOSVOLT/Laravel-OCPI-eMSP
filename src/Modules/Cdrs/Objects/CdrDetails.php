@@ -4,14 +4,14 @@ namespace Ocpi\Modules\Cdrs\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
-use Ocpi\Modules\Tariffs\Objects\Tariff;
 use Ocpi\Modules\Tariffs\Objects\TariffCollection;
 use Ocpi\Support\Enums\AuthMethod;
 use Ocpi\Support\Objects\Price;
+use Ocpi\Support\Traits\DateFormat;
 
 readonly class CdrDetails implements Arrayable
 {
-
+    use DateFormat;
     public function __construct(
         private string $countryCode,
         private string $partyId,
@@ -202,8 +202,8 @@ readonly class CdrDetails implements Arrayable
             'country_code' => $this->getCountryCode(),
             'party_id' => $this->getPartyId(),
             'id' => $this->getId(),
-            'start_date_time' => $this->getStartTime()->toISOString(),
-            'end_date_time' => $this->getEndTime()->toISOString(),
+            'start_date_time' => $this->getStartTime()->format(self::RFC3339),
+            'end_date_time' => $this->getEndTime()->format(self::RFC3339),
             'session_id' => $this->getSessionId(),
             'cdr_token' => $this->getCdrToken()->toArray(),
             'auth_method' => $this->getAuthMethod()->value,
@@ -228,7 +228,7 @@ readonly class CdrDetails implements Arrayable
             'credit' => $this->isCredit(),
             'credit_reference_id' => $this->getCreditReferenceId(),
             'home_charging_compensation' => $this->isHomeChargingCompensation(),
-            'last_updated' => $this->getLastUpdatedAt()->toISOString(),
+            'last_updated' => $this->getLastUpdatedAt()->format(self::RFC3339),
         ];
     }
 }

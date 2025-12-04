@@ -7,9 +7,11 @@ use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Locations\Enums\ConnectorFormat;
 use Ocpi\Modules\Locations\Enums\ConnectorType;
 use Ocpi\Modules\Locations\Enums\PowerType;
+use Ocpi\Support\Traits\DateFormat;
 
 class Connector implements Arrayable
 {
+    use DateFormat;
     /**
      * @var int|null
      */
@@ -193,7 +195,7 @@ class Connector implements Arrayable
             'max_electric_power' => $this->getMaxElectricPower(),
             'tariff_ids' => $this->getTariffIds(),
             'terms_and_conditions' => $this->getTermsAndConditions(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format(self::RFC3339),
         ];
     }
 }

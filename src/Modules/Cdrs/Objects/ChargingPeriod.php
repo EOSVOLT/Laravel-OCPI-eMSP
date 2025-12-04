@@ -4,10 +4,11 @@ namespace Ocpi\Modules\Cdrs\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
+use Ocpi\Support\Traits\DateFormat;
 
 readonly class ChargingPeriod implements Arrayable
 {
-
+    use DateFormat;
     /**
      * @param Carbon $startDate
      * @param CdrDimensionCollection $dimensions
@@ -50,7 +51,7 @@ readonly class ChargingPeriod implements Arrayable
     public function toArray(): array
     {
         return [
-            'start_date_time' => $this->getStartDate()->toISOString(),
+            'start_date_time' => $this->getStartDate()->format(self::RFC3339),
             'dimensions' => $this->getDimensions()->toArray(),
             'tariff_id' => $this->getTariffId(),
         ];

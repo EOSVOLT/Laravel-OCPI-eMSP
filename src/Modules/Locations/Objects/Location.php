@@ -7,12 +7,13 @@ use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Locations\Enums\Facility;
 use Ocpi\Modules\Locations\Enums\ParkingType;
+use Ocpi\Support\Traits\DateFormat;
 use Ocpi\Trait\ValidateArrayEnum;
 
 class Location implements Arrayable
 {
     use ValidateArrayEnum;
-
+    use DateFormat;
     /**
      * @var string|null
      */
@@ -530,7 +531,7 @@ class Location implements Arrayable
             'charging_when_closed' => $this->isChargingWhenClosed(),
             'images' => $this->getImages()?->toArray(),
             'energy_mix' => $this->getEnergyMix()?->toArray(),
-            'last_updated' => $this->getLastUpdated()->toISOString(),
+            'last_updated' => $this->getLastUpdated()->format(self::RFC3339),
         ];
     }
 }

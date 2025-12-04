@@ -5,12 +5,14 @@ namespace Ocpi\Modules\Locations\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Ocpi\Modules\Locations\Objects\Evse;
+use Ocpi\Support\Traits\DateFormat;
 use Ocpi\Support\Traits\RemoveEmptyField;
 
 /** @property Evse $resource */
 class EvseResource extends JsonResource
 {
     use RemoveEmptyField;
+    use DateFormat;
     public function __construct(Evse $resource)
     {
         parent::__construct($resource);
@@ -31,7 +33,7 @@ class EvseResource extends JsonResource
             'directions' => $this->resource->getDirections()?->toArray(),
             'parking_restrictions' => $this->resource->getParkingRestrictions(),
             'images' => $this->resource->getImages()?->toArray(),
-            'last_updated' => $this->resource->getLastUpdated()->toISOString(),
+            'last_updated' => $this->resource->getLastUpdated()->format(self::RFC3339),
         ]);
     }
 }

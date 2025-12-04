@@ -7,10 +7,11 @@ use Illuminate\Support\Carbon;
 use Ocpi\Modules\Commands\Enums\ProfileType;
 use Ocpi\Modules\Commands\Enums\WhitelistType;
 use Ocpi\Modules\Locations\Enums\TokenType;
+use Ocpi\Support\Traits\DateFormat;
 
 readonly class Token implements Arrayable
 {
-
+    use DateFormat;
     /**
      * @param string $countryCode
      * @param string $partyId
@@ -176,7 +177,7 @@ readonly class Token implements Arrayable
             'language' => $this->getLanguage(),
             'default_profile_type' => $this->getDefaultProfileType()?->value,
             'energy_contract' => $this->getEnergyContract()?->toArray(),
-            'last_updated' => $this->getUpdatedAt()->toIsoString(),
+            'last_updated' => $this->getUpdatedAt()->format(self::RFC3339),
         ];
     }
 }
