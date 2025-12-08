@@ -111,6 +111,11 @@ trait HandlesSession
      */
     private function sessionObjectUpdate(array $payload, Session $session): bool
     {
+        $status = SessionStatus::tryFrom($payload['status']);
+        if (SessionStatus::COMPLETED === $status && $session->status !== $status) {
+            return $this->stopSession($payload, $session);
+        }
+
         foreach ($payload as $field => $value) {
             $session->object[$field] = $value;
         }
@@ -121,6 +126,15 @@ trait HandlesSession
 
         Events\EMSP\SessionUpdated::dispatch($session->party_role_id, $session->id, $payload);
 
+        return true;
+    }
+
+    private function stopSession(array $payload, Session $session): bool
+    {
+        foreach ($payload as $field => $value) {
+            $session->object[$field] = $value;
+        }
+        Events\EMSP\SessionStopped::dispatch($session->party_role_id, $session->id, $payload);
         return true;
     }
 }
