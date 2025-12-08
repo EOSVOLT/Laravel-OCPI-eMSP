@@ -7,7 +7,7 @@ Laravel package for OCPI ([Open Charge Point Interface](https://github.com/ocpi/
 
 ### Key Features:
 
-- **OCPI version:** 2.1.1, 2.2.1
+- **OCPI version:** 2.2.1
 - **OCPI Modules:**
   - CDRs
   - Commands
@@ -15,6 +15,7 @@ Laravel package for OCPI ([Open Charge Point Interface](https://github.com/ocpi/
   - Locations
   - Sessions
   - Versions
+  - Tariff
 
 ### Version support
 
