@@ -11,12 +11,12 @@ class SessionUpdated implements ShouldDispatchAfterCommit, ReceiverSessionEventI
 
     /**
      * @param int $partyRoleId
-     * @param string $id
+     * @param string $sessionId
      * @param array $updateData
      */
     public function __construct(
         private readonly int $partyRoleId,
-        private readonly string $id,
+        private readonly string $sessionId,
         private readonly array $updateData,
     ) {
     }
@@ -32,9 +32,9 @@ class SessionUpdated implements ShouldDispatchAfterCommit, ReceiverSessionEventI
     /**
      * @return string
      */
-    public function getId(): string
+    public function getSessionId(): string
     {
-        return $this->id;
+        return $this->sessionId;
     }
 
     /**
