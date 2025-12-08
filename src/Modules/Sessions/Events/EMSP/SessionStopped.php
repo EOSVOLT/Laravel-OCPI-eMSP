@@ -5,7 +5,7 @@ namespace Ocpi\Modules\Sessions\Events\EMSP;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class SessionReplaced implements ShouldDispatchAfterCommit, ReceiverSessionEventInterface
+class SessionStopped implements ShouldDispatchAfterCommit, ReceiverSessionEventInterface
 {
     use Dispatchable;
 
@@ -44,5 +44,4 @@ class SessionReplaced implements ShouldDispatchAfterCommit, ReceiverSessionEvent
     {
         return $this->payload;
     }
-
 }
