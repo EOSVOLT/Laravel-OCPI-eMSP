@@ -37,7 +37,7 @@ class CdrFactory
             $data['session_id'],
             CdrTokenFactory::fromArray($data['cdr_token']),
             AuthMethod::tryFrom($data['auth_method']),
-            $data['authorization_reference'],
+            $data['authorization_reference'] ?? null,
             CdrLocationFactory::fromArray($data['cdr_location']),
             $data['meter_id'] ?? null,
             $data['currency'],
