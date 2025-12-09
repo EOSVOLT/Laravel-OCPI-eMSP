@@ -4,18 +4,18 @@ namespace Ocpi\Modules\Commands\Object;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Commands\Enums\CommandResultType;
-use Ocpi\Support\Objects\DisplayText;
+use Ocpi\Support\Objects\DisplayTextCollection;
 
 readonly class CommandResult implements Arrayable
 {
 
     /**
      * @param CommandResultType $result
-     * @param DisplayText $message
+     * @param DisplayTextCollection $messages
      */
     public function __construct(
         private CommandResultType $result,
-        private DisplayText $message,
+        private DisplayTextCollection $messages,
     ) {
     }
 
@@ -28,11 +28,11 @@ readonly class CommandResult implements Arrayable
     }
 
     /**
-     * @return DisplayText
+     * @return DisplayTextCollection
      */
-    public function getMessage(): DisplayText
+    public function getMessages(): DisplayTextCollection
     {
-        return $this->message;
+        return $this->messages;
     }
 
     /**
@@ -42,7 +42,7 @@ readonly class CommandResult implements Arrayable
     {
         return [
             'result' => $this->getResult()->value,
-            'message' => $this->getMessage()->toArray(),
+            'message' => $this->getMessages()->toArray(),
         ];
     }
 }

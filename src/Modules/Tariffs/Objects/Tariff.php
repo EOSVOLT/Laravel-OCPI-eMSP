@@ -4,9 +4,9 @@ namespace Ocpi\Modules\Tariffs\Objects;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
-use Ocpi\Modules\Locations\Objects\DisplayTextCollection;
 use Ocpi\Modules\Locations\Objects\EnergyMix;
 use Ocpi\Modules\Tariffs\Enums\TariffType;
+use Ocpi\Support\Objects\DisplayTextCollection;
 use Ocpi\Support\Objects\Price;
 use Ocpi\Support\Traits\DateFormat;
 
@@ -20,11 +20,11 @@ class Tariff implements Arrayable
     /**
      * @var DisplayTextCollection|null
      */
-    private ?DisplayTextCollection $tariff_alt_text = null;
+    private ?DisplayTextCollection $tariffAltText = null;
     /**
      * @var string|null
      */
-    private ?string $tariff_alt_url = null;
+    private ?string $tariffAltUrl = null;
     /**
      * @var Price|null
      */
@@ -91,17 +91,17 @@ class Tariff implements Arrayable
      */
     public function getTariffAltText(): ?DisplayTextCollection
     {
-        return $this->tariff_alt_text;
+        return $this->tariffAltText;
     }
 
     /**
-     * @param DisplayTextCollection|null $tariff_alt_text
+     * @param DisplayTextCollection|null $tariffAltText
      *
      * @return self
      */
-    public function setTariffAltText(?DisplayTextCollection $tariff_alt_text): self
+    public function setTariffAltText(?DisplayTextCollection $tariffAltText): self
     {
-        $this->tariff_alt_text = $tariff_alt_text;
+        $this->tariffAltText = $tariffAltText;
         return $this;
     }
 
@@ -110,17 +110,17 @@ class Tariff implements Arrayable
      */
     public function getTariffAltUrl(): ?string
     {
-        return $this->tariff_alt_url;
+        return $this->tariffAltUrl;
     }
 
     /**
-     * @param string|null $tariff_alt_url
+     * @param string|null $tariffAltUrl
      *
      * @return self
      */
-    public function setTariffAltUrl(?string $tariff_alt_url): self
+    public function setTariffAltUrl(?string $tariffAltUrl): self
     {
-        $this->tariff_alt_url = $tariff_alt_url;
+        $this->tariffAltUrl = $tariffAltUrl;
         return $this;
     }
 
