@@ -1,9 +1,8 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Objects;
+namespace Ocpi\Support\Objects;
 
 use Ocpi\Helpers\TypeCollection;
-use Ocpi\Support\Objects\DisplayText;
 
 class DisplayTextCollection extends TypeCollection
 {

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Modules\Locations\Enums\ParkingRestriction;
+use Ocpi\Support\Objects\DisplayTextCollection;
 use Ocpi\Support\Traits\DateFormat;
 use Ocpi\Trait\ValidateArrayEnum;
 
