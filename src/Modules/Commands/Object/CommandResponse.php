@@ -5,6 +5,7 @@ namespace Ocpi\Modules\Commands\Object;
 use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Support\Objects\DisplayText;
+use Ocpi\Support\Objects\DisplayTextCollection;
 
 readonly class CommandResponse implements Arrayable
 {
@@ -15,12 +16,12 @@ readonly class CommandResponse implements Arrayable
 
     /**
      * @param CommandResponseType $result
-     * @param DisplayText $message
+     * @param DisplayTextCollection $messages
      * @param int $timeoutSeconds
      */
     public function __construct(
         private CommandResponseType $result,
-        private DisplayText $message,
+        private DisplayTextCollection $messages,
         private int $timeoutSeconds = self::COMMAND_RESPONSE_TIMEOUT,
     ) {
     }
@@ -42,11 +43,11 @@ readonly class CommandResponse implements Arrayable
     }
 
     /**
-     * @return DisplayText
+     * @return DisplayTextCollection
      */
-    public function getMessage(): DisplayText
+    public function getMessages(): DisplayTextCollection
     {
-        return $this->message;
+        return $this->messages;
     }
 
     /**
@@ -57,7 +58,7 @@ readonly class CommandResponse implements Arrayable
         return [
             'result' => $this->getResult()->value,
             'timeout' => $this->getTimeoutSeconds(),
-            'message' => $this->getMessage()->toArray(),
+            'message' => $this->getMessages()->toArray(),
         ];
     }
 }
