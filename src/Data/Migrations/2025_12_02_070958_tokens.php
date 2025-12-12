@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table(config('ocpi.database.table.prefix') . 'charging_token', function (Blueprint $table) {
+        Schema::create(config('ocpi.database.table.prefix') . 'charging_token', function (Blueprint $table) {
             $table->id();
             $table->foreignId('party_role_id')->constrained(
                 config('ocpi.database.table.prefix') . 'party_roles'
@@ -27,5 +27,10 @@ return new class extends Migration {
 
             $table->unique(['party_role_id', 'uid', 'type']);
         });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists(config('ocpi.database.table.prefix') . 'charging_token');
     }
 };
