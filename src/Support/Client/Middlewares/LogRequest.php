@@ -13,14 +13,18 @@ class LogRequest implements RequestMiddleware
         $body = $pendingRequest->body()?->isNotEmpty()
             ? json_encode($pendingRequest->body()->all(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             : null;
-        $headers = $pendingRequest->headers()?->isNotEmpty()
-            ? json_encode($pendingRequest->headers()->all(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-            : '';
+
+        $headers = $pendingRequest->headers();
+        if (null !== $headers->get('Authorization')) {
+            $headers->remove('Authorization');
+        }
+        $headersString = json_encode($headers->all(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
         Log::channel('ocpi')->debug(
             '[OUT] ' . $pendingRequest->getMethod()->value . ' '
             . $pendingRequest->getUrl()
             . ($body ? PHP_EOL . $body : '')
-            . $headers
+            . $headersString
         );
     }
 }
