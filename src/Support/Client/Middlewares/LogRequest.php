@@ -23,7 +23,7 @@ class LogRequest implements RequestMiddleware
             ? json_encode($pendingRequest->body()->all(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             : null;
 
-        $headers = $pendingRequest->headers();
+        $headers = $pendingRequest->headers()->all();
         $logHeaders = [];
         foreach (self::LOG_HEADERS as $header) {
             if (true === isset($headers[$header])) {

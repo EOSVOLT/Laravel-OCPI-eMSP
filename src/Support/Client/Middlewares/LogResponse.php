@@ -15,7 +15,7 @@ class LogResponse implements ResponseMiddleware
                 ? json_encode($response->getPendingRequest()->body()->all(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                 : null;
 
-            $headers = $response->getPendingRequest()->headers();
+            $headers = $response->getPendingRequest()->headers()->all();
             $logHeaders = [];
             foreach (LogRequest::LOG_HEADERS as $header) {
                 if (true === isset($headers[$header])) {
