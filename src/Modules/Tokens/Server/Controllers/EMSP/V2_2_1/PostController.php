@@ -10,7 +10,6 @@ class PostController extends Controller
 {
     public function authorize(AuthorizeRequest $request): JsonResponse
     {
-
-        return $this->ocpiSuccessResponse();
+        return $this->ocpiServerErrorResponse(statusMessage: 'We not support real-time authorization yet.');
     }
 }

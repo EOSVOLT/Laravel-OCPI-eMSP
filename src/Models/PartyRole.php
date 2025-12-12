@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Ocpi\Database\Factories\PartyRoleFactory;
+use Ocpi\Models\Tokens\CommandToken;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Models\Model;
 
@@ -26,6 +27,7 @@ use Ocpi\Support\Models\Model;
  * @property string|null $url
  * @property string|null $endpoints
  * @property PartyToken[]|Collection $tokens
+ * @property CommandToken[]|Collection $command_tokens
  */
 class PartyRole extends Model
 {
@@ -93,5 +95,14 @@ class PartyRole extends Model
     public function children_role(): HasMany
     {
         return $this->hasMany(PartyRole::class, 'parent_role_id');
+    }
+
+    public function command_tokens(): HasMany
+    {
+        return $this->hasMany(
+            CommandToken::class,
+            'party_role_id',
+            'id',
+        );
     }
 }
