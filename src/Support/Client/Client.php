@@ -16,6 +16,7 @@ use Ocpi\Modules\Versions\Client\Resource as VersionsResource;
 use Ocpi\Support\Client\Middlewares\LogRequest;
 use Ocpi\Support\Client\Middlewares\LogResponse;
 use Ocpi\Support\Enums\InterfaceRole;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
@@ -113,10 +114,10 @@ class Client extends Connector
 
     protected function defaultHeaders(): array
     {
-        return [
+        return array_merge([
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-        ];
+        ], $this->getHeadersForHub());
     }
 
     protected function defaultConfig(): array
@@ -132,5 +133,23 @@ class Client extends Connector
         $token = GeneratorHelper::encodeToken($this->partyToken->token, $this->partyToken->party_role->party->version);
 
         return new TokenAuthenticator($token, 'Token');
+    }
+
+    private function getHeadersForHub(): array
+    {
+        $targetPartyRole = $this->partyToken->party_role;
+        if (Role::HUB === $targetPartyRole->role) {
+            //if target is HUB, add hub headers
+            $parentPartyRole = $targetPartyRole->parent_role;
+            if (null !== $parentPartyRole) {
+                return [
+                    'OCPI-to-party-id' => $targetPartyRole->code,
+                    'OCPI-to-country-code' => $targetPartyRole->country_code,
+                    'OCPI-from-party-id' => $parentPartyRole->code,
+                    'OCPI-from-country-code' => $parentPartyRole->country_code,
+                ];
+            }
+        }
+        return [];
     }
 }
