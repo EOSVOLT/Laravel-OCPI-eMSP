@@ -2,9 +2,8 @@
 
 namespace Ocpi\Modules\Cdrs\Factories;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use Ocpi\Modules\Cdrs\Objects\Cdr;
 use Ocpi\Modules\Cdrs\Objects\CdrCollection;
 use Ocpi\Modules\Cdrs\Objects\CdrDetails;
@@ -16,7 +15,7 @@ use Ocpi\Support\Factories\PriceFactory;
 class CdrFactory
 {
 
-    public static function fromCollection(Collection|LengthAwarePaginator $collection): CdrCollection
+    public static function fromCollection(LengthAwarePaginator $collection): CdrCollection
     {
         $cdrs = new CdrCollection(
             $collection->currentPage(),

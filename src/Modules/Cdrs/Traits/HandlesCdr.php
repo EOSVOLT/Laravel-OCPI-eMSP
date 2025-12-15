@@ -42,6 +42,8 @@ trait HandlesCdr
         int $offset = 0,
         int $limit = PaginatedCollection::DEFAULT_PER_PAGE,
     ): CdrCollection {
+        $perPage = $limit;
+        $page = ($offset / $limit) + 1;
         $collection = Cdr::query()
             ->where('party_role_id', $partyRoleId)
             ->when( null !== $dateFrom, function ($query) use ($dateFrom) {
@@ -50,9 +52,7 @@ trait HandlesCdr
             ->when( null !== $dateTo, function ($query) use ($dateTo) {
                 $query->whereDate('updated_at', '<=', $dateTo);
             })
-            ->offset($offset)
-            ->limit($limit)
-            ->get();
+            ->paginate(perPage: $perPage, page: $page);
         return CdrFactory::fromCollection($collection);
     }
 
