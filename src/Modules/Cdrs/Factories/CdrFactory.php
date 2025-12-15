@@ -2,8 +2,11 @@
 
 namespace Ocpi\Modules\Cdrs\Factories;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Ocpi\Modules\Cdrs\Objects\Cdr;
+use Ocpi\Modules\Cdrs\Objects\CdrCollection;
 use Ocpi\Modules\Cdrs\Objects\CdrDetails;
 use Ocpi\Modules\Tariffs\Factories\TariffFactory;
 use Ocpi\Modules\Tariffs\Objects\TariffCollection;
@@ -12,6 +15,21 @@ use Ocpi\Support\Factories\PriceFactory;
 
 class CdrFactory
 {
+
+    public static function fromCollection(Collection|LengthAwarePaginator $collection): CdrCollection
+    {
+        $cdrs = new CdrCollection(
+            $collection->currentPage(),
+            $collection->perPage(),
+            $collection->lastPage(),
+            $collection->total(),
+        );
+        foreach ($collection as $cdr) {
+            $cdrs->append(self::fromModel($cdr));
+        }
+        return $cdrs;
+    }
+
     public static function fromModel(\Ocpi\Models\Cdrs\Cdr $model): Cdr
     {
         $tariffCollection = TariffFactory::fromCollection($model->session->connector->tariffs);

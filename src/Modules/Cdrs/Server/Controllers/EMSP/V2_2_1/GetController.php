@@ -40,8 +40,8 @@ class GetController extends Controller
         $partyRoleId = $party->roles->first()->id;
 
         $cdr = $this->cdrSearch(
-            cdr_emsp_id: $cdr_emsp_id,
-            party_role_id: $partyRoleId,
+            id: $cdr_emsp_id,
+            partyRoleId: $partyRoleId,
         );
 
         if ($cdr === null) {

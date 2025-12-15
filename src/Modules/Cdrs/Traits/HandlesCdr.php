@@ -2,30 +2,58 @@
 
 namespace Ocpi\Modules\Cdrs\Traits;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
+use Ocpi\Helpers\PaginatedCollection;
 use Ocpi\Models\Cdrs\Cdr;
 use Ocpi\Modules\Cdrs\Events;
+use Ocpi\Modules\Cdrs\Factories\CdrFactory;
+use Ocpi\Modules\Cdrs\Objects\CdrCollection;
 
 trait HandlesCdr
 {
-    private function cdrSearch(?string $cdr_emsp_id = null, ?string $cdr_id = null, ?int $party_role_id = null): ?Cdr
+    private function cdrSearch(?string $id = null, ?string $cdrId = null, ?int $partyRoleId = null): ?Cdr
     {
         return Cdr::query()
             ->when(
-                $cdr_emsp_id !== null,
-                function ($query) use ($cdr_emsp_id) {
-                    $query->where('emsp_id', $cdr_emsp_id);
+                $id !== null,
+                function ($query) use ($id) {
+                    $query->where('id', $id);
                 },
-                function ($query) use ($cdr_id) {
-                    $query->where('id', $cdr_id);
-                })
+                function ($query) use ($cdrId) {
+                    $query->where('id', $cdrId);
+                }
+            )
             ->when(
-                $party_role_id !== null,
-                function ($query) use ($party_role_id) {
-                    $query->where('party_role_id', $party_role_id);
-                })
+                $partyRoleId !== null,
+                function ($query) use ($partyRoleId) {
+                    $query->where('party_role_id', $partyRoleId);
+                }
+            )
             ->first();
+    }
+
+    private function list(
+        int $partyRoleId,
+        ?Carbon $dateFrom = null,
+        ?Carbon $dateTo = null,
+        int $offset = 0,
+        int $limit = PaginatedCollection::DEFAULT_PER_PAGE,
+    ): CdrCollection {
+        $collection = Cdr::query()
+            ->where('party_role_id', $partyRoleId)
+            ->when( null !== $dateFrom, function ($query) use ($dateFrom) {
+                $query->whereDate('updated_at', '>=', $dateFrom);
+            })
+            ->when( null !== $dateTo, function ($query) use ($dateTo) {
+                $query->whereDate('updated_at', '<=', $dateTo);
+            })
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+        return CdrFactory::fromCollection($collection);
     }
 
     private function cdrCreate(array $payload, int $party_role_id, ?string $location_evse_id): ?Cdr
@@ -42,7 +70,7 @@ trait HandlesCdr
             'object' => $payload,
         ]);
 
-        if (! $cdr->save()) {
+        if (!$cdr->save()) {
             return null;
         }
 
@@ -55,8 +83,9 @@ trait HandlesCdr
     {
         return route(
             config('ocpi.server.routing.emsp.name_prefix')
-            .Str::replace('.', '_', Context::get('ocpi_version'))
-            .'.cdrs', [
+            . Str::replace('.', '_', Context::get('ocpi_version'))
+            . '.cdrs',
+            [
                 'cdr_emsp_id' => $cdr->emsp_id,
             ]
         );
