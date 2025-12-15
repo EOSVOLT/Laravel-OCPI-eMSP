@@ -55,12 +55,4 @@ class CommandToken extends Model
     {
         return $this->belongsTo(PartyRole::class, 'party_role_id', 'id');
     }
-
-    /**
-     * @return void
-     */
-    public function delete(): void
-    {
-        $this->update(['valid' => false]);
-    }
 }
