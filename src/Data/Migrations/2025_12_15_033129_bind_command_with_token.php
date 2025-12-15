@@ -15,7 +15,7 @@ return new class extends Migration {
         DB::table(config('ocpi.database.table.prefix') . 'commands as c')
             ->update(['interface_role' => InterfaceRole::RECEIVER->value]);
         Schema::table(config('ocpi.database.table.prefix') . 'commands', function (Blueprint $table) {
-            $table->enum('interface_role', InterfaceRole::cases())->change();
+            $table->enum('interface_role', InterfaceRole::stringCases())->change();
         });
     }
 
