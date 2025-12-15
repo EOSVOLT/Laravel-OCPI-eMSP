@@ -50,7 +50,7 @@ class GetController extends Controller
         }
 
         return $this->ocpiSuccessPaginateResponse(
-            $cdr->toArray(),
+            $cdr->pluck('cdr_details'),
             $offset,
             $limit,
             $cdr->getTotalResults(),
