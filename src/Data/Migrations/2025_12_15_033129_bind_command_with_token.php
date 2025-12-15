@@ -12,11 +12,17 @@ return new class extends Migration {
         Schema::table(config('ocpi.database.table.prefix') . 'commands', function (Blueprint $table) {
             $table->enum('interface_role', InterfaceRole::cases())->nullable();
         });
-        DB::table(config('ocpi.database.table.prefix' . 'commands'))
-            ->join(config('ocpi.database.table.prefix') .'party_roles as pr', 'commands.party_role_id', '=', 'pr.id')
+        DB::table(config('ocpi.database.table.prefix') . 'commands as c')
             ->update(['interface_role' => InterfaceRole::RECEIVER->value]);
         Schema::table(config('ocpi.database.table.prefix') . 'commands', function (Blueprint $table) {
             $table->enum('interface_role', InterfaceRole::cases())->change();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table(config('ocpi.database.table.prefix'). 'commands', function (Blueprint $table) {
+            $table->dropColumn('interface_role');
         });
     }
 };
