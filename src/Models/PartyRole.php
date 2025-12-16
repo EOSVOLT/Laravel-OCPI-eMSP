@@ -43,6 +43,16 @@ class PartyRole extends Model
         'endpoints',
     ];
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function (PartyRole $partyRole) {
+            // Soft delete all related tokens
+            $partyRole->tokens()->delete();
+        });
+    }
+
     protected function casts(): array
     {
         return [
