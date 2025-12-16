@@ -30,7 +30,7 @@ class PostController extends Controller
         SyncPartyRoleAction $syncPartyRoleAction,
     ): JsonResponse {
         try {
-            $input = \Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator::validate($request->all());
+            $input = CredentialsValidator::validate($request->all());
             /** @var PartyToken $parentToken */
             $parentToken = PartyToken::query()->with(['party_role.party'])->find(Context::get('token_id'));
             $parentParty = $parentToken->party_role->party;
