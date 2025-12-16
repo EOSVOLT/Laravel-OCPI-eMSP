@@ -47,6 +47,7 @@ readonly class SyncPartyRoleAction
                 $isPartyCreated = true;
             }
             $childrenPartyRole = PartyRole::query()->updateOrCreate([
+                'party_id' => $childrenParty->id,
                 'parent_role_id' => $parentPartyRole->id,
                 'code' => $partyCode->getCode(),
                 'role' => $role['role'],
