@@ -9,14 +9,11 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
-use Ocpi\Modules\Credentials\Events;
-use Ocpi\Modules\Credentials\Object\PartyCode;
+use Ocpi\Modules\Credentials\Actions\PartyRole\SyncPartyRoleAction;
 use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
-use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Helpers\GeneratorHelper;
@@ -26,14 +23,14 @@ class PutController extends Controller
 {
     public function __invoke(
         Request $request,
-        PartyInformationAndDetailsSynchronizeAction $versionsPartyInformationAndDetailsSynchronizeAction,
         SelfCredentialsGetAction $selfCredentialsGetAction,
+        SyncPartyRoleAction $syncPartyRoleAction,
     ): JsonResponse {
         try {
             $input = CredentialsValidator::validate($request->all());
-            /** @var PartyToken $partyToken */
-            $partyToken = PartyToken::query()->find(Context::get('token_id'));
-            $parentParty = $partyToken->party;
+            /** @var PartyToken $parentToken */
+            $parentToken = PartyToken::query()->find(Context::get('token_id'));
+            $parentParty = $parentToken->party_role->party;
             if ($parentParty === null) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
@@ -42,7 +39,7 @@ class PutController extends Controller
                 );
             }
 
-            if (false === $parentParty->registered) {
+            if (false === $parentToken->registered) {
                 return $this->ocpiServerErrorResponse(
                     statusCode: OcpiServerErrorCode::PartyApiUnusable,
                     statusMessage: 'Client not registered.',
@@ -50,74 +47,43 @@ class PutController extends Controller
                 );
             }
 
-            $parentParty = DB::connection(config('ocpi.database.connection'))
+            $parentToken = DB::connection(config('ocpi.database.connection'))
                 ->transaction(
                     function () use (
                         $parentParty,
-                        $request,
                         $input,
-                        $versionsPartyInformationAndDetailsSynchronizeAction,
-                        $partyToken
+                        $parentToken,
+                        $syncPartyRoleAction
                     ) {
-                        //remove all current children roles and recreate from payload.
-                        $parentParty->children->each(function (Party $child) {
-                            $child->roles()->delete();
-                        });
-                        $newTokenB = $input['token'];
-                        $newUrl = $input['url'];
-                        // update children parties from payload
-                        foreach ($request->input('roles') as $role) {
-                            $partyCode = new PartyCode($role['party_id'], $role['country_code']);
-
-                            /** @var Party $childrenParty */
-                            $childrenParty = $parentParty->children()->where(
-                                'code',
-                                $partyCode->getCodeFormatted()
-                            )->first();
-                            $childrenPartyToken = new PartyToken();
-                            $tokenName = $role['business_details']['name'] ?? '';
-                            $childrenPartyToken->fill([
-                                'token' => $newTokenB,
-                                'registered' => true,
-                                'name' => $tokenName . "_" . $partyCode->getCodeFormatted(),
-                            ]);
-                            if (null === $childrenParty) {
-                                $childrenParty = Party::query()->create(
-                                    [
-                                        'code' => $partyCode->getCodeFormatted(),
-                                        'parent_id' => $parentParty->id,
-                                        'version' => $parentParty->version,
-                                    ]
-                                );
+                        //remove all current children roles where it not exist in payload.
+                        $existRoles = [];
+                        //delete if not in the payload.
+                        foreach ($input['roles'] as $role) {
+                            /** @var PartyRole $exist */
+                            $exist = $parentParty->role_cpo->children_roles
+                                ->where('code', $role['party_id'])
+                                ->where('role', $role['role'])
+                                ->where('country_code', $role['country_code'])
+                                ->first();
+                            if (null !== $exist) {
+                                $existRoles[] = $exist->id;
                             }
-                            $childrenPartyRole = new PartyRole;
-                            $childrenPartyRole->fill([
-                                'code' => $partyCode->getCode(),
-                                'role' => $role['role'],
-                                'url' => $newUrl,
-                                'country_code' => $partyCode->getCountryCode(),
-                                'business_details' => $role['business_details'],
-                            ]);
-                            $childrenPartyRole = $childrenParty->roles()->save($childrenPartyRole);
-                            $childrenPartyRole->tokens()->delete();
-                            $childrenPartyRole->tokens()->save($childrenPartyToken);
-                            // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
-                            $versionsPartyInformationAndDetailsSynchronizeAction->handle(
-                                $childrenPartyToken,
-                            );
                         }
-                        // regenerate a new Token C for the client Party.
-                        $partyToken->token = GeneratorHelper::generateToken($parentParty->code);
-                        $partyToken->save();
-                        $partyToken->refresh();
-                        $parentParty->refresh();
-                        return $parentParty;
+                        $parentParty->role_cpo->children_roles()->whereNotIn('id', $existRoles)->delete();
+
+                        // Create client parties from payload
+                        $syncPartyRoleAction->handle($parentToken, $input);
+                        // Generate a Token C for the client Party.
+                        $parentToken->token = GeneratorHelper::generateToken($parentParty->code);
+                        $parentToken->registered = true;
+                        $parentToken->save();
+                        $parentToken->refresh();
+                        return $parentToken;
                     }
                 );
 
-            Events\CredentialsUpdated::dispatch($parentParty->id);
             return $this->ocpiSuccessResponse(
-                $selfCredentialsGetAction->handle($partyToken->party_role->tokens->first())
+                $selfCredentialsGetAction->handle($parentToken)
             );
         } catch (ValidationException $e) {
             Log::channel('ocpi')->error($e->getMessage());

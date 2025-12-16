@@ -18,16 +18,16 @@ class PatchController extends Controller
 
     public function __invoke(
         Request $request,
-        string $country_code,
-        string $party_id,
-        string $session_id,
+        string $countryCode,
+        string $partyId,
+        string $sessionId,
     ): JsonResponse {
         try {
             $payload = $request->json()->all();
 
             $session = $this->sessionById(
-                session_id: $session_id,
-                party_role_id: Context::get('party_role_id'),
+                externalSessionId: $sessionId,
+                partyRoleId: Context::get('party_role_id'),
             );
 
             if ($session === null) {

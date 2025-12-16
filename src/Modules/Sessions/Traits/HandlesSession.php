@@ -3,6 +3,7 @@
 namespace Ocpi\Modules\Sessions\Traits;
 
 use Illuminate\Support\Carbon;
+use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Sessions\Events;
 use Ocpi\Modules\Sessions\Factories\SessionFactory;
@@ -12,16 +13,16 @@ use Ocpi\Support\Enums\SessionStatus;
 trait HandlesSession
 {
     /**
-     * @param string $session_id
-     * @param int $party_role_id
+     * @param string $externalSessionId
+     * @param int $partyRoleId
      * @return Session|null
      * @todo return object instead.
      */
-    private function sessionById(string $session_id, int $party_role_id): ?Session
+    private function sessionById(string $externalSessionId, int $partyRoleId): ?Session
     {
         return Session::query()
-            ->where('id', $session_id)
-            ->where('party_role_id', $party_role_id)
+            ->where('session_id', $externalSessionId)
+            ->where('party_role_id', $partyRoleId)
             ->first();
     }
 
@@ -46,22 +47,28 @@ trait HandlesSession
 
     /**
      * @param array $payload
-     * @param int $party_role_id
-     * @param string $session_id
-     * @param string|null $location_id
+     * @param int $partyRoleId
+     * @param string $externalSessionId
+     * @param LocationConnector|null $connector
      * @return bool
      */
-    private function sessionCreate(array $payload, int $party_role_id, string $session_id, ?string $location_id): bool
-    {
-        if (($payload['id'] ?? null) === null || $payload['id'] !== $session_id) {
+    private function sessionCreate(
+        array $payload,
+        int $partyRoleId,
+        string $externalSessionId,
+        ?LocationConnector $connector
+    ): bool {
+        if (($payload['id'] ?? null) === null || $payload['id'] !== $externalSessionId) {
             return false;
         }
         $status = SessionStatus::tryFrom($payload['status']);
         $session = new Session;
         $session->fill([
-            'party_role_id' => $party_role_id,
-            'location_id' => $location_id,
-            'session_id' => $session_id,
+            'party_role_id' => $partyRoleId,
+            'location_id' => $connector?->evse->location_id,
+            'location_evse_id' => $connector?->evse->id,
+            'location_connector_id' => $connector?->id,
+            'session_id' => $externalSessionId,
             'object' => $payload,
             'status' => $status,
         ]);
@@ -82,13 +89,13 @@ trait HandlesSession
      */
     private function sessionReplace(array $payload, Session $session): bool
     {
-        if (($payload['id'] ?? null) === null || $payload['id'] !== $session->id) {
+        if (null === ($payload['id'] ?? null) || $payload['id'] !== $session->session_id) {
             return false;
         }
 
         $session->object = $payload;
 
-        if (!$session->save()) {
+        if (false === $session->save()) {
             return false;
         }
 
@@ -104,6 +111,11 @@ trait HandlesSession
      */
     private function sessionObjectUpdate(array $payload, Session $session): bool
     {
+        $status = SessionStatus::tryFrom($payload['status']);
+        if (SessionStatus::COMPLETED === $status && $session->status !== $status) {
+            return $this->stopSession($payload, $session);
+        }
+
         foreach ($payload as $field => $value) {
             $session->object[$field] = $value;
         }
@@ -114,6 +126,15 @@ trait HandlesSession
 
         Events\EMSP\SessionUpdated::dispatch($session->party_role_id, $session->id, $payload);
 
+        return true;
+    }
+
+    private function stopSession(array $payload, Session $session): bool
+    {
+        foreach ($payload as $field => $value) {
+            $session->object[$field] = $value;
+        }
+        Events\EMSP\SessionStopped::dispatch($session->party_role_id, $session->id, $payload);
         return true;
     }
 }

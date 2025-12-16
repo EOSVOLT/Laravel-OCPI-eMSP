@@ -15,9 +15,9 @@ class PutController extends Controller
 
     public function __invoke(
         Request $request,
-        string $country_code,
-        string $party_id,
-        string $session_id,
+        string $countryCode,
+        string $partyId,
+        string $sessionId,
     ): JsonResponse {
         //@todo revisit PUT for setting charging preference.
         return $this->ocpiSuccessResponse();

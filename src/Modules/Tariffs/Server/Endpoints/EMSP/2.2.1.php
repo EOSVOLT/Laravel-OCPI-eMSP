@@ -15,6 +15,6 @@ Route::middleware([
     ->name('tariffs')
     ->group(function () {
         Route::get('', [GetController::class, 'list']);
-        Route::put('/{country_code}/{party_id}/{external_id}', [PutController::class, 'upsert'])->name('.put');
-        Route::delete('/{country_code}/{party_id}/{external_id}', [DeleteController::class, 'delete'])->name('.delete');
+        Route::put('/{countryCode}/{partyId}/{externalId}', [PutController::class, 'upsert'])->name('.put');
+        Route::delete('/{countryCode}/{partyId}/{externalId}', [DeleteController::class, 'delete'])->name('.delete');
     });

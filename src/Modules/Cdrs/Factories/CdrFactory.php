@@ -2,8 +2,10 @@
 
 namespace Ocpi\Modules\Cdrs\Factories;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Ocpi\Modules\Cdrs\Objects\Cdr;
+use Ocpi\Modules\Cdrs\Objects\CdrCollection;
 use Ocpi\Modules\Cdrs\Objects\CdrDetails;
 use Ocpi\Modules\Tariffs\Factories\TariffFactory;
 use Ocpi\Modules\Tariffs\Objects\TariffCollection;
@@ -12,6 +14,21 @@ use Ocpi\Support\Factories\PriceFactory;
 
 class CdrFactory
 {
+
+    public static function fromCollection(LengthAwarePaginator $collection): CdrCollection
+    {
+        $cdrs = new CdrCollection(
+            $collection->currentPage(),
+            $collection->perPage(),
+            $collection->lastPage(),
+            $collection->total(),
+        );
+        foreach ($collection as $cdr) {
+            $cdrs->append(self::fromModel($cdr));
+        }
+        return $cdrs;
+    }
+
     public static function fromModel(\Ocpi\Models\Cdrs\Cdr $model): Cdr
     {
         $tariffCollection = TariffFactory::fromCollection($model->session->connector->tariffs);
@@ -37,7 +54,7 @@ class CdrFactory
             $data['session_id'],
             CdrTokenFactory::fromArray($data['cdr_token']),
             AuthMethod::tryFrom($data['auth_method']),
-            $data['authorization_reference'],
+            $data['authorization_reference'] ?? null,
             CdrLocationFactory::fromArray($data['cdr_location']),
             $data['meter_id'] ?? null,
             $data['currency'],

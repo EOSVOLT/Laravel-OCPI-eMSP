@@ -14,6 +14,7 @@ use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
 use Ocpi\Support\Helpers\UrlHelper;
 use Ocpi\Support\Objects\DisplayText;
+use Ocpi\Support\Objects\DisplayTextCollection;
 use Ocpi\Support\Traits\DateFormat;
 
 trait Response
@@ -47,9 +48,11 @@ trait Response
 
     protected function ocpiCommandAcceptedResponse(): JsonResponse
     {
+        $messages = new DisplayTextCollection();
+        $messages->append(new DisplayText('en', 'Command Accepted'));
         $acceptedResponse = new CommandResponse(
             CommandResponseType::ACCEPTED,
-            new DisplayText('en', 'Command Accepted')
+            $messages
         );
         return $this->ocpiSuccessResponse($acceptedResponse->toArray());
     }

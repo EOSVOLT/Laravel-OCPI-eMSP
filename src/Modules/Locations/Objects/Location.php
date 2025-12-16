@@ -7,6 +7,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Locations\Enums\Facility;
 use Ocpi\Modules\Locations\Enums\ParkingType;
+use Ocpi\Support\Objects\DisplayTextCollection;
 use Ocpi\Support\Traits\DateFormat;
 use Ocpi\Trait\ValidateArrayEnum;
 

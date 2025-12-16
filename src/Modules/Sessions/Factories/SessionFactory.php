@@ -2,14 +2,12 @@
 
 namespace Ocpi\Modules\Sessions\Factories;
 
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Cdrs\Factories\CdrTokenFactory;
 use Ocpi\Modules\Cdrs\Factories\ChargingPeriodFactory;
 use Ocpi\Modules\Locations\Factories\ConnectorFactory;
-use Ocpi\Modules\Locations\Factories\LocationFactory;
 use Ocpi\Modules\Sessions\Objects\SessionCollection;
 use Ocpi\Modules\Sessions\Objects\SessionDetails;
 use Ocpi\Support\Enums\AuthMethod;
@@ -19,11 +17,10 @@ use Ocpi\Support\Factories\PriceFactory;
 class SessionFactory
 {
     /**
-     * @param Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection
+     * @param \Illuminate\Pagination\LengthAwarePaginator|LengthAwarePaginator $collection
      * @return SessionCollection
      */
-    public static function fromCollection(
-        Collection|Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\LengthAwarePaginator $collection
+    public static function fromCollection(\Illuminate\Pagination\LengthAwarePaginator|LengthAwarePaginator $collection
     ): SessionCollection {
         $sessionCollection = new SessionCollection(
             page: $collection->currentPage(),
@@ -42,8 +39,10 @@ class SessionFactory
      * @param bool $withLocationConnector
      * @return \Ocpi\Modules\Sessions\Objects\Session
      */
-    public static function fromModel(Session $model, bool $withLocationConnector = false): \Ocpi\Modules\Sessions\Objects\Session
-    {
+    public static function fromModel(
+        Session $model,
+        bool $withLocationConnector = false
+    ): \Ocpi\Modules\Sessions\Objects\Session {
         return new \Ocpi\Modules\Sessions\Objects\Session(
             $model->id,
             $model->party_role_id,
@@ -74,7 +73,7 @@ class SessionFactory
             $data['kwh'],
             CdrTokenFactory::fromArray($data['cdr_token']),
             AuthMethod::tryFrom($data['auth_method']),
-            $data['authorization_reference'],
+            $data['authorization_reference'] ?? null,
             $data['location_id'],
             $data['evse_uid'],
             $data['connector_id'],

@@ -11,7 +11,6 @@ class SessionStopped implements ShouldDispatchAfterCommit, SenderSessionEventInt
 
     /**
      * @param string $sessionId
-     * @param array $updateData
      */
     public function __construct(
         private readonly string $sessionId,
