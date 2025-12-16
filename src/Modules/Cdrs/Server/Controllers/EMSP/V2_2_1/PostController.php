@@ -41,8 +41,8 @@ class PostController extends Controller
 
             // Verify CDR not already exists.
             $cdr = $this->cdrSearch(
-                cdr_id: $payload['id'] ?? null,
-                party_role_id: $partyRoleId,
+                cdrId: $payload['id'] ?? null,
+                partyRoleId: $partyRoleId,
             );
 
             if ($cdr) {
