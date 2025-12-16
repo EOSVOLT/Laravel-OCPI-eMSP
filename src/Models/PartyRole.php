@@ -16,7 +16,7 @@ use Ocpi\Support\Models\Model;
  * @property int $id
  * @property PartyRole|null $parent_role
  * @property int|null $parent_role_id
- * @property Collection|PartyRole[] $children_role
+ * @property Collection|PartyRole[] $children_roles
  * @property string $code
  * @property int $party_id
  * @property Party $party
@@ -90,7 +90,7 @@ class PartyRole extends Model
         return $this->belongsTo(PartyRole::class, 'parent_role_id');
     }
 
-    public function children_role(): HasMany
+    public function children_roles(): HasMany
     {
         return $this->hasMany(PartyRole::class, 'parent_role_id');
     }

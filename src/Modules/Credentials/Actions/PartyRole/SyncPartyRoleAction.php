@@ -6,6 +6,7 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Events\CredentialsCreated;
+use Ocpi\Modules\Credentials\Events\CredentialsUpdated;
 use Ocpi\Modules\Credentials\Object\PartyCode;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Throwable;
@@ -28,6 +29,7 @@ readonly class SyncPartyRoleAction
         $parentPartyRole = $parentToken->party_role;
         $parentParty = $parentPartyRole->party;
         foreach ($data['roles'] as $role) {
+            $isPartyCreated = false;
             $partyCode = new PartyCode($role['party_id'], $role['country_code']);
 
             $childrenParty = $parentParty->children()->where(
@@ -42,18 +44,20 @@ readonly class SyncPartyRoleAction
                         'version' => $parentParty->version,
                     ]
                 );
+                $isPartyCreated = true;
             }
-            $partyRole = new PartyRole;
-            $partyRole->fill([
+            $childrenPartyRole = PartyRole::query()->updateOrCreate([
                 'parent_role_id' => $parentPartyRole->id,
                 'code' => $partyCode->getCode(),
                 'role' => $role['role'],
-                'url' => $url,
                 'country_code' => $partyCode->getCountryCode(),
+            ], [
                 'business_details' => $role['business_details'],
+                'url' => $url,
             ]);
-            $role = $childrenParty->roles()->save($partyRole);
-
+            //delete all children tokens.
+            $childrenPartyRole->tokens()->delete();
+            //add new token.
             $childrenPartyToken = new PartyToken();
             $tokenName = $role['business_details']['name'] ?? '';
             $childrenPartyToken->fill([
@@ -61,13 +65,18 @@ readonly class SyncPartyRoleAction
                 'registered' => true,
                 'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
             ]);
-            $role->tokens()->save($childrenPartyToken);
+            $childrenPartyRole->tokens()->save($childrenPartyToken);
             $childrenParty->refresh();
             // OCPI GET calls for Versions Information and Details of the Party, store OCPI endpoints.
             $this->detailsSynchronizeAction->handle(
                 $childrenPartyToken
             );
-            CredentialsCreated::dispatch($childrenParty->id);
+            if (true === $isPartyCreated) {
+                CredentialsCreated::dispatch($childrenParty->id);
+            }else{
+                CredentialsUpdated::dispatch($childrenParty->id);
+            }
+
         }
     }
 }
