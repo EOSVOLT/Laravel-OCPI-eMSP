@@ -27,6 +27,7 @@ use Ocpi\Modules\Locations\Enums\TokenType;
  */
 class CommandToken extends Model
 {
+    protected $table = 'command_tokens';
     protected $fillable = [
         'uid',
         'type',
