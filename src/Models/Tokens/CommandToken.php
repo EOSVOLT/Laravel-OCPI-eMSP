@@ -24,11 +24,13 @@ use Ocpi\Modules\Locations\Enums\TokenType;
  * @property string $contract_id
  * @property PartyRole $party_role
  * @property string $updated_at
+ * @property int $party_role_id
  */
 class CommandToken extends Model
 {
     protected $table = 'command_tokens';
     protected $fillable = [
+        'party_role_id',
         'uid',
         'type',
         'visual_number',
