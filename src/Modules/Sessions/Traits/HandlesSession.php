@@ -27,17 +27,20 @@ trait HandlesSession
     }
 
     /**
+     * @param string $partyRoleId
      * @param Carbon $dateFrom
      * @param Carbon $dateTo
      * @param int $offset
      * @param int $limit
      * @return SessionCollection
      */
-    private function sessionSearch(Carbon $dateFrom, Carbon $dateTo, int $offset, int $limit): SessionCollection
+    private function sessionSearch(string $partyRoleId, Carbon $dateFrom, Carbon $dateTo, int $offset, int $limit): SessionCollection
     {
         $perPage = $limit;
         $page = ($offset / $limit) + 1;
-        $collection = Session::query()->whereBetween('updated_at', [$dateFrom, $dateTo])
+        $collection = Session::query()
+            ->where('party_role_id', $partyRoleId)
+            ->whereBetween('updated_at', [$dateFrom, $dateTo])
             ->paginate(
                 perPage: $perPage,
                 page: $page,
