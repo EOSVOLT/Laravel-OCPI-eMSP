@@ -51,7 +51,7 @@ class Resource extends OcpiResource
      * @throws Throwable
      * @throws RequestException
      */
-    private function patch(PartyRole $partyRole, CommandToken $commandToken, array $fields): void
+    public function patch(PartyRole $partyRole, CommandToken $commandToken, array $fields): void
     {
         $payload = array_filter($commandToken->toArray(), fn($value, $key) => in_array($key, $fields));
         if (empty($payload)) {
