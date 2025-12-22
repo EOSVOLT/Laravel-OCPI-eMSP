@@ -16,7 +16,12 @@ class CommandTokenResource extends JsonResource
         parent::__construct($resource);
     }
 
-    public function toArray(Request $request): array
+    /**
+     * @param Request|null $request
+     *
+     * @return array
+     */
+    public function toArray(?Request $request = null): array
     {
         return [
             'country_code' => $this->getCountryCode(),
