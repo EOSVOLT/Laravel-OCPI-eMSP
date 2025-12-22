@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('party_role_id')
                 ->constrained(
                     table: config('ocpi.database.table.prefix').'party_roles',
-                    indexName: 'locations_party_role_id',
+                    indexName: 'ocpi_locations_party_role_id_foreign',
                 )
                 ->cascadeOnDelete();
 
