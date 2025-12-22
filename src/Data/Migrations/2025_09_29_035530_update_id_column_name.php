@@ -41,7 +41,7 @@ return new class extends Migration {
         } else {
             Schema::table(config('ocpi.database.table.prefix') . "sessions", function (Blueprint $table) {
                 $table->dropIndex('ocpi_sessions_id_index');
-                $table->dropForeign(['party_role_id']);
+                $table->dropForeign('sessions_party_role_id');//explicit custom foreign name
                 $table->dropUnique(['party_role_id', 'id']);
                 $table->dropColumn('id');
                 $table->string('session_id', 36)->after('party_role_id');
