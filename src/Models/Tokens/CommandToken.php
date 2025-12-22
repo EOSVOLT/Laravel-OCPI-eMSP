@@ -2,19 +2,19 @@
 
 namespace Ocpi\Models\Tokens;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Commands\Enums\ProfileType;
 use Ocpi\Modules\Commands\Enums\WhitelistType;
 use Ocpi\Modules\Locations\Enums\TokenType;
+use Ocpi\Support\Models\Model;
 
 /**
  * @property int $id
  * @property string $uid
  * @property TokenType $type
- * @property string $visual_number
- * @property string $group_id
+ * @property null|string $visual_number
+ * @property null|string $group_id
  * @property bool $valid
  * @property WhitelistType $whitelist_type
  * @property string $language
