@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::disableForeignKeyConstraints();
         Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
-            $table->dropForeign(['party_role_id']);
+            $table->dropForeign('party_role_id');
             $table->dropUnique(['party_role_id', 'id']);
             $table->dropColumn('party_role_id');
             $table->foreignId('party_id')->after('id')->constrained(
