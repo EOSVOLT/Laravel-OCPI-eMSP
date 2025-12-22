@@ -11,18 +11,39 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
-            $table->dropForeign('locations_party_role_id');//explicit custom foreign name
-            $table->dropUnique(['party_role_id', 'id']);
-            $table->dropColumn('party_role_id');
-            $table->foreignId('party_id')->after('id')->constrained(
-                config('ocpi.database.table.prefix') . 'parties',
-                'id',
-                'locations_party_id'
-            )->onDelete('cascade');
-            $table->index(['emsp_id', 'party_id'],
-                config('ocpi.database.table.prefix') . 'locations_party_id_id_unique');
-        });
+        if ('sqlite' === DB::connection()->getDriverName()) {
+            Schema::dropIfExists(config('ocpi.database.table.prefix') . 'locations');
+            Schema::create(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
+                $table->uuid('emsp_id')->primary();
+                $table->foreignId('party_id')
+                    ->constrained(
+                        table: config('ocpi.database.table.prefix').'parties',
+                        indexName: 'locations_party_id',
+                    )
+                    ->cascadeOnDelete();
+
+                $table->string('id', length: 39);
+                $table->json('object');
+                $table->timestamps();
+                $table->softDeletes();
+
+                $table->unique(['party_id', 'id']);
+                $table->index('id');
+            });
+        } else {
+            Schema::table(config('ocpi.database.table.prefix') . 'locations', function (Blueprint $table) {
+                $table->dropForeign('locations_party_role_id');//explicit custom foreign name
+                $table->dropUnique(['party_role_id', 'id']);
+                $table->dropColumn('party_role_id');
+                $table->foreignId('party_id')->after('id')->constrained(
+                    config('ocpi.database.table.prefix') . 'parties',
+                    'id',
+                    'locations_party_id'
+                )->onDelete('cascade');
+                $table->index(['emsp_id', 'party_id'],
+                    config('ocpi.database.table.prefix') . 'locations_party_id_id_unique');
+            });
+        }
         Schema::enableForeignKeyConstraints();
     }
 
