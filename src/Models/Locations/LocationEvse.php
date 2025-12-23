@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Ocpi\Database\Factories\LocationEvseFactory;
 use Ocpi\Modules\Locations\Enums\EvseStatus;
 use Ocpi\Support\Models\Model;
 
@@ -56,6 +57,10 @@ class LocationEvse extends Model
         ];
     }
 
+    protected static function newFactory(): LocationEvseFactory
+    {
+        return LocationEvseFactory::new();
+    }
     /***
      * Scopes.
      ***/
