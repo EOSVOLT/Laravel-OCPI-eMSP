@@ -2,7 +2,7 @@
 
 namespace Ocpi\Modules\Tariffs\Enums;
 
-use Eosvolt\Foundation\EnumArrayable;
+use Ocpi\Support\Traits\Enums\EnumArrayable;
 
 enum TariffType: string
 {
