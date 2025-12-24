@@ -41,9 +41,9 @@ return new class extends Migration {
         } else {
             Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {
                 $table->dropPrimary(['emsp_id']);
+                $table->renameColumn('id', 'connector_id');
                 $table->id()->after('emsp_id');
                 $table->dropColumn('emsp_id');
-                $table->renameColumn('id', 'connector_id');
             });
         }
         Schema::table(config('ocpi.database.table.prefix') . 'location_connectors', function (Blueprint $table) {

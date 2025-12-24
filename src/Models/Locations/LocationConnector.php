@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Ocpi\Database\Factories\LocationConnectorFactory;
 use Ocpi\Models\Tariffs\Tariff;
 use Ocpi\Support\Models\Model;
 
@@ -33,17 +34,12 @@ class LocationConnector extends Model
         'evse_id',
         'connector_id',
         'object',
-        'updated_at'
+        'updated_at',
     ];
 
-    protected function casts(): array
+    protected static function newFactory(): LocationConnectorFactory
     {
-        return [
-            'object' => 'array',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
+        return LocationConnectorFactory::new();
     }
 
     /***
@@ -68,5 +64,15 @@ class LocationConnector extends Model
             'id',
             'tariff_id'
         );
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'object' => 'array',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
     }
 }

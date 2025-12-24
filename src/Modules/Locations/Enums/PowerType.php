@@ -2,7 +2,7 @@
 
 namespace Ocpi\Modules\Locations\Enums;
 
-use Eosvolt\Foundation\EnumArrayable;
+use Ocpi\Support\Traits\Enums\EnumArrayable;
 
 enum PowerType: string
 {
