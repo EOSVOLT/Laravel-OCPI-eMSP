@@ -9,7 +9,7 @@ use Ocpi\Modules\Commands\Enums\WhitelistType;
 use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Support\Traits\DateFormat;
 
-readonly class Token implements Arrayable
+readonly class CommandToken implements Arrayable
 {
     use DateFormat;
     /**
@@ -36,13 +36,13 @@ readonly class Token implements Arrayable
         private string $contractId,
         private ?string $visual_number = null,
         private string $issuer,
+        private Carbon $updatedAt,
         private ?string $groupId = null,
         private bool $valid = false,
         private WhitelistType $whitelist,
         private ?string $language = null,
         private ?ProfileType $defaultProfileType = null,
         private ?EnergyContract $energyContract = null,
-        private Carbon $updatedAt,
     ) {
     }
 

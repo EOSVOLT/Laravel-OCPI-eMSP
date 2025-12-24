@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Commands\Enums\CommandType;
@@ -15,7 +15,7 @@ use Ocpi\Modules\Commands\Events\CPO\CommandRemoteStopTransaction;
 use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Credentials\Object\PartyRole;
 use Ocpi\Modules\Locations\Enums\TokenType;
-use Ocpi\Modules\Tokens\Factories\TokenFactory;
+use Ocpi\Modules\Tokens\Factories\CommandTokenFactory;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
@@ -39,7 +39,7 @@ class PostController extends Controller
 
     private function remoteStartTransaction(Request $request): JsonResponse
     {
-        $token = TokenFactory::fromArray($request->input('token'));
+        $token = CommandTokenFactory::fromArray($request->input('token'));
         if (TokenType::RFID === $token->getType()) {
             return $this->ocpiServerErrorResponse(statusMessage: 'RFID is not support yet.');
         }

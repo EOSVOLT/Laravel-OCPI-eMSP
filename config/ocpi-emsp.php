@@ -32,6 +32,7 @@ return [
                 'locations',
                 'sessions',
                 'tariffs',
+                'tokens'
             ],
         ],
     ],

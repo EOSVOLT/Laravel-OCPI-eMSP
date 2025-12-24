@@ -27,7 +27,7 @@ trait InterfaceRoleTrait
     {
         return match ($module) {
             'credentials', 'locations', 'cdrs', 'sessions', 'tariffs' => InterfaceRole::RECEIVER,
-            'commands' => InterfaceRole::SENDER,
+            'commands', 'tokens' => InterfaceRole::SENDER,
         };
     }
 }

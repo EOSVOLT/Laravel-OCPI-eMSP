@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Ocpi\Models\PartyRole;
+use Ocpi\Models\Tokens\CommandToken;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Enums\CommandResultType;
 use Ocpi\Modules\Commands\Enums\CommandType;
@@ -19,6 +20,8 @@ use Ocpi\Support\Models\Model;
  * @property array|null $payload
  * @property CommandResponseType|null $response
  * @property CommandResultType|null $result
+ * @property CommandToken|null $command_token
+ * @property int|null $command_token_id
  */
 class Command extends Model
 {
@@ -32,6 +35,7 @@ class Command extends Model
         'payload',
         'response',
         'result',
+        'command_token_id',
     ];
 
     protected function casts(): array
@@ -51,5 +55,10 @@ class Command extends Model
     public function party_role(): BelongsTo
     {
         return $this->belongsTo(PartyRole::class);
+    }
+
+    public function command_token(): BelongsTo
+    {
+        return $this->belongsTo(CommandToken::class);
     }
 }

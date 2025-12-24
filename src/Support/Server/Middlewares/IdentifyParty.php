@@ -70,7 +70,7 @@ class IdentifyParty
         Context::add('token_id', $token->id);
         $party = PartyFactory::fromModel($token->party_role->party);
         Context::addHidden('party', $party);
-
+        Context::addHidden('party_role', $token->party_role);
         return $next($request);
     }
 
