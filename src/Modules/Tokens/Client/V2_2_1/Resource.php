@@ -55,7 +55,7 @@ class Resource extends OcpiResource
     {
         $payload = array_filter($commandToken->toArray(), function ($value,$key) use ($fields) {
             return in_array($key, $fields);
-        });
+        }, ARRAY_FILTER_USE_BOTH);
         if (empty($payload)) {
             return;
         }
