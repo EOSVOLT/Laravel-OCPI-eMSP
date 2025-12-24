@@ -53,7 +53,9 @@ class Resource extends OcpiResource
      */
     public function patch(PartyRole $partyRole, CommandToken $commandToken, array $fields): void
     {
-        $payload = array_filter($commandToken->toArray(), fn($value, $key) => in_array($key, $fields));
+        $payload = array_filter($commandToken->toArray(), function ($value,$key) use ($fields) {
+            return in_array($key, $fields);
+        });
         if (empty($payload)) {
             return;
         }
