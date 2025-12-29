@@ -481,7 +481,7 @@ class Location implements Arrayable
      */
     public function setFacilities(array $facilities): self
     {
-        self::validateArrayEnum($facilities, Facility::cases());
+        self::validateArrayEnum($facilities, Facility::stringCases());
         $this->facilities = $facilities;
         return $this;
     }

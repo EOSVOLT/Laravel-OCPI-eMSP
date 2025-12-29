@@ -8,6 +8,7 @@ use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Locations\Client\V2_2_1\CPOClient;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\Role;
+use Throwable;
 
 class Synchronize extends Command
 {
@@ -29,6 +30,7 @@ class Synchronize extends Command
 
     /**
      * Execute the console command.
+     * @throws Throwable
      */
     public function handle()
     {
