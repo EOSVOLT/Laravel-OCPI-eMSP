@@ -32,7 +32,7 @@ class TariffResource extends JsonResource
     {
         return self::removeEmptyField([
             'country_code' => $this->getCountryCode(),
-            'party_id' => $this->getPartyCode(),
+            'party_id' => $this->getPartyId(),
             'id' => $this->getExternalId(),
             'currency' => $this->getCurrency(),
             'type' => $this->getType()?->value,
