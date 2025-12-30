@@ -2,7 +2,6 @@
 
 namespace Ocpi\Modules\Tariffs\Repositories;
 
-use Illuminate\Http\Request;
 use Ocpi\Models\Tariffs\Tariff;
 use Ocpi\Models\Tariffs\TariffElement;
 use Ocpi\Models\Tariffs\TariffElementPriceComponents;
@@ -15,6 +14,7 @@ class TariffRepository
     /**
      * @param int $partyId
      * @param array $data
+     *
      * @return \Ocpi\Modules\Tariffs\Objects\Tariff
      */
     public function createOrUpdateFromArray(int $partyId, array $data): \Ocpi\Modules\Tariffs\Objects\Tariff
@@ -35,9 +35,12 @@ class TariffRepository
                 'min_price_incl_vat' => $minPrice['incl_vat'] ?? null,
                 'max_price_excl_vat' => $maxPrice['excl_vat'] ?? null,
                 'max_price_incl_vat' => $maxPrice['incl_vat'] ?? null,
+                'start_date_time' => $data['start_date_time'] ?? null,
+                'end_date_time' => $data['end_date_time'] ?? null,
+                'energy_mix' => $data['energy_mix'] ?? null,
             ]
         );
-        if (true === $tariff->trashed()){
+        if (true === $tariff->trashed()) {
             $tariff->restore();
         }
         $this->clearElementsForTariff($tariff);
@@ -48,6 +51,7 @@ class TariffRepository
     /**
      * @param Tariff $tariff
      * @param array $elements
+     *
      * @return void
      */
     private function createElementsForTariff(Tariff $tariff, array $elements): void
@@ -90,6 +94,7 @@ class TariffRepository
     /**
      * @param TariffElement $tariffElement
      * @param array $priceComponents
+     *
      * @return void
      */
     private function createPriceComponents(TariffElement $tariffElement, array $priceComponents): void
@@ -98,7 +103,7 @@ class TariffRepository
             $priceComponent = TariffPriceComponents::query()->firstOrCreate([
                 'dimension_type' => $priceComponent['type'],
                 'price' => $priceComponent['price'],
-                'vat' => $priceComponent['vat'],
+                'vat' => $priceComponent['vat'] ?? null,
                 'step_size' => $priceComponent['step_size'],
             ]);
             TariffElementPriceComponents::query()->firstOrCreate([
