@@ -10,6 +10,7 @@ use Ocpi\Modules\Credentials\Console\Commands\Sender\Initialize as ModuleCredent
 use Ocpi\Modules\Credentials\Console\Commands\Sender\Register as ModuleCredentialsRegister;
 use Ocpi\Modules\Credentials\Console\Commands\Sender\Update as ModuleCredentialsUpdate;
 use Ocpi\Modules\Locations\Console\Commands\Synchronize as ModuleLocationsSynchronize;
+use Ocpi\Modules\Tariffs\Commands\Synchronize as ModuleTariffSynchronize;
 use Ocpi\Modules\Versions\Console\Commands\Update as ModuleVersionsUpdate;
 
 class OcpiServiceProvider extends ServiceProvider
@@ -94,6 +95,7 @@ class OcpiServiceProvider extends ServiceProvider
             ModuleCredentialsUpdate::class,
             ModuleLocationsSynchronize::class,
             ModuleCPOCredentialsInitialize::class,
+            ModuleTariffSynchronize::class,
         ]);
     }
 
