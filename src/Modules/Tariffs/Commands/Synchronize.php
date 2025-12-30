@@ -1,28 +1,28 @@
 <?php
 
-namespace Ocpi\Modules\Locations\Console\Commands;
+namespace Ocpi\Modules\Tariffs\Commands;
 
 use Illuminate\Console\Command;
-use Ocpi\Modules\Locations\Traits\HandlesLocation;
+use Ocpi\Modules\Tariffs\Traits\HandlesTariff;
 use Throwable;
 
 class Synchronize extends Command
 {
-    use HandlesLocation;
+    use HandlesTariff;
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'ocpi:locations:synchronize {--P|party= : Party Code to synchronize}';
+    protected $signature = 'ocpi:tariffs:synchronize {--P|party= : Party Code to synchronize}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Synchronize locations';
+    protected $description = 'Synchronize Tariffs';
 
     /**
      * Execute the console command.
