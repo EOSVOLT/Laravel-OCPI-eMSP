@@ -44,10 +44,10 @@ trait HandlesTariff
      * @param string $tariffExternalId
      * @param array $payload
      *
-     * @return Tariff|null
-     * @throws Throwable
+     * @return \Ocpi\Modules\Tariffs\Objects\Tariff|null
+     * @throws BindingResolutionException
      */
-    public function tariffCreate(PartyRole $partyRole, string $tariffExternalId, array $payload): ?Tariff
+    public function tariffCreate(PartyRole $partyRole, string $tariffExternalId, array $payload): ?\Ocpi\Modules\Tariffs\Objects\Tariff
     {
         if (empty($payload['elements']) || $tariffExternalId !== $payload['id']) {
             return null;
@@ -62,10 +62,10 @@ trait HandlesTariff
      * @param Tariff $tariff
      * @param array $payload
      *
-     * @return Tariff|null
+     * @return \Ocpi\Modules\Tariffs\Objects\Tariff|null
      * @throws BindingResolutionException
      */
-    public function tariffReplace(Tariff $tariff, array $payload): ?Tariff
+    public function tariffReplace(Tariff $tariff, array $payload): ?\Ocpi\Modules\Tariffs\Objects\Tariff
     {
         if (empty($payload['elements']) || $tariff->external_id !== $payload['id']) {
             return null;
