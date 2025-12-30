@@ -49,7 +49,7 @@ class Tariff implements Arrayable
     /**
      * @param int $id
      * @param string $countryCode
-     * @param string $partyCode
+     * @param string $partyId
      * @param string $externalId
      * @param string $currency
      * @param TariffElementCollection $elements
@@ -58,7 +58,7 @@ class Tariff implements Arrayable
     public function __construct(
         private readonly int $id,
         private readonly string $countryCode,
-        private readonly string $partyCode,
+        private readonly string $partyId,
         private readonly string $externalId,
         private readonly string $currency,
         private readonly TariffElementCollection $elements,
@@ -230,9 +230,9 @@ class Tariff implements Arrayable
     /**
      * @return string
      */
-    public function getPartyCode(): string
+    public function getPartyId(): string
     {
-        return $this->partyCode;
+        return $this->partyId;
     }
 
     /**
@@ -280,7 +280,7 @@ class Tariff implements Arrayable
         return [
             'id' => $this->getId(),
             'country_code' => $this->getCountryCode(),
-            'party_code' => $this->getPartyCode(),
+            'party_id' => $this->getPartyId(),
             'external_id' => $this->getExternalId(),
             'currency' => $this->getCurrency(),
             'type' => $this->getType()?->value,
