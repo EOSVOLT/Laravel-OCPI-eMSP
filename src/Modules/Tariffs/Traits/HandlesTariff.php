@@ -55,7 +55,7 @@ trait HandlesTariff
         $tariffRepository = app()->make(TariffRepository::class);
         $createdTariff = $tariffRepository->createOrUpdateFromArray($partyRole->party_id, $payload);
         TariffCreated::dispatch($createdTariff->getId());
-        return $createdTariff;
+        return Tariff::query()->find($createdTariff->getId());
     }
 
     /**
@@ -73,7 +73,7 @@ trait HandlesTariff
         $tariffRepository = app()->make(TariffRepository::class);
         $updatedTariff = $tariffRepository->createOrUpdateFromArray($tariff->party_id, $payload);
         TariffReplaced::dispatch($updatedTariff->getId());
-        return $updatedTariff;
+        return Tariff::query()->find($updatedTariff->getId());
     }
 
     /**
