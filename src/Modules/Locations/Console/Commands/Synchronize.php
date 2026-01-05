@@ -31,6 +31,6 @@ class Synchronize extends Command
     public function handle(): void
     {
         $optionParty = $this->option('party');
-        $this->fetchFromCPO($optionParty);
+        $this->fetchLocationFromCPO($optionParty);
     }
 }

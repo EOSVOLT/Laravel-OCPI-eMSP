@@ -81,7 +81,7 @@ trait HandlesTariff
      * @throws FatalRequestException
      * @throws RequestException
      */
-    public function fetchFromCPO(?string $partyCode = null): void
+    public function fetchTariffFromCPO(?string $partyCode = null): void
     {
         $activityId = time() . rand(1000, 9999);
         Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Starting OCPI Tariffs synchronization');

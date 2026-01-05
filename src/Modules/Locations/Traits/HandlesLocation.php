@@ -784,7 +784,7 @@ trait HandlesLocation
      * @throws FatalRequestException
      * @throws RequestException
      */
-    private function fetchFromCPO(?string $partyCode = null): void
+    private function fetchLocationFromCPO(?string $partyCode = null): void
     {
         $activityId = time() . rand(1000, 9999);
         Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Starting OCPI Locations synchronization');
@@ -860,7 +860,9 @@ trait HandlesLocation
                                 $ocpiLocationId,
                                 $ocpiLocation,
                             )) {
-                                Log::channel('ocpi')->error('ActivityId: ' . $activityId . ' | Error creating Location ' . $ocpiLocationId . '.');
+                                Log::channel('ocpi')->error(
+                                    'ActivityId: ' . $activityId . ' | Error creating Location ' . $ocpiLocationId . '.'
+                                );
                                 DB::connection(config('ocpi.database.connection'))->rollback();
 
                                 continue;
@@ -871,7 +873,9 @@ trait HandlesLocation
                                 $location,
                                 $ocpiLocation
                             )) {
-                                Log::channel('ocpi')->error('ActivityId: ' . $activityId . ' | Error replacing Location ' . $ocpiLocationId . '.');
+                                Log::channel('ocpi')->error(
+                                    'ActivityId: ' . $activityId . ' | Error replacing Location ' . $ocpiLocationId . '.'
+                                );
                                 DB::connection(config('ocpi.database.connection'))->rollback();
 
                                 continue;
@@ -885,7 +889,9 @@ trait HandlesLocation
                     $offset += $limit;
                 } while (null !== $ocpiLocationList->getLink());
 
-                Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | - ' . count($locationProcessedList) . ' Location(s) synchronized');
+                Log::channel('ocpi')->info(
+                    'ActivityId: ' . $activityId . ' | - ' . count($locationProcessedList) . ' Location(s) synchronized'
+                );
             }
         }
     }
