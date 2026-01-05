@@ -10,6 +10,7 @@ use Ocpi\Models\Tokens\CommandToken;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Enums\CommandResultType;
 use Ocpi\Modules\Commands\Enums\CommandType;
+use Ocpi\Support\Enums\InterfaceRole;
 use Ocpi\Support\Models\Model;
 
 /**
@@ -22,6 +23,7 @@ use Ocpi\Support\Models\Model;
  * @property CommandResultType|null $result
  * @property CommandToken|null $command_token
  * @property int|null $command_token_id
+ * @property InterfaceRole $interface_role
  */
 class Command extends Model
 {
@@ -36,6 +38,7 @@ class Command extends Model
         'response',
         'result',
         'command_token_id',
+        'interface_role',
     ];
 
     protected function casts(): array
@@ -45,6 +48,7 @@ class Command extends Model
             'payload' => 'array',
             'response' => CommandResponseType::class,
             'result' => CommandResultType::class,
+            'interface_role' => InterfaceRole::class,
         ];
     }
 

@@ -16,6 +16,7 @@ use Ocpi\Modules\Credentials\Object\Party;
 use Ocpi\Modules\Credentials\Object\PartyRole;
 use Ocpi\Modules\Locations\Enums\TokenType;
 use Ocpi\Modules\Tokens\Factories\CommandTokenFactory;
+use Ocpi\Support\Enums\InterfaceRole;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
@@ -54,6 +55,7 @@ class PostController extends Controller
                 'party_role_id' => $partyRole->getId(),
                 'type' => CommandType::START_SESSION,
                 'payload' => $payload,
+                'interface_role' => InterfaceRole::RECEIVER
             ]);
 
             CommandRemoteStartTransaction::dispatch($command->id);
@@ -76,6 +78,7 @@ class PostController extends Controller
                 'party_role_id' => $session->party_role_id,
                 'type' => CommandType::STOP_SESSION,
                 'payload' => $payload,
+                'interface_role' => InterfaceRole::RECEIVER
             ]);
 
             CommandRemoteStopTransaction::dispatch($command->id, $request->input('session_id'));
