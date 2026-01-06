@@ -42,13 +42,6 @@ class GetController extends Controller
             limit: $limit,
         );
 
-        if (0 === $cdr->count()) {
-            return $this->ocpiClientErrorResponse(
-                statusCode: OcpiClientErrorCode::InvalidParameters,
-                statusMessage: 'Unknown CDR.',
-            );
-        }
-
         return $this->ocpiSuccessPaginateResponse(
             $cdr->pluck('cdr_details'),
             $offset,
