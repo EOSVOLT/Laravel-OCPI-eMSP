@@ -4,6 +4,7 @@ namespace Ocpi\Models\Cdrs;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationEvse;
@@ -21,8 +22,9 @@ use Ocpi\Support\Models\Model;
  * @property int $location_id
  * @property int $location_evse_id
  * @property LocationEvse $evse
- * @property Session $session
- * @property string $session_id
+ * @property Session|null $session
+ * @property string|null $session_id
+ * @property string|null $external_url
  */
 class Cdr extends Model
 {
@@ -36,6 +38,7 @@ class Cdr extends Model
         'session_id',
         'cdr_id',
         'object',
+        'external_url',
     ];
 
     /***
@@ -52,9 +55,9 @@ class Cdr extends Model
         return $this->belongsTo(Location::class);
     }
 
-    public function session(): BelongsTo
+    public function session(): HasOne
     {
-        return $this->belongsTo(Session::class);
+        return $this->hasOne(Session::class);
     }
 
     public function party_role(): BelongsTo

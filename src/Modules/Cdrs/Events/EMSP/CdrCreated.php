@@ -9,9 +9,19 @@ class CdrCreated implements ShouldDispatchAfterCommit
 {
     use Dispatchable;
 
-    public function __construct(
-        public int $party_role_id,
-        public string $id,
-        public mixed $payload,
-    ) {}
+    /**
+     * @param int $id
+     */
+    public function __construct(private readonly int $id)
+    {
+    }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
 }

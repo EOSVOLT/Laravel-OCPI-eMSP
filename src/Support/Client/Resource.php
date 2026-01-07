@@ -77,8 +77,11 @@ class Resource extends BaseResource
      * @throws RequestException
      * @throws Throwable
      */
-    public function requestPostSend(array|ArrayObject|null $payload, ?string $endpoint = null): array|string|null
-    {
+    public function requestPostSend(
+        array|ArrayObject|null $payload,
+        ?string $endpoint = null,
+        bool $returnFullResponse = false
+    ): array|string|null {
         $response = $this->connector->send(
             (new PostRequest)
                 ->withEndpoint($endpoint)
@@ -87,16 +90,19 @@ class Resource extends BaseResource
 
         $response->throw();
 
-        return $this->responsePostProcess($response);
+        return $this->responsePostProcess($response, $returnFullResponse);
     }
 
-    public function responsePostProcess(Response $response): array|string|null
+    public function responsePostProcess(Response $response, bool $returnFullResponse = false): array|string|null
     {
         if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
+        if (true === $returnFullResponse) {
+            return $responseArray ?? null;
+        }
 
         return $responseArray['data'] ?? $responseArray ?? null;
     }
