@@ -14,7 +14,7 @@ readonly class Cdr implements Arrayable
      * @param CdrDetails $cdrDetails
      * @param int $locationId
      * @param int $locationEvseId
-     * @param string $sessionId
+     * @param string|null $sessionId
      */
     public function __construct(
         private int $id,
@@ -23,7 +23,7 @@ readonly class Cdr implements Arrayable
         private CdrDetails $cdrDetails,
         private int $locationId,
         private int $locationEvseId,
-        private string $sessionId
+        private ?string $sessionId
     ) {
     }
 
@@ -67,12 +67,18 @@ readonly class Cdr implements Arrayable
         return $this->locationId;
     }
 
+    /**
+     * @return int
+     */
     public function getLocationEvseId(): int
     {
         return $this->locationEvseId;
     }
 
-    public function getSessionId(): string
+    /**
+     * @return string|null
+     */
+    public function getSessionId(): ?string
     {
         return $this->sessionId;
     }
