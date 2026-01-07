@@ -55,9 +55,9 @@ class Cdr extends Model
         return $this->belongsTo(Location::class);
     }
 
-    public function session(): HasOne
+    public function session(): BelongsTo
     {
-        return $this->hasOne(Session::class);
+        return $this->belongsTo(Session::class);
     }
 
     public function party_role(): BelongsTo
