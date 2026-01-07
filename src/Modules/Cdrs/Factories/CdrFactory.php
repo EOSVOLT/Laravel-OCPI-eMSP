@@ -41,7 +41,7 @@ class CdrFactory
     {
         $tariffs = $model->session?->connector->tariffs;
         $tariffCollection = null;
-        if (null === $tariffs) {
+        if (null !== $tariffs) {
             $tariffCollection = TariffFactory::fromCollection($model->session?->connector->tariffs);
         }
         return new Cdr(
