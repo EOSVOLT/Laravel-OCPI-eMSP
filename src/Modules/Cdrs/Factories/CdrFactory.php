@@ -15,6 +15,10 @@ use Ocpi\Support\Factories\PriceFactory;
 class CdrFactory
 {
 
+    /**
+     * @param LengthAwarePaginator $collection
+     * @return CdrCollection
+     */
     public static function fromCollection(LengthAwarePaginator $collection): CdrCollection
     {
         $cdrs = new CdrCollection(
@@ -29,9 +33,17 @@ class CdrFactory
         return $cdrs;
     }
 
+    /**
+     * @param \Ocpi\Models\Cdrs\Cdr $model
+     * @return Cdr
+     */
     public static function fromModel(\Ocpi\Models\Cdrs\Cdr $model): Cdr
     {
-        $tariffCollection = TariffFactory::fromCollection($model->session->connector->tariffs);
+        $tariffs = $model->session?->connector->tariffs;
+        $tariffCollection = null;
+        if (null === $tariffs) {
+            $tariffCollection = TariffFactory::fromCollection($model->session?->connector->tariffs);
+        }
         return new Cdr(
             $model->id,
             $model->party_role_id,
@@ -43,7 +55,12 @@ class CdrFactory
         );
     }
 
-    public static function createDetailsFromArray(array $data, TariffCollection $tariffCollection): CdrDetails
+    /**
+     * @param array $data
+     * @param TariffCollection|null $tariffCollection
+     * @return CdrDetails
+     */
+    public static function createDetailsFromArray(array $data, ?TariffCollection $tariffCollection = null): CdrDetails
     {
         return new CdrDetails(
             $data['country_code'],
