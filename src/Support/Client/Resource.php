@@ -4,11 +4,16 @@ namespace Ocpi\Support\Client;
 
 use ArrayObject;
 use Carbon\Carbon;
+use Ocpi\Modules\Commands\Enums\CommandResponseType;
+use Ocpi\Modules\Commands\Enums\CommandResultType;
 use Ocpi\Support\Client\Requests\DeleteRequest;
 use Ocpi\Support\Client\Requests\GetRequest;
 use Ocpi\Support\Client\Requests\PatchRequest;
 use Ocpi\Support\Client\Requests\PostRequest;
 use Ocpi\Support\Client\Requests\PutRequest;
+use Ocpi\Support\Factories\DisplayTextFactory;
+use Ocpi\Support\Objects\OCPICommandResponse;
+use Ocpi\Support\Objects\OCPICommandResult;
 use Ocpi\Support\Objects\OCPIResponse;
 use Ocpi\Support\Objects\PaginationOCPIResponse;
 use Saloon\Exceptions\Request\FatalRequestException;
@@ -99,6 +104,41 @@ class Resource extends BaseResource
         $responseArray = $response->array();
 
         return $responseArray['data'] ?? $responseArray ?? null;
+    }
+
+    public function commandRequestSend(array|ArrayObject|null $payload, ?string $endpoint = null): OCPICommandResponse
+    {
+        $response = $this->connector->send(
+            (new PostRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+        $responseArray = $response->array();
+
+        return new OCPICommandResponse(
+            CommandResponseType::tryFrom($responseArray['result']),
+            $responseArray['timeout'],
+            isset($responseArray['message']) ? DisplayTextFactory::fromArrayCollection($responseArray['message']) : null
+        );
+    }
+
+    public function commandResultSend(array|ArrayObject|null $payload, ?string $endpoint = null): OCPICommandResult
+    {
+        $response = $this->connector->send(
+            (new PostRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+        $responseArray = $response->array();
+
+        return new OCPICommandResult(
+            CommandResultType::tryFrom($responseArray['result']),
+            isset($responseArray['message']) ? DisplayTextFactory::fromArrayCollection($responseArray['message']) : null
+        );
     }
 
     /**

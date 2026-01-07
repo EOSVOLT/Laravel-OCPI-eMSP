@@ -1,20 +1,46 @@
 <?php
 
-namespace Ocpi\Modules\Commands\Client;
+namespace Ocpi\Modules\Commands\Client\V2_2_1;
 
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Log;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\PartyRole;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Modules\Commands\Events;
+use Ocpi\Modules\DTOs\RemoteStartTransactionRequestDTO;
 use Ocpi\Support\Client\Resource as OcpiResource;
+use Ocpi\Support\Enums\InterfaceRole;
+use Ocpi\Support\Objects\OCPICommandResponse;
 
 class Resource extends OcpiResource
 {
+
+    public function remoteStartTransaction(
+        PartyRole $partyRole,
+        RemoteStartTransactionRequestDTO $dto
+    ): OCPICommandResponse {
+        $cpoClient = new CPOClient($partyRole->tokens->first());
+        $command = Command::create([
+            'party_role_id' => $partyRole->id,
+            'type' => CommandType::START_SESSION,
+            'interface_role' => InterfaceRole::SENDER,
+            'payload' => $dto->toArray(),
+        ]);
+
+        Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:REQUEST: ' . $command->id, $dto->toArray());
+        $response = $cpoClient->commands()->commandRequestSend(
+            $dto->toArray(),
+            '/' . CommandType::START_SESSION->value
+        );
+        Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:RESPONSE: ' . $command->id, $dto->toArray());
+        $command->update(['response' => $response->getResult()]);
+        return $response;
+    }
+
     public function reserveNow(PartyRole $partyRole, array $payload): void
     {
         $command = DB::connection(config('ocpi.database.connection'))
@@ -38,9 +64,9 @@ class Resource extends OcpiResource
         );
 
         $commandResponseType = CommandResponseType::fromName($response);
-        if (! $commandResponseType) {
-            Log::channel('ocpi')->error('Unknown CommandResponseType '.json_encode($response));
-            throw new Exception('Unknown CommandResponseType '.json_encode($response));
+        if (!$commandResponseType) {
+            Log::channel('ocpi')->error('Unknown CommandResponseType ' . json_encode($response));
+            throw new Exception('Unknown CommandResponseType ' . json_encode($response));
         }
 
         $command->response = $commandResponseType->name;
@@ -49,7 +75,12 @@ class Resource extends OcpiResource
         if ($commandResponseType === CommandResponseType::ACCEPTED) {
             Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
         } else {
-            Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $command->payload);
+            Events\CommandResponseError::dispatch(
+                $partyRole->id,
+                $command->id,
+                $command->type->name,
+                $command->payload
+            );
         }
     }
 
@@ -76,9 +107,9 @@ class Resource extends OcpiResource
         );
 
         $commandResponseType = CommandResponseType::fromName($response);
-        if (! $commandResponseType) {
-            Log::channel('ocpi')->error('Unknown CommandResponseType '.json_encode($response));
-            throw new Exception('Unknown CommandResponseType '.json_encode($response));
+        if (!$commandResponseType) {
+            Log::channel('ocpi')->error('Unknown CommandResponseType ' . json_encode($response));
+            throw new Exception('Unknown CommandResponseType ' . json_encode($response));
         }
 
         $command->response = $commandResponseType->name;
@@ -87,17 +118,24 @@ class Resource extends OcpiResource
         if ($commandResponseType === CommandResponseType::ACCEPTED) {
             Events\CommandResponseAccepted::dispatch($partyRole->id, $command->id, $command->type->name);
         } else {
-            Events\CommandResponseError::dispatch($partyRole->id, $command->id, $command->type->name, $command->payload);
+            Events\CommandResponseError::dispatch(
+                $partyRole->id,
+                $command->id,
+                $command->type->name,
+                $command->payload
+            );
         }
     }
 
     private function responseUrl(PartyRole $partyRole, Command $command): string
     {
         return (config('ocpi.server.enabled', false) === true)
-            ? route('ocpi.emsp.'.Str::replace('.', '_', $partyRole?->party?->version).'.commands.post', [
+            ? route('ocpi.emsp.' . Str::replace('.', '_', $partyRole?->party?->version) . '.commands.post', [
                 'type' => $command->type->name,
                 'id' => $command->id,
             ])
-            : config('ocpi.client.server.url').'/emsp/'.$partyRole?->party?->version.'/commands/'.$command->type->name.'/'.$command->id;
+            : config(
+                'ocpi.client.server.url'
+            ) . '/emsp/' . $partyRole?->party?->version . '/commands/' . $command->type->name . '/' . $command->id;
     }
 }
