@@ -15,20 +15,17 @@ return new class extends Migration {
         if ('sqlite' === DB::connection()->getDriverName()) {
             Schema::dropIfExists(config('ocpi.database.table.prefix') . "sessions");
             Schema::create(config('ocpi.database.table.prefix') . 'sessions', function (Blueprint $table) {
-                $table->id();
+                $table->uuid('id')->primary();
                 $table->foreignId('party_role_id')
                     ->constrained(
                         table: config('ocpi.database.table.prefix') . 'party_roles',
                         indexName: 'sessions_party_role_id',
                     )
                     ->cascadeOnDelete();
-                $table->foreignUuid('location_evse_emsp_id')
-                    ->nullable()
-                    ->constrained(
-                        table: config('ocpi.database.table.prefix') . 'location_evses',
-                        column: 'emsp_id',
-                    )
-                    ->cascadeOnDelete();
+
+                $table->foreignId('location_id')->constrained(
+                    config('ocpi.database.table.prefix') . 'locations'
+                )->restrictOnDelete();
 
                 $table->string('session_id', length: 36);
                 $table->json('object');

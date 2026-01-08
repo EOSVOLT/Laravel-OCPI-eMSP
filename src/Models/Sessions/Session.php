@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Ocpi\Database\Factories\SessionFactory;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Locations\LocationEvse;
@@ -43,6 +44,11 @@ class Session extends Model
         'status',
     ];
 
+    protected static function newFactory(): SessionFactory
+    {
+        return SessionFactory::new();
+    }
+
     /***
      * Relations.
      ***/
@@ -59,7 +65,7 @@ class Session extends Model
 
     public function connector(): BelongsTo
     {
-        return $this->belongsTo(LocationConnector::class,'location_connector_id', 'id');
+        return $this->belongsTo(LocationConnector::class, 'location_connector_id', 'id');
     }
 
     public function location_evse(): BelongsTo

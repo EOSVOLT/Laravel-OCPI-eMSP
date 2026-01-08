@@ -20,7 +20,7 @@ class SessionFactory extends Factory
             'session_id' => $this->faker->uuid,
             'status' => SessionStatus::COMPLETED,
             'object' => [],
-            'connector_id' => $connector->id,
+            'location_connector_id' => $connector->id,
             'location_id' => $connector->evse->location_id,
             'location_evse_id' => $connector->evse_id,
         ];
