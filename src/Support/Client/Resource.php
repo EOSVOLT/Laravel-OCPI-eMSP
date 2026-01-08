@@ -80,7 +80,7 @@ class Resource extends BaseResource
     public function requestPostSend(
         array|ArrayObject|null $payload,
         ?string $endpoint = null,
-        bool $returnFullResponse = false
+        bool $withHeadersResponse = false
     ): array|string|null {
         $response = $this->connector->send(
             (new PostRequest)
@@ -90,21 +90,21 @@ class Resource extends BaseResource
 
         $response->throw();
 
-        return $this->responsePostProcess($response, $returnFullResponse);
+        return $this->responsePostProcess($response, $withHeadersResponse);
     }
 
-    public function responsePostProcess(Response $response, bool $returnFullResponse = false): array|string|null
+    public function responsePostProcess(Response $response, bool $withHeadersResponse = false): array|string|null
     {
         if (!$response->successful()) {
             return null;
         }
 
         $responseArray = $response->array();
-        if (true === $returnFullResponse) {
-            return $responseArray ?? null;
+        $responseArray = $responseArray['data'] ?? $responseArray ?? null;
+        if (true === $withHeadersResponse) {
+            $responseArray['headers'] = $response->headers()->all();
         }
-
-        return $responseArray['data'] ?? $responseArray ?? null;
+        return $responseArray;
     }
 
     /**
