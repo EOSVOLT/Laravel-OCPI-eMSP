@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table(config('ocpi.database.table.prefix') . 'cdrs', function (Blueprint $table) {
             $table->string('session_id', 36)->nullable()->change();
-            $table->string('external_url')->nullable();
+            $table->text('external_url')->nullable();
         });
     }
 
