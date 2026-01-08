@@ -89,7 +89,7 @@ trait HandlesCdr
         ]);
         //find session with $payload['session_id']
         $sessionId = $payload['session_id'] ?? null;
-        if (null === $sessionId) {
+        if (null !== $sessionId) {
             /** @var Session|null $session */
             $session = Session::query()->where('session_id', $sessionId)->first();
             $cdr->session_id = $session?->id;
