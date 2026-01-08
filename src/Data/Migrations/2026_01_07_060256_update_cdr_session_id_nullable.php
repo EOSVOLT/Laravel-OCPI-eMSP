@@ -23,7 +23,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table(config('ocpi.database.table.prefix') . 'cdrs', function (Blueprint $table) {
-            $table->string('session_id', 36)->nullable(false)->change();
             $table->dropColumn('external_url');
         });
     }
