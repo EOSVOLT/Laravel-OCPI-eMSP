@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Traits\HandlesCdr;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
@@ -19,23 +21,27 @@ class PostController extends Controller
     use HandlesCdr,
         HandlesLocation;
 
+    public function __construct()
+    {
+    }
+
     public function __invoke(
         Request $request,
     ): JsonResponse {
         try {
             //add a cdr payload validator.
 
-            /** @var PartyToken $token */
-            $token = PartyToken::query()->find(Context::get('token_id'));
-            $partyRoleId = $token->party_role_id;
-
             $payload = $request->json()->all();
 
+            /** @var PartyRole $partyRole */
+            $partyRole = PartyRole::query()->where('code', $payload['party_id'])
+                ->where('country_code', $payload['country_code'])
+                ->where('role', Role::EMSP)
+                ->first();
+            $partyRoleId = $partyRole->id;
+
             // Verify CDR not already exists.
-            $cdr = $this->cdrSearch(
-                cdrId: $payload['id'],
-                partyRoleId: $partyRoleId,
-            );
+            $cdr = $this->cdrSearch($payload['id']);
 
             if (null !== $cdr) {
                 return $this->ocpiClientErrorResponse(
@@ -49,7 +55,7 @@ class PostController extends Controller
             $locationId = $cdrLocation['id'];
             $locationEvseUid = $cdrLocation['evse_uid'];
             $locationEvse = $this->evseSearch(
-                partyId: $token->party_role->party_id,
+                partyId: $partyRole->party_id,
                 locationExternalId: $locationId,
                 evseUid: $locationEvseUid,
             );

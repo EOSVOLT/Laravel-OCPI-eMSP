@@ -16,25 +16,13 @@ use Ocpi\Modules\Cdrs\Objects\CdrCollection;
 trait HandlesCdr
 {
     /**
-     * @param string|null $cdrId
-     * @param int|null $partyRoleId
+     * @param string $cdrId
      * @return Cdr|null
      */
-    private function cdrSearch(?string $cdrId = null, ?int $partyRoleId = null): ?Cdr
+    private function cdrSearch(string $cdrId): ?Cdr
     {
         return Cdr::query()
-            ->when(
-                $cdrId !== null,
-                function ($query) use ($cdrId) {
-                    $query->where('cdr_id', $cdrId);
-                }
-            )
-            ->when(
-                $partyRoleId !== null,
-                function ($query) use ($partyRoleId) {
-                    $query->where('party_role_id', $partyRoleId);
-                }
-            )
+            ->where('cdr_id', $cdrId)
             ->first();
     }
 

@@ -26,15 +26,7 @@ class GetController extends Controller
                 statusMessage: 'eMSP CDR ID is missing.',
             );
         }
-
-        /** @var PartyToken $token */
-        $token = PartyToken::query()->find(Context::get('token_id'));
-        $partyRoleId = $token->party_role_id;
-
-        $cdr = $this->cdrSearch(
-            cdrId: $cdrId,
-            partyRoleId: $partyRoleId,
-        );
+        $cdr = $this->cdrSearch($cdrId);
 
         if ($cdr === null) {
             return $this->ocpiClientErrorResponse(
