@@ -13,26 +13,18 @@ use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Modules\Commands\Events;
 use Ocpi\Modules\DTOs\RemoteStartTransactionRequestDTO;
 use Ocpi\Support\Client\Resource as OcpiResource;
-use Ocpi\Support\Enums\InterfaceRole;
 use Ocpi\Support\Objects\OCPICommandResponse;
 
 class Resource extends OcpiResource
 {
 
     public function remoteStartTransaction(
-        PartyRole $partyRole,
+        Command $command,
         RemoteStartTransactionRequestDTO $dto
     ): OCPICommandResponse {
-        $cpoClient = new CPOClient($partyRole->tokens->first());
-        $command = Command::create([
-            'party_role_id' => $partyRole->id,
-            'type' => CommandType::START_SESSION,
-            'interface_role' => InterfaceRole::SENDER,
-            'payload' => $dto->toArray(),
-        ]);
 
         Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:REQUEST: ' . $command->id, $dto->toArray());
-        $response = $cpoClient->commands()->commandRequestSend(
+        $response = $this->commandRequestSend(
             $dto->toArray(),
             '/' . CommandType::START_SESSION->value
         );
