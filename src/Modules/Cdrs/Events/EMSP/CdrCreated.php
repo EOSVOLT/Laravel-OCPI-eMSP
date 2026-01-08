@@ -5,7 +5,7 @@ namespace Ocpi\Modules\Cdrs\Events\EMSP;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 
-class CdrCreated implements ShouldDispatchAfterCommit
+class CdrCreated implements ShouldDispatchAfterCommit, ReceiverCdrEventInterface
 {
     use Dispatchable;
 
