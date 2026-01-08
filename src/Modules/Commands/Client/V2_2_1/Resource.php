@@ -28,7 +28,7 @@ class Resource extends OcpiResource
             $dto->toArray(),
             '/' . CommandType::START_SESSION->value
         );
-        Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:RESPONSE: ' . $command->id, $dto->toArray());
+        Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
         return $response;
     }
