@@ -24,6 +24,7 @@ class Resource extends OcpiResource
     ): OCPICommandResponse {
 
         Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:REQUEST: ' . $command->id, $dto->toArray());
+        $command->update(['payload' => $dto->toArray()]);
         $response = $this->commandRequestSend(
             $dto->toArray(),
             '/' . CommandType::START_SESSION->value
