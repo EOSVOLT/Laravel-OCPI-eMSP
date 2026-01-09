@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\PartyRole;
-use Ocpi\Models\PartyToken;
 use Ocpi\Models\Sessions\Session;
+use Ocpi\Models\Tokens\CommandToken;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Modules\Commands\Events;
@@ -23,13 +23,13 @@ class Resource extends OcpiResource
 {
 
     public function remoteStartTransaction(
-        PartyToken $partyToken,
+        CommandToken $commandToken,
         string $locationId,
         ?string $evseUid = null,
         ?string $connectorId = null,
     ): OCPICommandResponse {
         $command = Command::query()->create([
-            'party_role_id' => $partyToken->party_role_id,
+            'party_role_id' => $commandToken->party_role_id,
             'type' => CommandType::START_SESSION,
             'interface_role' => InterfaceRole::SENDER,
         ]);
