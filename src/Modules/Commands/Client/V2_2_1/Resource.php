@@ -17,7 +17,6 @@ use Ocpi\Modules\DTOs\RemoteStartTransactionRequestDTO;
 use Ocpi\Modules\DTOs\RemoteStopTransactionRequestDTO;
 use Ocpi\Support\Client\Resource as OcpiResource;
 use Ocpi\Support\Enums\InterfaceRole;
-use Ocpi\Support\Objects\OCPICommandResponse;
 
 class Resource extends OcpiResource
 {
@@ -27,7 +26,7 @@ class Resource extends OcpiResource
         string $locationId,
         ?string $evseUid = null,
         ?string $connectorId = null,
-    ): OCPICommandResponse {
+    ): Command {
         $command = Command::query()->create([
             'party_role_id' => $commandToken->party_role_id,
             'type' => CommandType::START_SESSION,
@@ -48,10 +47,10 @@ class Resource extends OcpiResource
         );
         Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
-        return $response;
+        return $command;
     }
 
-    public function remoteStopTransaction(Session $session): OCPICommandResponse
+    public function remoteStopTransaction(Session $session): Command
     {
         $command = Command::query()->create([
             'party_role_id' => $session->party_role_id,
@@ -70,7 +69,7 @@ class Resource extends OcpiResource
         );
         Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
-        return $response;
+        return $command;
     }
 
     public function reserveNow(PartyRole $partyRole, array $payload): void
