@@ -12,21 +12,23 @@ use Ocpi\Support\Traits\DateFormat;
 readonly class CommandToken implements Arrayable
 {
     use DateFormat;
+
     /**
      * @param string $countryCode
      * @param string $partyId
+     * @param int $partyRoleId
      * @param string $tokenUid
      * @param TokenType $type
      * @param string $contractId
      * @param string|null $visual_number
      * @param string $issuer
+     * @param Carbon $updatedAt
      * @param string|null $groupId
      * @param bool $valid
      * @param WhitelistType $whitelist
      * @param string|null $language
      * @param ProfileType|null $defaultProfileType
      * @param EnergyContract|null $energyContract
-     * @param Carbon $updatedAt
      */
     public function __construct(
         private string $countryCode,
@@ -43,6 +45,7 @@ readonly class CommandToken implements Arrayable
         private ?string $language = null,
         private ?ProfileType $defaultProfileType = null,
         private ?EnergyContract $energyContract = null,
+        private ?int $partyRoleId = null,
     ) {
     }
 
@@ -156,6 +159,11 @@ readonly class CommandToken implements Arrayable
     public function getUpdatedAt(): Carbon
     {
         return $this->updatedAt;
+    }
+
+    public function getPartyRoleId(): ?int
+    {
+        return $this->partyRoleId;
     }
 
     /**

@@ -9,12 +9,12 @@ use Illuminate\Support\Str;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\Sessions\Session;
-use Ocpi\Models\Tokens\CommandToken;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Modules\Commands\Events;
 use Ocpi\Modules\DTOs\RemoteStartTransactionRequestDTO;
 use Ocpi\Modules\DTOs\RemoteStopTransactionRequestDTO;
+use Ocpi\Modules\Tokens\Objects\CommandToken;
 use Ocpi\Support\Client\Resource as OcpiResource;
 use Ocpi\Support\Enums\InterfaceRole;
 
@@ -28,13 +28,13 @@ class Resource extends OcpiResource
         ?string $connectorId = null,
     ): Command {
         $command = Command::query()->create([
-            'party_role_id' => $commandToken->party_role_id,
+            'party_role_id' => $commandToken->getPartyRoleId(),
             'type' => CommandType::START_SESSION,
             'interface_role' => InterfaceRole::SENDER,
         ]);
         $dto = new RemoteStartTransactionRequestDTO(
             implode('/', [config('app.url'), $command->id]),
-            $command,
+            $commandToken,
             $locationId,
             $evseUid,
             $connectorId
