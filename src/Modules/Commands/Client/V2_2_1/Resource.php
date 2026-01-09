@@ -8,21 +8,38 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Models\PartyRole;
+use Ocpi\Models\PartyToken;
+use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Modules\Commands\Events;
 use Ocpi\Modules\DTOs\RemoteStartTransactionRequestDTO;
+use Ocpi\Modules\DTOs\RemoteStopTransactionRequestDTO;
 use Ocpi\Support\Client\Resource as OcpiResource;
+use Ocpi\Support\Enums\InterfaceRole;
 use Ocpi\Support\Objects\OCPICommandResponse;
 
 class Resource extends OcpiResource
 {
 
     public function remoteStartTransaction(
-        Command $command,
-        RemoteStartTransactionRequestDTO $dto
+        PartyToken $partyToken,
+        string $locationId,
+        ?string $evseUid = null,
+        ?string $connectorId = null,
     ): OCPICommandResponse {
-
+        $command = Command::query()->create([
+            'party_role_id' => $partyToken->party_role_id,
+            'type' => CommandType::START_SESSION,
+            'interface_role' => InterfaceRole::SENDER,
+        ]);
+        $dto = new RemoteStartTransactionRequestDTO(
+            implode('/', [config('app.url'), $command->id]),
+            $command,
+            $locationId,
+            $evseUid,
+            $connectorId
+        );
         Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:REQUEST: ' . $command->id, $dto->toArray());
         $command->update(['payload' => $dto->toArray()]);
         $response = $this->commandRequestSend(
@@ -30,6 +47,28 @@ class Resource extends OcpiResource
             '/' . CommandType::START_SESSION->value
         );
         Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:RESPONSE: ' . $command->id, $response->toArray());
+        $command->update(['response' => $response->getResult()]);
+        return $response;
+    }
+
+    public function remoteStopTransaction(Session $session): OCPICommandResponse
+    {
+        $command = Command::query()->create([
+            'party_role_id' => $session->party_role_id,
+            'type' => CommandType::STOP_SESSION,
+            'interface_role' => InterfaceRole::SENDER,
+        ]);
+        $dto = new RemoteStopTransactionRequestDTO(
+            implode('/', [config('app.url'), $command->id]),
+            $session->id
+        );
+        Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:REQUEST: ' . $command->id, $dto->toArray());
+        $command->update(['payload' => $dto->toArray()]);
+        $response = $this->commandRequestSend(
+            $dto->toArray(),
+            '/' . CommandType::STOP_SESSION->value
+        );
+        Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
         return $response;
     }
