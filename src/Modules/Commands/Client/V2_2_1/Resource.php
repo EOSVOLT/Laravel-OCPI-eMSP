@@ -47,7 +47,7 @@ class Resource extends OcpiResource
         );
         Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
-        return $command;
+        return $command->refresh();
     }
 
     public function remoteStopTransaction(Session $session): Command
@@ -69,7 +69,7 @@ class Resource extends OcpiResource
         );
         Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
-        return $command;
+        return $command->refresh();
     }
 
     public function reserveNow(PartyRole $partyRole, array $payload): void
