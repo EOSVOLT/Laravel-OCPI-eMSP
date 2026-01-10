@@ -118,8 +118,8 @@ class Resource extends BaseResource
         $responseArray = $response->array();
 
         return new OCPICommandResponse(
-            CommandResponseType::tryFrom($responseArray['result']),
-            $responseArray['timeout'],
+            CommandResponseType::tryFrom($responseArray['data']['result']),
+            $responseArray['data']['timeout'],
             isset($responseArray['message']) ? DisplayTextFactory::fromArrayCollection($responseArray['message']) : null
         );
     }
