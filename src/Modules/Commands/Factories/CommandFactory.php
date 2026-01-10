@@ -3,8 +3,6 @@
 namespace Ocpi\Modules\Commands\Factories;
 
 use Ocpi\Models\Commands\Command;
-use Ocpi\Modules\Commands\Enums\CommandResponseType;
-use Ocpi\Modules\Commands\Enums\CommandResultType;
 use Ocpi\Modules\Credentials\Factories\PartyRoleFactory;
 
 class CommandFactory
@@ -17,8 +15,8 @@ class CommandFactory
             PartyRoleFactory::fromModel($command->party_role),
             $command->type,
             $command->payload,
-            CommandResponseType::tryFrom($command->response ?? ''),
-            CommandResultType::tryFrom($command->result ?? ''),
+            $command->response,
+            $command->result,
         );
     }
 }
