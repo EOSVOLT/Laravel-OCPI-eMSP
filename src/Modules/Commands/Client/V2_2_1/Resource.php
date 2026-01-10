@@ -20,6 +20,10 @@ use Ocpi\Support\Enums\InterfaceRole;
 
 class Resource extends OcpiResource
 {
+    private function formatVersion(): string
+    {
+        return str_replace('_', '.', substr(class_basename(get_class($this)), 1));
+    }
 
     public function remoteStartTransaction(
         CommandToken $commandToken,
@@ -33,7 +37,14 @@ class Resource extends OcpiResource
             'interface_role' => InterfaceRole::SENDER,
         ]);
         $dto = new RemoteStartTransactionRequestDTO(
-            implode('/', [config('app.url'), $command->id]),
+            implode('/', [
+                config('app.url'),
+                config('ocpi.server.routing.emsp.uri_prefix'),
+                $this->formatVersion(),
+                'commands',
+                CommandType::START_SESSION->value,
+                $command->id,
+            ]),
             $commandToken,
             $locationId,
             $evseUid,
@@ -58,7 +69,14 @@ class Resource extends OcpiResource
             'interface_role' => InterfaceRole::SENDER,
         ]);
         $dto = new RemoteStopTransactionRequestDTO(
-            implode('/', [config('app.url'), $command->id]),
+            implode('/', [
+                config('app.url'),
+                config('ocpi.server.routing.emsp.uri_prefix'),
+                $this->formatVersion(),
+                'commands',
+                CommandType::STOP_SESSION->value,
+                $command->id,
+            ]),
             $session->id
         );
         Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:REQUEST: ' . $command->id, $dto->toArray());
