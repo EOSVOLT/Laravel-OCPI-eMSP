@@ -24,6 +24,16 @@ use Throwable;
 
 class Resource extends BaseResource
 {
+    protected function formatVersion(): string
+    {
+        $base = class_basename($this);
+
+        if (preg_match('/^V(\d+(?:_\d+)*)/i', $base, $m) !== 1) {
+            return '';
+        }
+
+        return str_replace('_', '.', $m[1]);
+    }
     /**
      * @throws FatalRequestException
      * @throws RequestException
