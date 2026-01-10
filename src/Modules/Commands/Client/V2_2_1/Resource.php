@@ -22,7 +22,13 @@ class Resource extends OcpiResource
 {
     private function formatVersion(): string
     {
-        return str_replace('_', '.', substr(class_basename(get_class($this)), 1));
+        $base = class_basename($this);
+
+        if (preg_match('/^V(\d+(?:_\d+)*)/i', $base, $m) !== 1) {
+            return '';
+        }
+
+        return str_replace('_', '.', $m[1]);
     }
 
     public function remoteStartTransaction(
