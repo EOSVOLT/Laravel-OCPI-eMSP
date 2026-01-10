@@ -77,7 +77,7 @@ class SessionFactory
             $data['location_id'],
             $data['evse_uid'],
             $data['connector_id'],
-            $data['meter_id'],
+            $data['meter_id'] ?? null,
             $data['currency'],
             ChargingPeriodFactory::collectionFromArray($data['charging_periods']),
             PriceFactory::fromArray($data['total_cost']),
