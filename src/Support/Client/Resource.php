@@ -16,6 +16,7 @@ use Ocpi\Support\Objects\OCPICommandResponse;
 use Ocpi\Support\Objects\OCPICommandResult;
 use Ocpi\Support\Objects\OCPIResponse;
 use Ocpi\Support\Objects\PaginationOCPIResponse;
+use RuntimeException;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\BaseResource;
@@ -28,11 +29,11 @@ class Resource extends BaseResource
     {
         $base = class_basename($this);
 
-        if (preg_match('/^V(\d+(?:_\d+)*)/i', $base, $m) !== 1) {
-            return '';
+        if (preg_match('#(?:^|/)V(\d+(?:_\d+)*)(?:/|$)#', $base, $m) === 1) {
+            return str_replace('_', '.', $m[1]);
         }
 
-        return str_replace('_', '.', $m[1]);
+        throw new RuntimeException("Could not determine version from resource class {$base}");
     }
     /**
      * @throws FatalRequestException
