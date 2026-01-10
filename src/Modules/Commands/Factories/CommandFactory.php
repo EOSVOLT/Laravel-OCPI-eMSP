@@ -5,7 +5,6 @@ namespace Ocpi\Modules\Commands\Factories;
 use Ocpi\Models\Commands\Command;
 use Ocpi\Modules\Commands\Enums\CommandResponseType;
 use Ocpi\Modules\Commands\Enums\CommandResultType;
-use Ocpi\Modules\Commands\Enums\CommandType;
 use Ocpi\Modules\Credentials\Factories\PartyRoleFactory;
 
 class CommandFactory
@@ -16,7 +15,7 @@ class CommandFactory
         return new \Ocpi\Modules\Commands\Object\Command(
             $command->id,
             PartyRoleFactory::fromModel($command->party_role),
-            CommandType::tryFrom($command->type),
+            $command->type,
             $command->payload,
             CommandResponseType::tryFrom($command->response ?? ''),
             CommandResultType::tryFrom($command->result ?? ''),
