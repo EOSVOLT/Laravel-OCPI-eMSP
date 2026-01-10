@@ -27,9 +27,9 @@ class Resource extends BaseResource
 {
     protected function formatVersion(): string
     {
-        $base = class_basename($this);
+        $base = get_class($this);
 
-        if (preg_match('#(?:^|/)V(\d+(?:_\d+)*)(?:/|$)#', $base, $m) === 1) {
+        if (preg_match('~\\\\V(\d+(?:_\d+)*)\\\\~', $base, $m) === 1) {
             return str_replace('_', '.', $m[1]);
         }
 
