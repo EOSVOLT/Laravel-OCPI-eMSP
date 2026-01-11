@@ -79,8 +79,8 @@ class SessionFactory
             $data['connector_id'],
             $data['meter_id'] ?? null,
             $data['currency'],
-            ChargingPeriodFactory::collectionFromArray($data['charging_periods']),
-            PriceFactory::fromArray($data['total_cost']),
+            ChargingPeriodFactory::collectionFromArray($data['charging_periods'] ?? null),
+            PriceFactory::fromArray($data['total_cost'] ?? null),
             SessionStatus::tryFrom($data['status']),
             Carbon::createFromTimeString($data['last_updated']),
         );
