@@ -841,6 +841,10 @@ trait HandlesLocation
                         'ActivityId: ' . $activityId . ' | - ' . count($data) . ' Location(s) retrieved'
                     );
                     foreach ($data as $ocpiLocation) {
+                        if ($ocpiLocation['country_code'] !== $partyRole->country_code
+                            || $ocpiLocation['party_id'] !== $partyRole->code) {
+                            continue;
+                        }
                         $ocpiLocationId = $ocpiLocation['id'] ?? null;
 
                         DB::connection(config('ocpi.database.connection'))->beginTransaction();
