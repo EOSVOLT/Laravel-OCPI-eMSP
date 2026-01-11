@@ -14,6 +14,7 @@ use Ocpi\Support\Traits\DateFormat;
 readonly class SessionDetails implements Arrayable
 {
     use DateFormat;
+
     /**
      * @param string $id
      * @param string $countryCode
@@ -30,7 +31,7 @@ readonly class SessionDetails implements Arrayable
      * @param string|null $meterId
      * @param string $currency
      * @param ChargingPeriodCollection|null $chargingPeriods
-     * @param Price $totalCost
+     * @param Price|null $totalCost
      * @param SessionStatus $status
      * @param Carbon $lastUpdated
      */
@@ -50,7 +51,7 @@ readonly class SessionDetails implements Arrayable
         private ?string $meterId = null,
         private string $currency,
         private ?ChargingPeriodCollection $chargingPeriods = null,
-        private Price $totalCost,
+        private ?Price $totalCost = null,
         private SessionStatus $status,
         private Carbon $lastUpdated,
     )
@@ -178,9 +179,9 @@ readonly class SessionDetails implements Arrayable
     }
 
     /**
-     * @return Price
+     * @return null|Price
      */
-    public function getTotalCost(): Price
+    public function getTotalCost(): ?Price
     {
         return $this->totalCost;
     }
@@ -222,7 +223,7 @@ readonly class SessionDetails implements Arrayable
             'meter_id' => $this->getMeterId(),
             'currency' => $this->getCurrency(),
             'charging_periods' => $this->getChargingPeriods()->toArray(),
-            'total_cost' => $this->getTotalCost()->toArray(),
+            'total_cost' => $this->getTotalCost()?->toArray(),
             'status' => $this->getStatus()->value,
             'last_updated' => $this->getLastUpdated()->format(self::RFC3339),
         ];
