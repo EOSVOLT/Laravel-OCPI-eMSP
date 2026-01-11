@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\Party;
+use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Cdrs\Traits\HandlesCdr;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
@@ -54,24 +55,36 @@ class PostController extends Controller
 
             // Find LocationEvse.
             $locationEvse = null;
-            $location_id = data_get($payload, 'location.id');
-            $location_evse_uid = data_get($payload, 'location.evses.0.uid');
+            $location_id = data_get($payload, 'cdr_location.id');
+            $location_evse_uid = data_get($payload, 'cdr_location.evse_uid');
             if ($location_id && $location_evse_uid) {
                 //@todo revisit evseSearch() is missing
                 $locationEvse = $this->evseSearch(
-                    party_role_id: $partyRoleId,
-                    location_id: $location_id,
-                    evse_uid: $location_evse_uid,
+                    $party->id,
+                    $location_id,
+                    $location_evse_uid,
                 );
             }
-
+            $session = Session::query()->where('session_id', $payload['session_id'])->first();
+            if (null === $session || null === $locationEvse) {
+                Log::channel('ocpi')->error('Session or LocationEvse not found.', [
+                    'session' => $session,
+                    'locationEvse' => $locationEvse,
+                ]);
+                return $this->ocpiClientErrorResponse(
+                    statusCode: OcpiClientErrorCode::InvalidParameters,
+                    statusMessage: 'Some required fields are missing.',
+                );
+            }
             // New CDR.
             $cdr = DB::connection(config('ocpi.database.connection'))
-                ->transaction(function () use ($payload, $partyRoleId, $locationEvse) {
+                ->transaction(function () use ($payload, $partyRoleId, $locationEvse, $session) {
                     return $this->cdrCreate(
                         payload: $payload,
                         party_role_id: $partyRoleId,
+                        locationId: $locationEvse->location_id,
                         location_evse_id: $locationEvse?->id,
+                        sessionId: $session->id,
                     );
                 });
 

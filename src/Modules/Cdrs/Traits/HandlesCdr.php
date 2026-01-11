@@ -2,7 +2,6 @@
 
 namespace Ocpi\Modules\Cdrs\Traits;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
@@ -56,17 +55,18 @@ trait HandlesCdr
         return CdrFactory::fromCollection($collection);
     }
 
-    private function cdrCreate(array $payload, int $party_role_id, ?string $location_evse_id): ?Cdr
+    private function cdrCreate(array $payload, int $party_role_id, string $locationId, string $location_evse_id, string $sessionId): ?Cdr
     {
         if (($payload['id'] ?? null) === null) {
             return null;
         }
-
         $cdr = new Cdr;
         $cdr->fill([
             'party_role_id' => $party_role_id,
+            'location_id' => $locationId,
             'location_evse_id' => $location_evse_id,
-            'id' => $payload['id'],
+            'session_id' => $sessionId,
+            'cdr_id' => $payload['id'],
             'object' => $payload,
         ]);
 
