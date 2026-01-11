@@ -619,6 +619,7 @@ trait HandlesLocation
             return $this->evseDelete($locationEvse);
         }
 
+        $locationEvse->status = EvseStatus::tryFrom($payload['status'] ?? '') ?? $locationEvse->status;
         foreach ($payload as $field => $value) {
             $locationEvse->object[$field] = $value;
         }
