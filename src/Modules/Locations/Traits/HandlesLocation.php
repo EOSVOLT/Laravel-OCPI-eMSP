@@ -620,9 +620,11 @@ trait HandlesLocation
         }
 
         $locationEvse->status = EvseStatus::tryFrom($payload['status'] ?? '') ?? $locationEvse->status;
+        $object = $locationEvse->object;
         foreach ($payload as $field => $value) {
-            $locationEvse->object[$field] = $value;
+            $object[$field] = $value;
         }
+        $locationEvse->object = $object;
 
         $locationEvse->locationWithTrashed->updated_at = $payload['last_updated'] ?? Carbon::now();
         if (!$locationEvse->locationWithTrashed->save()) {
