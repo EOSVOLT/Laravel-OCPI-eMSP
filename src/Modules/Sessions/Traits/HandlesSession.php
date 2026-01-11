@@ -136,7 +136,7 @@ trait HandlesSession
 
     private function stopSession(array $payload, Session $session): bool
     {
-        $session->status = $status ?? $session->status;
+        $session->status = SessionStatus::tryFrom($payload['status'] ?? '') ?? $session->status;
         $object = $session->object ?? [];
         foreach ($payload as $field => $value) {
             $object[$field] = $value;
