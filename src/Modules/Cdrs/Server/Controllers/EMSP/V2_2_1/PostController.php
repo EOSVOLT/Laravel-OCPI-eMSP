@@ -36,7 +36,7 @@ class PostController extends Controller
                 );
             }
 
-            $partyRoleId = $party->roles->first()->id;
+            $partyRoleId = $party->role_emsp->first()->id;
 
             $payload = $request->json()->all();
 
@@ -57,10 +57,14 @@ class PostController extends Controller
             $locationEvse = null;
             $location_id = data_get($payload, 'cdr_location.id');
             $location_evse_uid = data_get($payload, 'cdr_location.evse_uid');
+            $ownerParty = Party::withWhereHas('role_cpo', function ($query) use ($payload) {
+                $query->where('country_code', $payload['country_code'])
+                ->where('party_id', $payload['party_id']);
+            })->first();
             if ($location_id && $location_evse_uid) {
                 //@todo revisit evseSearch() is missing
                 $locationEvse = $this->evseSearch(
-                    $party->id,
+                    $ownerParty->id,
                     $location_id,
                     $location_evse_uid,
                 );
