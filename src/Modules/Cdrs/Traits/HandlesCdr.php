@@ -73,7 +73,7 @@ trait HandlesCdr
         if (!$cdr->save()) {
             return null;
         }
-
+        $cdr->refresh();
         Events\EMSP\CdrCreated::dispatch($party_role_id, $cdr->id, $payload);
 
         return $cdr;
