@@ -72,7 +72,7 @@ class Resource extends OcpiResource
                 CommandType::STOP_SESSION->value,
                 $command->id,
             ]),
-            $session->id
+            $session->session_id
         );
         Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:REQUEST: ' . $command->id, $dto->toArray());
         $command->update(['payload' => $dto->toArray()]);
