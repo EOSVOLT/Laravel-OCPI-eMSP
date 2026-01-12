@@ -186,7 +186,7 @@ readonly class CdrDetails implements Arrayable
         return $this->creditReferenceId;
     }
 
-    public function isHomeChargingCompensation(): bool
+    public function isHomeChargingCompensation(): ?bool
     {
         return $this->isHomeChargingCompensation;
     }
