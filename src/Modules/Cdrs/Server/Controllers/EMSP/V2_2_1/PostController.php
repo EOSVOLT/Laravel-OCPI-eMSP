@@ -5,11 +5,9 @@ namespace Ocpi\Modules\Cdrs\Server\Controllers\EMSP\V2_2_1;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Ocpi\Models\PartyRole;
-use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Traits\HandlesCdr;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
@@ -36,7 +34,7 @@ class PostController extends Controller
             /** @var PartyRole $partyRole */
             $partyRole = PartyRole::query()->where('code', $payload['party_id'])
                 ->where('country_code', $payload['country_code'])
-                ->where('role', Role::EMSP)
+                ->where('role', Role::CPO)
                 ->first();
             $partyRoleId = $partyRole->id;
 
