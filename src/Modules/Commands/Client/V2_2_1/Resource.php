@@ -45,13 +45,11 @@ class Resource extends OcpiResource
             $evseUid,
             $connectorId
         );
-        Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:REQUEST: ' . $command->id, $dto->toArray());
         $command->update(['payload' => $dto->toArray()]);
         $response = $this->commandRequestSend(
             $dto->toArray(),
             '/' . CommandType::START_SESSION->value
         );
-        Log::channel('ocpi')->info('OCPI:COMMAND:START_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
         return $command->refresh();
     }
@@ -74,13 +72,11 @@ class Resource extends OcpiResource
             ]),
             $session->session_id
         );
-        Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:REQUEST: ' . $command->id, $dto->toArray());
         $command->update(['payload' => $dto->toArray()]);
         $response = $this->commandRequestSend(
             $dto->toArray(),
             '/' . CommandType::STOP_SESSION->value
         );
-        Log::channel('ocpi')->info('OCPI:COMMAND:STOP_SESSION:RESPONSE: ' . $command->id, $response->toArray());
         $command->update(['response' => $response->getResult()]);
         return $command->refresh();
     }
