@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Context;
 use Ocpi\Helpers\PaginatedCollection;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Traits\HandlesCdr;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
@@ -20,18 +21,10 @@ class GetController extends Controller
     public function __invoke(
         Request $request,
     ): JsonResponse {
-        $partyCode = Context::get('party_code');
 
-        $party = Party::with(['roles'])->where('code', $partyCode)->first();
-        if ($party === null || $party->roles->count() === 0) {
-            return $this->ocpiServerErrorResponse(
-                statusCode: OcpiServerErrorCode::PartyApiUnusable,
-                statusMessage: 'Party not found.',
-                httpCode: 405,
-            );
-        }
-
-        $partyRoleId = $party->roles->first()->id;
+        /** @var PartyToken $token */
+        $token = PartyToken::query()->find(Context::get('token_id'));
+        $partyRoleId = $token->party_role_id;
         $offset = $request->input('offset', 0);
         $limit = $request->input('limit', PaginatedCollection::DEFAULT_PER_PAGE);
         $cdr = $this->list(

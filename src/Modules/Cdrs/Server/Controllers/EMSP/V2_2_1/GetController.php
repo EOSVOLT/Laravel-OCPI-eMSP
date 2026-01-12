@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Ocpi\Models\Party;
+use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Traits\HandlesCdr;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
 use Ocpi\Support\Enums\OcpiServerErrorCode;
@@ -17,32 +18,15 @@ class GetController extends Controller
 
     public function __invoke(
         Request $request,
-        ?string $cdr_emsp_id = null,
+        ?string $cdrId = null,
     ): JsonResponse {
-        if ($cdr_emsp_id === null) {
+        if ($cdrId === null) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::NotEnoughInformation,
                 statusMessage: 'eMSP CDR ID is missing.',
             );
         }
-
-        $partyCode = Context::get('party_code');
-
-        $party = Party::with(['roles'])->where('code', $partyCode)->first();
-        if ($party === null || $party->roles->count() === 0) {
-            return $this->ocpiServerErrorResponse(
-                statusCode: OcpiServerErrorCode::PartyApiUnusable,
-                statusMessage: 'Client not found.',
-                httpCode: 405,
-            );
-        }
-
-        $partyRoleId = $party->roles->first()->id;
-
-        $cdr = $this->cdrSearch(
-            id: $cdr_emsp_id,
-            partyRoleId: $partyRoleId,
-        );
+        $cdr = $this->cdrSearch($cdrId);
 
         if ($cdr === null) {
             return $this->ocpiClientErrorResponse(
