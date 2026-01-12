@@ -15,7 +15,7 @@ class CommandTokenFactory
     /**
      * @param array $data
      *
-     * @return CommandToken
+     * @return \Ocpi\Modules\Tokens\Objects\CommandToken
      */
     public static function fromArray(array $data): \Ocpi\Modules\Tokens\Objects\CommandToken
     {
@@ -41,6 +41,11 @@ class CommandTokenFactory
         );
     }
 
+    /**
+     * @param CommandToken $model
+     *
+     * @return \Ocpi\Modules\Tokens\Objects\CommandToken
+     */
     public static function fromModel(CommandToken $model): \Ocpi\Modules\Tokens\Objects\CommandToken
     {
         $role = $model->party_role;
@@ -59,9 +64,15 @@ class CommandTokenFactory
             $model->language,
             $model->default_profile_type,
             empty($model->energy_contract) ? null : EnergyContractFactory::fromArray($model->energy_contract),
+            $model->party_role_id,
         );
     }
 
+    /**
+     * @param Collection $collection
+     *
+     * @return CommandTokenCollection
+     */
     public static function fromCollection(Collection $collection): CommandTokenCollection
     {
         $tokenCollection = new CommandTokenCollection();

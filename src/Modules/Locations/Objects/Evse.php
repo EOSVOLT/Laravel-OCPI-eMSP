@@ -272,7 +272,7 @@ class Evse implements Arrayable
      */
     public function setParkingRestrictions(array $parkingRestrictions): self
     {
-        self::validateArrayEnum($parkingRestrictions, ParkingRestriction::cases());
+        self::validateArrayEnum($parkingRestrictions, ParkingRestriction::stringCases());
         $this->parkingRestrictions = $parkingRestrictions;
         return $this;
     }

@@ -86,7 +86,7 @@ trait HandlesCdr
         if (false === $cdr->save()) {
             return null;
         }
-
+        $cdr->refresh();
         Events\EMSP\CdrCreated::dispatch($cdr->id);
 
         return $cdr;

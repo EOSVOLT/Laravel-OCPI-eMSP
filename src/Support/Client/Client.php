@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Client\Resource as CdrsResource;
-use Ocpi\Modules\Commands\Client\Resource as CommandsResource;
+use Ocpi\Modules\Commands\Client\V2_2_1\Resource as CommandsResource;
 use Ocpi\Modules\Credentials\Client\Resource as CredentialsResource;
 use Ocpi\Modules\Locations\Client\V2_2_1\Resource as LocationsResource;
 use Ocpi\Modules\Sessions\Client\Resource as SessionsResource;

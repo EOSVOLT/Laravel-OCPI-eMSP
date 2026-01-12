@@ -2,7 +2,6 @@
 
 namespace Ocpi\Models\Tariffs;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,15 +12,19 @@ use Ocpi\Models\Party;
 
 /**
  * @property int $id
+ * @property int $party_id
  * @property string $external_id
  * @property string $currency
  * @property string $type
  * @property array $tariff_alt_text
  * @property string $tariff_alt_url
- * @property ?float $min_price_excl_vat
- * @property ?float $min_price_incl_vat
- * @property ?float $max_price_excl_vat
- * @property ?float $max_price_incl_vat
+ * @property null|float $min_price_excl_vat
+ * @property null|float $min_price_incl_vat
+ * @property null|float $max_price_excl_vat
+ * @property null|float $max_price_incl_vat
+ * @property null|Carbon $start_date_time
+ * @property null|Carbon $end_date_time
+ * @property array $energy_mix
  * @property Party $party
  * @property TariffElement[]|Collection $elements
  * @property Carbon $created_at
@@ -31,9 +34,21 @@ use Ocpi\Models\Party;
 class Tariff extends Model
 {
     use SoftDeletes;
-    use HasFactory;
 
     protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'tariff_alt_text' => 'array',
+            'energy_mix' => 'array',
+            'start_date_time' => 'datetime',
+            'end_date_time' => 'datetime',
+            'created_at' => 'datetime',
+            'deleted_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
 
     /**
      * @return string
@@ -57,15 +72,5 @@ class Tariff extends Model
     public function elements(): HasMany
     {
         return $this->hasMany(TariffElement::class, 'tariff_id', 'id');
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'tariff_alt_text' => 'json',
-            'created_at' => 'datetime',
-            'deleted_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
     }
 }

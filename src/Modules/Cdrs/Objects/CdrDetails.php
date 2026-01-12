@@ -41,7 +41,7 @@ readonly class CdrDetails implements Arrayable
         private ?string $invoiceReferenceId = null,
         private bool $isCredit = false,
         private ?string $creditReferenceId = null,
-        private bool $isHomeChargingCompensation = false,
+        private ?bool $isHomeChargingCompensation = null,
         private Carbon $lastUpdatedAt
     ) {
     }
@@ -186,7 +186,7 @@ readonly class CdrDetails implements Arrayable
         return $this->creditReferenceId;
     }
 
-    public function isHomeChargingCompensation(): bool
+    public function isHomeChargingCompensation(): ?bool
     {
         return $this->isHomeChargingCompensation;
     }

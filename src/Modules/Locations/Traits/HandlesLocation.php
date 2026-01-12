@@ -3,12 +3,15 @@
 namespace Ocpi\Modules\Locations\Traits;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\Location as LocationModel;
 use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\PartyRole;
+use Ocpi\Modules\Locations\Client\V2_2_1\CPOClient;
 use Ocpi\Modules\Locations\Enums\ConnectorFormat;
 use Ocpi\Modules\Locations\Enums\ConnectorType;
 use Ocpi\Modules\Locations\Enums\EnergySourceCategory;
@@ -35,6 +38,10 @@ use Ocpi\Modules\Locations\Events\EMSP\LocationRemoved;
 use Ocpi\Modules\Locations\Events\EMSP\LocationReplaced;
 use Ocpi\Modules\Locations\Events\EMSP\LocationRestored;
 use Ocpi\Modules\Locations\Events\EMSP\LocationUpdated;
+use Ocpi\Support\Enums\Role;
+use Saloon\Exceptions\Request\FatalRequestException;
+use Saloon\Exceptions\Request\RequestException;
+use Throwable;
 
 use function Symfony\Component\Clock\now;
 
@@ -426,7 +433,7 @@ trait HandlesLocation
             ->whereNotIn('uid', collect($payloadEvseList)->pluck('uid')->toArray());
         if ($locationEvseToDeleteList->count() > 0) {
             $locationEvseToDeleteList->each(function (LocationEvse $locationEvseToDelete) {
-                $this->eveseDelete($locationEvseToDelete, false);
+                $this->evseDelete($locationEvseToDelete, false);
             });
         }
         LocationFullyReplaced::dispatch($location->id);
@@ -528,7 +535,7 @@ trait HandlesLocation
         bool $dispatchEvent = true
     ): bool {
         if (EvseStatus::REMOVED === EvseStatus::tryFrom($payload['status'] ?? '')) {
-            return $this->eveseDelete($locationEvse);
+            return $this->evseDelete($locationEvse);
         }
 
         // Replace EVSE.
@@ -537,7 +544,7 @@ trait HandlesLocation
 
         // No Connector => Delete EVSE.
         if (count($payloadConnectorList ?? []) === 0) {
-            return $this->eveseDelete($locationEvse);
+            return $this->evseDelete($locationEvse);
         }
 
         if ($locationEvse->trashed()) {
@@ -609,12 +616,15 @@ trait HandlesLocation
     {
         // Delete EVSE.
         if (EvseStatus::REMOVED === EvseStatus::tryFrom($payload['status'] ?? '')) {
-            return $this->eveseDelete($locationEvse);
+            return $this->evseDelete($locationEvse);
         }
 
+        $locationEvse->status = EvseStatus::tryFrom($payload['status'] ?? '') ?? $locationEvse->status;
+        $object = $locationEvse->object;
         foreach ($payload as $field => $value) {
-            $locationEvse->object[$field] = $value;
+            $object[$field] = $value;
         }
+        $locationEvse->object = $object;
 
         $locationEvse->locationWithTrashed->updated_at = $payload['last_updated'] ?? Carbon::now();
         if (!$locationEvse->locationWithTrashed->save()) {
@@ -753,7 +763,7 @@ trait HandlesLocation
             ->first();
     }
 
-    private function eveseDelete(LocationEvse $locationEvse, bool $dispatchEvent = true): bool
+    private function evseDelete(LocationEvse $locationEvse, bool $dispatchEvent = true): bool
     {
         $locationEvse->delete();
         $locationEvse->connectors()->delete();
@@ -770,5 +780,126 @@ trait HandlesLocation
             }
         }
         return true;
+    }
+
+    /**
+     * @throws Throwable
+     * @throws FatalRequestException
+     * @throws RequestException
+     */
+    private function fetchLocationFromCPO(?string $partyCode = null): void
+    {
+        $activityId = time() . rand(1000, 9999);
+        Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Starting OCPI Locations synchronization');
+
+        $partyRoles = PartyRole::query()
+            ->withWhereHas('party', function ($query) use ($partyCode) {
+                $query->when(null !== $partyCode, function ($query) use ($partyCode) {
+                    $query->whereIn('code', explode(',', $partyCode));
+                });
+                $query->where('is_external_party', true);
+            })
+            ->withWhereHas('tokens', function ($query) {
+                $query->where('registered', true);
+            })
+            ->whereHas('parent_role', function ($query) {
+                $query->where('role', Role::EMSP);
+            })
+            ->where('role', Role::CPO)
+            ->get();
+
+        if (0 === $partyRoles->count()) {
+            Log::channel('ocpi')->error('ActivityId: ' . $activityId . ' | No Party to process.');
+            return;
+        }
+
+
+        foreach ($partyRoles as $role) {
+            $party = $role->party;
+            Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Processing Party ' . $party->code);
+            $ocpiClient = new CPOClient($role->tokens->first());
+
+            if (empty($ocpiClient->resolveBaseUrl())) {
+                Log::channel('ocpi')->warning(
+                    'ActivityId: ' . $activityId . ' | Party ' . $party->code
+                    . ' is not configured to use the Locations module.'
+                );
+                continue;
+            }
+
+            foreach ($party->roles as $partyRole) {
+                Log::channel('ocpi')->info(
+                    'ActivityId: ' . $activityId . ' | - Call '
+                    . $partyRole->code . ' / ' . $partyRole->country_code . ' - OCPI - Locations GET'
+                );
+                $offset = 0;
+                $limit = 100;
+                do {
+                    $ocpiLocationList = $ocpiClient->locations()->get(offset: $offset, limit: $limit);
+                    $data = $ocpiLocationList?->getData() ?? [];
+                    $locationProcessedList = [];
+
+                    Log::channel('ocpi')->info(
+                        'ActivityId: ' . $activityId . ' | - ' . count($data) . ' Location(s) retrieved'
+                    );
+                    foreach ($data as $ocpiLocation) {
+                        if ($ocpiLocation['country_code'] !== $partyRole->country_code
+                            || $ocpiLocation['party_id'] !== $partyRole->code) {
+                            continue;
+                        }
+                        $ocpiLocationId = $ocpiLocation['id'] ?? null;
+
+                        DB::connection(config('ocpi.database.connection'))->beginTransaction();
+
+                        $location = $this->searchLocation(
+                            $partyRole,
+                            $ocpiLocationId,
+                        );
+
+                        Log::channel('ocpi')->info(
+                            'ActivityId: ' . $activityId . ' |  > Processing '
+                            . ($location === null ? 'new' : 'existing') . ' Location ' . $ocpiLocationId
+                        );
+                        // New Location.
+                        if ($location === null) {
+                            if (!$this->locationCreate(
+                                $partyRole,
+                                $ocpiLocationId,
+                                $ocpiLocation,
+                            )) {
+                                Log::channel('ocpi')->error(
+                                    'ActivityId: ' . $activityId . ' | Error creating Location ' . $ocpiLocationId . '.'
+                                );
+                                DB::connection(config('ocpi.database.connection'))->rollback();
+
+                                continue;
+                            }
+                        } else {
+                            // Replaced Location.
+                            if (!$this->locationReplace(
+                                $location,
+                                $ocpiLocation
+                            )) {
+                                Log::channel('ocpi')->error(
+                                    'ActivityId: ' . $activityId . ' | Error replacing Location ' . $ocpiLocationId . '.'
+                                );
+                                DB::connection(config('ocpi.database.connection'))->rollback();
+
+                                continue;
+                            }
+                        }
+
+                        $locationProcessedList[] = $ocpiLocationId;
+
+                        DB::connection(config('ocpi.database.connection'))->commit();
+                    }
+                    $offset += $limit;
+                } while (null !== $ocpiLocationList->getLink());
+
+                Log::channel('ocpi')->info(
+                    'ActivityId: ' . $activityId . ' | - ' . count($locationProcessedList) . ' Location(s) synchronized'
+                );
+            }
+        }
     }
 }

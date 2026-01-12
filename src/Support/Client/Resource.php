@@ -4,13 +4,19 @@ namespace Ocpi\Support\Client;
 
 use ArrayObject;
 use Carbon\Carbon;
+use Ocpi\Modules\Commands\Enums\CommandResponseType;
+use Ocpi\Modules\Commands\Enums\CommandResultType;
 use Ocpi\Support\Client\Requests\DeleteRequest;
 use Ocpi\Support\Client\Requests\GetRequest;
 use Ocpi\Support\Client\Requests\PatchRequest;
 use Ocpi\Support\Client\Requests\PostRequest;
 use Ocpi\Support\Client\Requests\PutRequest;
+use Ocpi\Support\Factories\DisplayTextFactory;
+use Ocpi\Support\Objects\OCPICommandResponse;
+use Ocpi\Support\Objects\OCPICommandResult;
 use Ocpi\Support\Objects\OCPIResponse;
 use Ocpi\Support\Objects\PaginationOCPIResponse;
+use RuntimeException;
 use Saloon\Exceptions\Request\FatalRequestException;
 use Saloon\Exceptions\Request\RequestException;
 use Saloon\Http\BaseResource;
@@ -19,6 +25,16 @@ use Throwable;
 
 class Resource extends BaseResource
 {
+    protected function formatVersion(): string
+    {
+        $base = get_class($this);
+
+        if (preg_match('~\\\\V(\d+(?:_\d+)*)\\\\~', $base, $m) === 1) {
+            return str_replace('_', '.', $m[1]);
+        }
+
+        throw new RuntimeException("Could not determine version from resource class {$base}");
+    }
     /**
      * @throws FatalRequestException
      * @throws RequestException
@@ -105,6 +121,41 @@ class Resource extends BaseResource
             $responseArray['headers'] = $response->headers()->all();
         }
         return $responseArray;
+    }
+
+    public function commandRequestSend(array|ArrayObject|null $payload, ?string $endpoint = null): OCPICommandResponse
+    {
+        $response = $this->connector->send(
+            (new PostRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+        $responseArray = $response->array();
+
+        return new OCPICommandResponse(
+            CommandResponseType::tryFrom($responseArray['data']['result']),
+            $responseArray['data']['timeout'],
+            isset($responseArray['message']) ? DisplayTextFactory::fromArrayCollection($responseArray['message']) : null
+        );
+    }
+
+    public function commandResultSend(array|ArrayObject|null $payload, ?string $endpoint = null): OCPICommandResult
+    {
+        $response = $this->connector->send(
+            (new PostRequest)
+                ->withEndpoint($endpoint)
+                ->withPayload($payload)
+        );
+
+        $response->throw();
+        $responseArray = $response->array();
+
+        return new OCPICommandResult(
+            CommandResultType::tryFrom($responseArray['result']),
+            isset($responseArray['message']) ? DisplayTextFactory::fromArrayCollection($responseArray['message']) : null
+        );
     }
 
     /**

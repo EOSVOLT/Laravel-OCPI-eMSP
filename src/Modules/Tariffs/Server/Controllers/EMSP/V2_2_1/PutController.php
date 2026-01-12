@@ -2,19 +2,20 @@
 
 namespace Ocpi\Modules\Tariffs\Server\Controllers\EMSP\V2_2_1;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
+use Ocpi\Models\PartyRole;
 use Ocpi\Models\Tariffs\Tariff;
-use Ocpi\Modules\Locations\Traits\HandlesLocation;
-use Ocpi\Modules\Tariffs\Events\EMSP\TariffCreated;
-use Ocpi\Modules\Tariffs\Events\EMSP\TariffReplaced;
 use Ocpi\Modules\Tariffs\Repositories\TariffRepository;
+use Ocpi\Modules\Tariffs\Traits\HandlesTariff;
 use Ocpi\Support\Server\Controllers\Controller;
+use Throwable;
 
 class PutController extends Controller
 {
-    use HandlesLocation;
+    use HandlesTariff;
 
     /**
      * @param TariffRepository $tariffRepository
@@ -28,7 +29,10 @@ class PutController extends Controller
      * @param string $partyCode
      * @param string $externalId
      * @param Request $request
+     *
      * @return JsonResponse
+     * @throws BindingResolutionException
+     * @throws Throwable
      */
     public function upsert(
         string $countryCode,
@@ -36,17 +40,17 @@ class PutController extends Controller
         string $externalId,
         Request $request
     ): JsonResponse {
-        $partyId = Context::get('party_role_party_id');
+        $partyRoleId = Context::get('party_role_id');
+        $partyRole = PartyRole::find($partyRoleId);
         $data = $request->json()->all();
-        $exist = Tariff::query()
-            ->where('party_id', $partyId)
+        $tariff = Tariff::query()
+            ->where('party_id', $partyRole->party_id)
             ->where('external_id', $externalId)
-            ->exists();
-        $tariff = $this->tariffRepository->createOrUpdateFromArray($partyId, $data);
-        if (true === $exist) {
-            TariffReplaced::dispatch($tariff->getId());
+            ->first();
+        if (null === $tariff) {
+            $this->tariffCreate($partyRole, $externalId, $data);
         } else {
-            TariffCreated::dispatch($tariff->getId());
+            $this->tariffReplace($tariff, $data);
         }
 
         return $this->ocpiSuccessResponse();
