@@ -42,7 +42,7 @@ class CdrFactory
         $tariffs = $model->session?->connector->tariffs;
         $tariffCollection = null;
         if (null !== $tariffs) {
-            $tariffCollection = TariffFactory::fromCollection($model->session?->connector->tariffs);
+            $tariffCollection = TariffFactory::fromCollection($tariffs);
         }
         return new Cdr(
             $model->id,
@@ -51,7 +51,8 @@ class CdrFactory
             self::createDetailsFromArray($model->object, $tariffCollection),
             $model->location_id,
             $model->location_evse_id,
-            $model->session_id
+            $model->session_id,
+            $model->external_url
         );
     }
 

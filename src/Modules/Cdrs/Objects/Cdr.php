@@ -15,6 +15,7 @@ readonly class Cdr implements Arrayable
      * @param int $locationId
      * @param int $locationEvseId
      * @param string|null $sessionId
+     * @param string|null $externalUrl
      */
     public function __construct(
         private int $id,
@@ -23,7 +24,8 @@ readonly class Cdr implements Arrayable
         private CdrDetails $cdrDetails,
         private int $locationId,
         private int $locationEvseId,
-        private ?string $sessionId
+        private ?string $sessionId = null,
+        private ?string $externalUrl = null,
     ) {
     }
 
@@ -84,6 +86,14 @@ readonly class Cdr implements Arrayable
     }
 
     /**
+     * @return string|null
+     */
+    public function getExternalUrl(): ?string
+    {
+        return $this->externalUrl;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
@@ -96,6 +106,7 @@ readonly class Cdr implements Arrayable
             'location_id' => $this->getLocationId(),
             'location_evse_id' => $this->getLocationEvseId(),
             'session_id' => $this->getSessionId(),
+            'external_url' => $this->getExternalUrl(),
         ];
     }
 }
