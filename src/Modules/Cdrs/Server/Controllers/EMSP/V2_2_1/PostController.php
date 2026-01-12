@@ -8,12 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Ocpi\Models\Party;
-use Ocpi\Models\Sessions\Session;
+use Ocpi\Models\PartyRole;
+use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Cdrs\Traits\HandlesCdr;
 use Ocpi\Modules\Locations\Traits\HandlesLocation;
 use Ocpi\Support\Enums\OcpiClientErrorCode;
-use Ocpi\Support\Enums\OcpiServerErrorCode;
+use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Server\Controllers\Controller;
 
 class PostController extends Controller
@@ -21,32 +21,29 @@ class PostController extends Controller
     use HandlesCdr,
         HandlesLocation;
 
+    public function __construct()
+    {
+    }
+
     public function __invoke(
         Request $request,
     ): JsonResponse {
         try {
-            $partyCode = Context::get('party_code');
-
-            $party = Party::with(['roles'])->where('code', $partyCode)->first();
-            if ($party === null || $party->roles->count() === 0) {
-                return $this->ocpiServerErrorResponse(
-                    statusCode: OcpiServerErrorCode::PartyApiUnusable,
-                    statusMessage: 'Client not found.',
-                    httpCode: 405,
-                );
-            }
-
-            $partyRoleId = $party->role_emsp->first()->id;
+            //add a cdr payload validator.
 
             $payload = $request->json()->all();
 
-            // Verify CDR not already exists.
-            $cdr = $this->cdrSearch(
-                cdrId: $payload['id'] ?? null,
-                partyRoleId: $partyRoleId,
-            );
+            /** @var PartyRole $partyRole */
+            $partyRole = PartyRole::query()->where('code', $payload['party_id'])
+                ->where('country_code', $payload['country_code'])
+                ->where('role', Role::EMSP)
+                ->first();
+            $partyRoleId = $partyRole->id;
 
-            if ($cdr) {
+            // Verify CDR not already exists.
+            $cdr = $this->cdrSearch($payload['id']);
+
+            if (null !== $cdr) {
                 return $this->ocpiClientErrorResponse(
                     statusCode: OcpiClientErrorCode::InvalidParameters,
                     statusMessage: 'CDR already exists.',
@@ -54,45 +51,33 @@ class PostController extends Controller
             }
 
             // Find LocationEvse.
-            $locationEvse = null;
-            $location_id = data_get($payload, 'cdr_location.id');
-            $location_evse_uid = data_get($payload, 'cdr_location.evse_uid');
-            $ownerParty = Party::withWhereHas('role_cpo', function ($query) use ($payload) {
-                $query->where('country_code', $payload['country_code'])
-                ->where('party_id', $payload['party_id']);
-            })->first();
-            if ($location_id && $location_evse_uid) {
-                //@todo revisit evseSearch() is missing
-                $locationEvse = $this->evseSearch(
-                    $ownerParty->id,
-                    $location_id,
-                    $location_evse_uid,
-                );
-            }
-            $session = Session::query()->where('session_id', $payload['session_id'])->first();
-            if (null === $session || null === $locationEvse) {
-                Log::channel('ocpi')->error('Session or LocationEvse not found.', [
-                    'session' => $session,
-                    'locationEvse' => $locationEvse,
-                ]);
+            $cdrLocation = data_get($payload, 'cdr_location');
+            $locationId = $cdrLocation['id'];
+            $locationEvseUid = $cdrLocation['evse_uid'];
+            $locationEvse = $this->evseSearch(
+                partyId: $partyRole->party_id,
+                locationExternalId: $locationId,
+                evseUid: $locationEvseUid,
+            );
+
+            if (null === $locationEvse) {
                 return $this->ocpiClientErrorResponse(
-                    statusCode: OcpiClientErrorCode::InvalidParameters,
-                    statusMessage: 'Some required fields are missing.',
+                    statusCode: OcpiClientErrorCode::UnknownLocation,
+                    statusMessage: 'Location or Evse not found.',
                 );
             }
+
             // New CDR.
             $cdr = DB::connection(config('ocpi.database.connection'))
-                ->transaction(function () use ($payload, $partyRoleId, $locationEvse, $session) {
-                    return $this->cdrCreate(
+                ->transaction(function () use ($payload, $partyRoleId, $locationEvse) {
+                    return $this->createCdr(
                         payload: $payload,
-                        party_role_id: $partyRoleId,
-                        locationId: $locationEvse->location_id,
-                        location_evse_id: $locationEvse?->id,
-                        sessionId: $session->id,
+                        partyRoleId: $partyRoleId,
+                        locationEvse: $locationEvse,
                     );
                 });
 
-            return $cdr
+            return (null !== $cdr)
                 // Add Location header with CDR GET URL.
                 ? $this->ocpiSuccessResponse()
                     ->header('Location', $this->cdrRoute($cdr))

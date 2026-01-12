@@ -106,7 +106,7 @@ readonly class CdrDetails implements Arrayable
         return $this->currency;
     }
 
-    public function getTariffs(): TariffCollection
+    public function getTariffs(): ?TariffCollection
     {
         return $this->tariffs;
     }
@@ -211,7 +211,7 @@ readonly class CdrDetails implements Arrayable
             'cdr_location' => $this->getCdrLocation()->toArray(),
             'meter_id' => $this->getMeterId(),
             'currency' => $this->getCurrency(),
-            'tariffs' => $this->getTariffs()->toArray(),
+            'tariffs' => $this->getTariffs()?->toArray(),
             'charging_periods' => $this->getChargingPeriodCollection()->toArray(),
             'signed_data' => $this->getSignedData()?->toArray(),
             'total_cost' => $this->getTotalCost()->toArray(),
