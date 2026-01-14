@@ -5,7 +5,7 @@ namespace Ocpi\Models\Locations;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Ocpi\Database\Factories\LocationConnectorFactory;
@@ -52,17 +52,15 @@ class LocationConnector extends Model
     }
 
     /**
-     * @return HasManyThrough
+     * @return BelongsToMany
      */
-    public function tariffs(): HasManyThrough
+    public function tariffs(): BelongsToMany
     {
-        return $this->hasManyThrough(
+        return $this->belongsToMany(
             Tariff::class,
             LocationConnectorTariff::class,
             'location_connector_id',
-            'id',
-            'id',
-            'tariff_id'
+            'tariff_id',
         );
     }
 
