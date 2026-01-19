@@ -9,8 +9,10 @@ use Illuminate\Validation\Rule;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\Location as LocationModel;
 use Ocpi\Models\Locations\LocationConnector;
+use Ocpi\Models\Locations\LocationConnectorTariff;
 use Ocpi\Models\Locations\LocationEvse;
 use Ocpi\Models\PartyRole;
+use Ocpi\Models\Tariffs\Tariff;
 use Ocpi\Modules\Locations\Client\V2_2_1\CPOClient;
 use Ocpi\Modules\Locations\Enums\ConnectorFormat;
 use Ocpi\Modules\Locations\Enums\ConnectorType;
@@ -523,6 +525,7 @@ trait HandlesLocation
             if (true === $dispatchEvent) {
                 LocationConnectorCreated::dispatch($locationConnector->id);
             }
+            $this->updateTariffConnector($locationConnector->id, $payloadConnector['tariff_ids'] ?? null);
         }
 
         return $locationEvse->refresh();
@@ -598,6 +601,7 @@ trait HandlesLocation
                     LocationConnectorReplaced::dispatch($locationConnector->id);
                 }
             }
+            $this->updateTariffConnector($locationConnector->id, $payloadConnector['tariff_ids'] ?? null);
         }
         // Delete missing EVSE Connectors.
         $payloadConnectorIdList = collect($payloadConnectorList)->pluck('id')->toArray();
@@ -610,6 +614,32 @@ trait HandlesLocation
             LocationEvseReplaced::dispatch($locationEvse->id);
         }
         return true;
+    }
+
+    public function updateTariffConnector(int $locationConnectorId, ?array $tariffIds): void
+    {
+        //add tariff connector relation
+        if (true === empty($tariffIds)) {
+            //purge all mappings
+            LocationConnectorTariff::query()->where('location_connector_id', $locationConnectorId)->delete();
+            return;
+        }
+        if (null !== $tariffIds) {
+            $tariffs = Tariff::query()->whereIn('external_id', $tariffIds)->get();
+            if (false === $tariffs->isEmpty()) {
+                //purge all mappings
+                LocationConnectorTariff::query()->where('location_connector_id', $locationConnectorId)->delete();
+            }
+            /** @var Tariff $tariff */
+            foreach ($tariffs as $tariff) {
+                LocationConnectorTariff::query()->create(
+                    [
+                        'location_connector_id' => $locationConnectorId,
+                        'tariff_id' => $tariff->id,
+                    ]
+                );
+            }
+        }
     }
 
     private function evseObjectUpdate(array $payload, LocationEvse $locationEvse): bool
@@ -689,7 +719,7 @@ trait HandlesLocation
             $locationConnector->refresh();
             LocationConnectorReplaced::dispatch($locationConnector->id);
         }
-
+        $this->updateTariffConnector($locationConnector->id, $payload['tariff_ids'] ?? null);
         $locationEvse->updated_at = $lastUpdated;
         $locationEvse->save();
 
