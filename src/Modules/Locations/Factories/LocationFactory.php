@@ -50,6 +50,7 @@ class LocationFactory
             $object['time_zone'],
             Carbon::parse($location->updated_at),
         )
+            ->setOperator(BusinessModelFactory::fromArray($object['operator'] ?? []))
             ->setEvses($location->evses ? EvseFactory::fromCollection($location->evses) : null)
             ->setImages(ImageFactory::fromModelArray($object['images'] ?? []))
             ->setChargingWhenClosed($object['charging_when_closed'] ?? false)
