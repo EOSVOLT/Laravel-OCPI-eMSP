@@ -48,16 +48,6 @@ class Party extends Model
         'cpo_id',
     ];
 
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::deleting(function (Party $party) {
-            // Soft delete all related party roles
-            $party->roles()->delete();
-        });
-    }
-
     /**
      * @todo move to helper or static factory
      */
@@ -80,6 +70,16 @@ class Party extends Model
     public static function encodeToken(string $token): string
     {
         return base64_encode($token);
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function (Party $party) {
+            // Soft delete all related party roles
+            $party->roles()->delete();
+        });
     }
 
     protected static function newFactory(): PartyFactory
@@ -132,6 +132,13 @@ class Party extends Model
     public function generateToken(): string
     {
         return $this->code . '_' . Str::uuid();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_external_party' => 'boolean',
+        ];
     }
 
     /***
