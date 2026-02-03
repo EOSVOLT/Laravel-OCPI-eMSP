@@ -65,6 +65,32 @@ trait HandlesLocation
         return $location;
     }
 
+    public function updateTariffConnector(int $locationConnectorId, ?array $tariffIds): void
+    {
+        //add tariff connector relation
+        if (true === empty($tariffIds)) {
+            //purge all mappings
+            LocationConnectorTariff::query()->where('location_connector_id', $locationConnectorId)->delete();
+            return;
+        }
+        if (null !== $tariffIds) {
+            $tariffs = Tariff::query()->whereIn('external_id', $tariffIds)->get();
+            if (false === $tariffs->isEmpty()) {
+                //purge all mappings
+                LocationConnectorTariff::query()->where('location_connector_id', $locationConnectorId)->delete();
+            }
+            /** @var Tariff $tariff */
+            foreach ($tariffs as $tariff) {
+                LocationConnectorTariff::query()->create(
+                    [
+                        'location_connector_id' => $locationConnectorId,
+                        'tariff_id' => $tariff->id,
+                    ]
+                );
+            }
+        }
+    }
+
     private function locationRules(): array
     {
         return [
@@ -336,6 +362,8 @@ trait HandlesLocation
             ];
     }
 
+//
+
     private function locationCreate(PartyRole $partyRole, string $locationExternalId, array $payload): bool
     {
         $party = $partyRole->party;
@@ -376,7 +404,6 @@ trait HandlesLocation
         return true;
     }
 
-//
     private function locationReplace(Location $location, array $payload): bool
     {
         if ($location->trashed()) {
@@ -616,32 +643,6 @@ trait HandlesLocation
         return true;
     }
 
-    public function updateTariffConnector(int $locationConnectorId, ?array $tariffIds): void
-    {
-        //add tariff connector relation
-        if (true === empty($tariffIds)) {
-            //purge all mappings
-            LocationConnectorTariff::query()->where('location_connector_id', $locationConnectorId)->delete();
-            return;
-        }
-        if (null !== $tariffIds) {
-            $tariffs = Tariff::query()->whereIn('external_id', $tariffIds)->get();
-            if (false === $tariffs->isEmpty()) {
-                //purge all mappings
-                LocationConnectorTariff::query()->where('location_connector_id', $locationConnectorId)->delete();
-            }
-            /** @var Tariff $tariff */
-            foreach ($tariffs as $tariff) {
-                LocationConnectorTariff::query()->create(
-                    [
-                        'location_connector_id' => $locationConnectorId,
-                        'tariff_id' => $tariff->id,
-                    ]
-                );
-            }
-        }
-    }
-
     private function evseObjectUpdate(array $payload, LocationEvse $locationEvse): bool
     {
         // Delete EVSE.
@@ -820,7 +821,16 @@ trait HandlesLocation
     private function fetchLocationFromCPO(?string $partyCode = null): void
     {
         $activityId = time() . rand(1000, 9999);
-        Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Starting OCPI Locations synchronization');
+        if (null !== $partyCode) {
+            Log::channel('ocpi')->info(
+                'ActivityId: ' . $activityId . ' | Starting OCPI Locations synchronization for Party ' . $partyCode
+            );
+        } else {
+            Log::channel('ocpi')->info(
+                'ActivityId: ' . $activityId . ' | Starting OCPI Locations synchronization for all parties'
+            );
+        }
+
 
         $partyRoles = PartyRole::query()
             ->withWhereHas('party', function ($query) use ($partyCode) {
@@ -839,14 +849,17 @@ trait HandlesLocation
             ->get();
 
         if (0 === $partyRoles->count()) {
-            Log::channel('ocpi')->error('ActivityId: ' . $activityId . ' | No Party to process.');
+            Log::channel('ocpi')->error(
+                'ActivityId: ' . $activityId . ' | No Party to process for locations synchronization.'
+            );
             return;
         }
 
-
         foreach ($partyRoles as $role) {
             $party = $role->party;
-            Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Processing Party ' . $party->code);
+            Log::channel('ocpi')->info(
+                'ActivityId: ' . $activityId . ' | Location synchronization for Party ' . $party->code
+            );
             $ocpiClient = new CPOClient($role->tokens->first());
 
             if (empty($ocpiClient->resolveBaseUrl())) {
