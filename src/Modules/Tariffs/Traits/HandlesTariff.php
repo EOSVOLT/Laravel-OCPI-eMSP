@@ -84,7 +84,16 @@ trait HandlesTariff
     public function fetchTariffFromCPO(?string $partyCode = null): void
     {
         $activityId = time() . rand(1000, 9999);
-        Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Starting OCPI Tariffs synchronization');
+        if (null !== $partyCode) {
+            Log::channel('ocpi')->info(
+                'ActivityId: ' . $activityId . ' | Starting OCPI Tariffs synchronization for Party ' . $partyCode
+            );
+        } else {
+            Log::channel('ocpi')->info(
+                'ActivityId: ' . $activityId . ' | Starting OCPI Tariffs synchronization for all parties'
+            );
+        }
+
 
         $partyRoles = PartyRole::query()
             ->withWhereHas('party', function ($query) use ($partyCode) {
@@ -103,14 +112,17 @@ trait HandlesTariff
             ->get();
 
         if (0 === $partyRoles->count()) {
-            Log::channel('ocpi')->error('ActivityId: ' . $activityId . ' | No Party to process.');
+            Log::channel('ocpi')->error(
+                'ActivityId: ' . $activityId . ' | No Party to process for tariffs synchronization.'
+            );
             return;
         }
 
-
         foreach ($partyRoles as $role) {
             $party = $role->party;
-            Log::channel('ocpi')->info('ActivityId: ' . $activityId . ' | Processing Party ' . $party->code);
+            Log::channel('ocpi')->info(
+                'ActivityId: ' . $activityId . ' | Tariff synchronization for Party ' . $party->code
+            );
             $ocpiClient = new CPOClient($role->tokens->first());
 
             if (empty($ocpiClient->resolveBaseUrl())) {
@@ -164,7 +176,6 @@ trait HandlesTariff
 
                                 continue;
                             }
-
                         } else {
                             // Replaced Tariff.
                             if (!$this->tariffReplace(
