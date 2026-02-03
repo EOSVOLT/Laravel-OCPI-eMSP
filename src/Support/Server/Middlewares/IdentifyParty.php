@@ -57,7 +57,7 @@ class IdentifyParty
                 }
             })
             ->first();
-        if (null === $token) {
+        if (null === $token || true === $token->party_role->party->is_external_party) {
             return $this->ocpiClientErrorResponse(
                 statusCode: OcpiClientErrorCode::InvalidParameters,
                 statusMessage: 'Invalid Authorization Token or Party.',
