@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->timestamp('last_updated')->nullable();
         });
         Session::all()->each(function (Session $session) {
-            $lastUpdated = $session->object['last_update'] ?? null;
+            $lastUpdated = $session->object['last_updated'] ?? null;
             if (null !== $lastUpdated) {
                 $date = Carbon\Carbon::parse($lastUpdated);
                 $session->update([
