@@ -83,6 +83,9 @@ trait HandlesSession
             'session_id' => $externalSessionId,
             'object' => $payload,
             'status' => $status,
+            'last_updated' => (false === empty($payload['last_updated'])) ? Carbon::parse(
+                $payload['last_updated']
+            ) : null,
         ]);
 
         if (!$session->save()) {
@@ -106,6 +109,9 @@ trait HandlesSession
         }
 
         $session->object = $payload;
+        if (false === empty($payload['last_updated'])) {
+            $session->last_updated = Carbon::parse($payload['last_updated']);
+        }
 
         if (false === $session->save()) {
             return false;
@@ -133,7 +139,9 @@ trait HandlesSession
             $object[$field] = $value;
         }
         $session->object = $object;
-
+        if (false === empty($object['last_updated'])) {
+            $session->last_updated = Carbon::parse($object['last_updated']);
+        }
         if (!$session->save()) {
             return false;
         }
