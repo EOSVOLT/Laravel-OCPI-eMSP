@@ -46,9 +46,9 @@ trait HandlesSession
         $page = ($offset / $limit) + 1;
         $collection = Session::query()
             ->where('party_role_id', $partyRoleId)
-            ->whereDate('updated_at', '>=', $dateFrom)
+            ->whereDate('last_updated', '>=', $dateFrom)
             ->when(null !== $dateTo, function ($query) use ($dateTo) {
-                $query->whereDate('updated_at', '<=', $dateTo);
+                $query->whereDate('last_updated', '<=', $dateTo);
             })
             ->paginate(
                 perPage: $perPage,
