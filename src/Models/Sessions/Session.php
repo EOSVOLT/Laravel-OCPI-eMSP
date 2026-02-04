@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Ocpi\Database\Factories\SessionFactory;
 use Ocpi\Models\Locations\Location;
 use Ocpi\Models\Locations\LocationConnector;
@@ -27,6 +28,7 @@ use Ocpi\Support\Models\Model;
  * @property LocationEvse $evse
  * @property int $location_connector_id
  * @property LocationConnector $connector
+ * @property Carbon|null $last_updated
  */
 class Session extends Model
 {
@@ -42,6 +44,7 @@ class Session extends Model
         'session_id',
         'object',
         'status',
+        'last_updated'
     ];
 
     protected static function newFactory(): SessionFactory
@@ -83,6 +86,7 @@ class Session extends Model
         return [
             'object' => 'array',
             'status' => SessionStatus::class,
+            'last_updated' => 'datetime'
         ];
     }
 }

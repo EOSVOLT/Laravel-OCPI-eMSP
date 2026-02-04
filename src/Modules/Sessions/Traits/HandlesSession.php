@@ -3,6 +3,7 @@
 namespace Ocpi\Modules\Sessions\Traits;
 
 use Illuminate\Support\Carbon;
+use Ocpi\Helpers\PaginatedCollection;
 use Ocpi\Models\Locations\LocationConnector;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Sessions\Events;
@@ -29,18 +30,26 @@ trait HandlesSession
     /**
      * @param string $partyRoleId
      * @param Carbon $dateFrom
-     * @param Carbon $dateTo
-     * @param int $offset
-     * @param int $limit
+     * @param Carbon|null $dateTo
+     * @param int|null $offset
+     * @param int|null $limit
      * @return SessionCollection
      */
-    private function sessionSearch(string $partyRoleId, Carbon $dateFrom, Carbon $dateTo, int $offset, int $limit): SessionCollection
-    {
+    private function sessionSearch(
+        string $partyRoleId,
+        Carbon $dateFrom,
+        ?Carbon $dateTo = null,
+        ?int $offset = 0,
+        ?int $limit = PaginatedCollection::DEFAULT_PER_PAGE
+    ): SessionCollection {
         $perPage = $limit;
         $page = ($offset / $limit) + 1;
         $collection = Session::query()
             ->where('party_role_id', $partyRoleId)
-            ->whereBetween('updated_at', [$dateFrom, $dateTo])
+            ->where('last_updated', '>=', $dateFrom)
+            ->when(null !== $dateTo, function ($query) use ($dateTo) {
+                $query->where('last_updated', '<=', $dateTo);
+            })
             ->paginate(
                 perPage: $perPage,
                 page: $page,
@@ -74,6 +83,9 @@ trait HandlesSession
             'session_id' => $externalSessionId,
             'object' => $payload,
             'status' => $status,
+            'last_updated' => (false === empty($payload['last_updated'])) ? Carbon::parse(
+                $payload['last_updated']
+            ) : null,
         ]);
 
         if (!$session->save()) {
@@ -97,6 +109,9 @@ trait HandlesSession
         }
 
         $session->object = $payload;
+        if (false === empty($payload['last_updated'])) {
+            $session->last_updated = Carbon::parse($payload['last_updated']);
+        }
 
         if (false === $session->save()) {
             return false;
@@ -124,7 +139,9 @@ trait HandlesSession
             $object[$field] = $value;
         }
         $session->object = $object;
-
+        if (false === empty($object['last_updated'])) {
+            $session->last_updated = Carbon::parse($object['last_updated']);
+        }
         if (!$session->save()) {
             return false;
         }
