@@ -3,7 +3,6 @@
 namespace Ocpi\Modules\Credentials\Actions\Party;
 
 use Ocpi\Models\PartyToken;
-use Ocpi\Support\Helpers\GeneratorHelper;
 
 class SelfCredentialsGetAction
 {
@@ -23,17 +22,26 @@ class SelfCredentialsGetAction
                 'business_details' => $role->business_details,
             ];
         } else {
+            $roles = [
+                [
+                    'role' => $role->role,
+                    'party_id' => $role->code,
+                    'country_code' => $role->country_code,
+                    'business_details' => $role->business_details,
+                ],
+            ];
+            foreach ($role->join_party_roles as $joinRole) {
+                $role[] = [
+                    'role' => $joinRole->role,
+                    'party_id' => $joinRole->code,
+                    'country_code' => $joinRole->country_code,
+                    'business_details' => $joinRole->business_details,
+                ];
+            }
             return [
                 'url' => $role->url,
                 'token' => $partyToken->token, //token C
-                'roles' => [
-                    [
-                        'role' => $role->role,
-                        'party_id' => $role->code,
-                        'country_code' => $role->country_code,
-                        'business_details' => $role->business_details,
-                    ]
-                ],
+                'roles' => $roles,
             ];
         }
     }
