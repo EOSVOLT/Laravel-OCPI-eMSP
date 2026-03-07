@@ -34,6 +34,9 @@ class PartyRole extends Model
     use HasFactory;
     use SoftDeletes;
 
+    /**
+     * @var string[]
+     */
     protected $fillable = [
         'party_id',
         'parent_role_id',
@@ -45,6 +48,9 @@ class PartyRole extends Model
         'endpoints',
     ];
 
+    /**
+     * @return void
+     */
     protected static function boot(): void
     {
         parent::boot();
@@ -55,15 +61,9 @@ class PartyRole extends Model
         });
     }
 
-    protected function casts(): array
-    {
-        return [
-            'business_details' => 'array',
-            'endpoints' => 'array',
-            'role' => Role::class,
-        ];
-    }
-
+    /**
+     * @return PartyRoleFactory
+     */
     protected static function newFactory(): PartyRoleFactory
     {
         return PartyRoleFactory::new();
@@ -78,6 +78,11 @@ class PartyRole extends Model
         $query->where('code', $code);
     }
 
+    /**
+     * @param Builder $query
+     * @param string $countryCode
+     * @return void
+     */
     public function scopeCountryCode(Builder $query, string $countryCode): void
     {
         $query->where('country_code', $countryCode);
@@ -92,21 +97,33 @@ class PartyRole extends Model
         return $this->belongsTo(Party::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function tokens(): HasMany
     {
         return $this->hasMany(PartyToken::class, 'party_role_id');
     }
 
+    /**
+     * @return BelongsTo
+     */
     public function parent_role(): BelongsTo
     {
         return $this->belongsTo(PartyRole::class, 'parent_role_id');
     }
 
+    /**
+     * @return HasMany
+     */
     public function children_roles(): HasMany
     {
         return $this->hasMany(PartyRole::class, 'parent_role_id');
     }
 
+    /**
+     * @return HasMany
+     */
     public function command_tokens(): HasMany
     {
         return $this->hasMany(
@@ -114,5 +131,25 @@ class PartyRole extends Model
             'party_role_id',
             'id',
         );
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function join_party_roles(): BelongsTo
+    {
+        return $this->belongsTo(JoinParty::class, 'join_party_role_id', 'party_role_id');
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function casts(): array
+    {
+        return [
+            'business_details' => 'array',
+            'endpoints' => 'array',
+            'role' => Role::class,
+        ];
     }
 }
