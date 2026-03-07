@@ -5,6 +5,7 @@ namespace Ocpi\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
@@ -28,6 +29,7 @@ use Ocpi\Support\Models\Model;
  * @property string|null $endpoints
  * @property PartyToken[]|Collection $tokens
  * @property CommandToken[]|Collection $command_tokens
+ * @property PartyRole[]|Collection $join_party_roles
  */
 class PartyRole extends Model
 {
@@ -134,11 +136,11 @@ class PartyRole extends Model
     }
 
     /**
-     * @return BelongsTo
+     * @return BelongsToMany
      */
-    public function join_party_roles(): BelongsTo
+    public function join_party_roles(): BelongsToMany
     {
-        return $this->belongsTo(JoinParty::class, 'join_party_role_id', 'party_role_id');
+        return $this->belongsToMany(JoinParty::class, 'join_party_role_id', 'party_role_id');
     }
 
     /**
