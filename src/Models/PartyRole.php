@@ -140,7 +140,7 @@ class PartyRole extends Model
      */
     public function join_party_roles(): BelongsToMany
     {
-        return $this->belongsToMany(JoinParty::class, 'join_party_role_id', 'party_role_id');
+        return $this->belongsToMany(PartyRole::class, JoinParty::class, 'party_role_id');
     }
 
     /**
