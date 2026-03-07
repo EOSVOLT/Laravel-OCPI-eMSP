@@ -31,7 +31,7 @@ class SelfCredentialsGetAction
                 ],
             ];
             foreach ($role->join_party_roles as $joinRole) {
-                $role[] = [
+                $roles[] = [
                     'role' => $joinRole->role,
                     'party_id' => $joinRole->code,
                     'country_code' => $joinRole->country_code,
