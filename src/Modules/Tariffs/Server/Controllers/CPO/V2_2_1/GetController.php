@@ -26,7 +26,7 @@ class GetController extends Controller
         $party = Context::getHidden('party');
         $offset = $request->input('offset');
         $limit = $request->input('limit');
-        $tariffData = Tariff::query()
+        $query = Tariff::query()
             ->where('party_id', $party->getId())
             ->when($request->input('date_from'), function ($query) use ($request) {
                 $query->where('updated_at', '>=', Carbon::parse($request->input('date_from')));
@@ -34,7 +34,9 @@ class GetController extends Controller
             ->when($request->input('date_to'), function ($query) use ($request) {
                 $query->where('updated_at', '<', Carbon::parse($request->input('date_to')));
             })
-            ->orderBy('created_at')
+            ->orderBy('created_at');
+        $total = $query->count();
+        $tariffData = $query
             ->offset($offset)
             ->limit($limit)
             ->get();
@@ -43,7 +45,7 @@ class GetController extends Controller
             new TariffResourceList($tariffs)->toArray(),
             $offset,
             $limit,
-            $tariffs->count(),
+            $total,
             'tariffs',
         );
     }

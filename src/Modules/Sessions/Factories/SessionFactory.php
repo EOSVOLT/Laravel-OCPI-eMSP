@@ -2,8 +2,8 @@
 
 namespace Ocpi\Modules\Sessions\Factories;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Ocpi\Models\Sessions\Session;
 use Ocpi\Modules\Cdrs\Factories\CdrTokenFactory;
 use Ocpi\Modules\Cdrs\Factories\ChargingPeriodFactory;
@@ -17,17 +17,13 @@ use Ocpi\Support\Factories\PriceFactory;
 class SessionFactory
 {
     /**
-     * @param \Illuminate\Pagination\LengthAwarePaginator|LengthAwarePaginator $collection
+     *
+     * @param Collection $collection
      * @return SessionCollection
      */
-    public static function fromCollection(\Illuminate\Pagination\LengthAwarePaginator|LengthAwarePaginator $collection
+    public static function fromCollection(Collection $collection
     ): SessionCollection {
-        $sessionCollection = new SessionCollection(
-            page: $collection->currentPage(),
-            perPage: $collection->perPage(),
-            totalPages: ($collection->total() / $collection->perPage()),
-            totalResults: $collection->total(),
-        );
+        $sessionCollection = new SessionCollection();
         foreach ($collection as $session) {
             $sessionCollection->append(self::fromModel($session));
         }

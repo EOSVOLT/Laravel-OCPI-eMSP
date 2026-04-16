@@ -37,7 +37,7 @@ class GetController extends Controller
         $offset = $request->input('offset');
         $limit = $request->input('limit');
         $party = Context::getHidden('party');
-        $location = Location::query()
+        $query = Location::query()
             ->with(['party.role_cpo'])
             ->where('party_id', $party->getId())
             ->when($request->input('date_from'), function ($query) use ($request) {
@@ -47,16 +47,18 @@ class GetController extends Controller
                 $query->where('updated_at', '<', Carbon::parse($request->input('date_to')));
             })
             ->where('publish', true)
-            ->withHasValidEvses()
+            ->withHasValidEvses();
+        $total = $query->count();
+        $locations = $query
             ->offset($offset)
             ->limit($limit)
             ->get();
-        $locationObj = LocationFactory::fromCollection($location);
+        $locationObj = LocationFactory::fromCollection($locations);
         return $this->ocpiSuccessPaginateResponse(
             new LocationResourceList($locationObj)->toArray(),
             $offset,
             $limit,
-            $location->count(),
+            $total,
             'locations'
         );
     }
