@@ -28,36 +28,6 @@ trait HandlesSession
     }
 
     /**
-     * @param string $partyRoleId
-     * @param Carbon $dateFrom
-     * @param Carbon|null $dateTo
-     * @param int|null $offset
-     * @param int|null $limit
-     * @return SessionCollection
-     */
-    private function sessionSearch(
-        string $partyRoleId,
-        Carbon $dateFrom,
-        ?Carbon $dateTo = null,
-        ?int $offset = 0,
-        ?int $limit = PaginatedCollection::DEFAULT_PER_PAGE
-    ): SessionCollection {
-        $perPage = $limit;
-        $page = ($offset / $limit) + 1;
-        $collection = Session::query()
-            ->where('party_role_id', $partyRoleId)
-            ->where('last_updated', '>=', $dateFrom)
-            ->when(null !== $dateTo, function ($query) use ($dateTo) {
-                $query->where('last_updated', '<=', $dateTo);
-            })
-            ->paginate(
-                perPage: $perPage,
-                page: $page,
-            );
-        return SessionFactory::fromCollection($collection);
-    }
-
-    /**
      * @param array $payload
      * @param int $partyRoleId
      * @param string $externalSessionId
