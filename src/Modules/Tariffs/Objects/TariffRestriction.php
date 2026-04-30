@@ -3,6 +3,7 @@
 namespace Ocpi\Modules\Tariffs\Objects;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Ocpi\Modules\Tariffs\Enums\DayOfWeek;
 
 class TariffRestriction implements Arrayable
 {
@@ -55,7 +56,7 @@ class TariffRestriction implements Arrayable
      */
     private ?int $maxDuration = null;
     /**
-     * @var array
+     * @var DayOfWeek[]
      */
     private array $dayOfWeek = [];
 
@@ -296,7 +297,7 @@ class TariffRestriction implements Arrayable
     }
 
     /**
-     * @return array
+     * @return DayOfWeek[]
      */
     public function getDayOfWeek(): array
     {
@@ -304,13 +305,13 @@ class TariffRestriction implements Arrayable
     }
 
     /**
-     * @param array $dayOfWeek
+     * @param DayOfWeek[] $dayOfWeek
      *
      * @return $this
      */
     public function setDayOfWeek(array $dayOfWeek): self
     {
-        $this->dayOfWeek = $dayOfWeek;
+        $this->dayOfWeek = array_values($dayOfWeek);
         return $this;
     }
 
@@ -341,7 +342,7 @@ class TariffRestriction implements Arrayable
             'max_power' => $this->getMaxPower(),
             'min_duration' => $this->getMinDuration(),
             'max_duration' => $this->getMaxDuration(),
-            'day_of_week' => $this->getDayOfWeek(),
+            'day_of_week' => array_map(fn (DayOfWeek $day) => $day->value, $this->getDayOfWeek()),
         ];
     }
 }

@@ -2,7 +2,10 @@
 
 namespace Ocpi\Models\Tariffs;
 
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Ocpi\Modules\Tariffs\Enums\DayOfWeek;
 use Ocpi\Modules\Tariffs\Enums\ReservationRestrictionType;
 
 /**
@@ -19,7 +22,7 @@ use Ocpi\Modules\Tariffs\Enums\ReservationRestrictionType;
  * @property ?float $max_power
  * @property ?int $min_duration
  * @property ?int $max_duration
- * @property ?array $day_of_week
+ * @property ?Collection<int, DayOfWeek> $day_of_week
  * @property ?ReservationRestrictionType $reservation
  */
 class TariffRestriction extends Model
@@ -37,9 +40,8 @@ class TariffRestriction extends Model
     protected function casts(): array
     {
         return [
+            'day_of_week' => AsEnumCollection::of(DayOfWeek::class),
             'reservation' => ReservationRestrictionType::class,
         ];
     }
-
-
 }

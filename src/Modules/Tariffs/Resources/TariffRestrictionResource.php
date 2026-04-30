@@ -4,6 +4,7 @@ namespace Ocpi\Modules\Tariffs\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Ocpi\Modules\Tariffs\Enums\DayOfWeek;
 use Ocpi\Modules\Tariffs\Objects\TariffRestriction;
 use Ocpi\Support\Traits\RemoveEmptyField;
 
@@ -39,7 +40,10 @@ class TariffRestrictionResource extends JsonResource
             'max_power' => $this->resource->getMaxPower(),
             'min_duration' => $this->resource->getMinDuration(),
             'max_duration' => $this->resource->getMaxDuration(),
-            'day_of_week' => $this->resource->getDayOfWeek(),
+            'day_of_week' => array_map(
+                fn (DayOfWeek $day) => $day->value,
+                $this->resource->getDayOfWeek(),
+            ),
         ]);
     }
 }
