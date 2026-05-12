@@ -25,7 +25,6 @@ use function Laravel\Prompts\password;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\spin;
 use function Laravel\Prompts\text;
-use function Ocpi\Modules\Credentials\Console\Commands\config;
 
 class SenderWizard extends Command
 {
