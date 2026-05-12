@@ -174,10 +174,7 @@ class SenderWizard extends Command
 
         $clientRole = $ourRole === Role::CPO ? Role::EMSP : Role::CPO;
 
-        $alias = text(
-            label: 'Mocked-party alias (free-form name for this handshake)',
-            required: true,
-        );
+        $alias = 'Mocked-party alias';
 
         $version = select(
             label: 'OCPI version',
@@ -186,14 +183,14 @@ class SenderWizard extends Command
         );
 
         $versionsUrl = text(
-            label: 'Mocked-party Versions endpoint URL',
+            label: 'Client party Versions endpoint URL',
             placeholder: 'https://example.com/ocpi/cpo/versions',
             required: true,
             validate: fn(string $v) => filter_var($v, FILTER_VALIDATE_URL) ? null : 'Must be a valid URL.',
         );
 
         $tokenA = password(
-            label: 'Token A (credentials token shared by the Mocked-party)',
+            label: 'Token A (credentials token shared by the Client party)',
             required: true,
         );
 
