@@ -6,6 +6,7 @@ namespace Ocpi;
 
 use Illuminate\Support\ServiceProvider;
 use Ocpi\Modules\Credentials\Console\Commands\Receiver\Initialize as ModuleCPOCredentialsInitialize;
+use Ocpi\Modules\Credentials\Console\Commands\Sender\SenderWizard as ModuleCredentialsHandshakeWizard;
 use Ocpi\Modules\Credentials\Console\Commands\Sender\Initialize as ModuleCredentialsInitialize;
 use Ocpi\Modules\Credentials\Console\Commands\Sender\Register as ModuleCredentialsRegister;
 use Ocpi\Modules\Credentials\Console\Commands\Sender\Update as ModuleCredentialsUpdate;
@@ -93,6 +94,7 @@ class OcpiServiceProvider extends ServiceProvider
             ModuleCredentialsInitialize::class,
             ModuleCredentialsRegister::class,
             ModuleCredentialsUpdate::class,
+            ModuleCredentialsHandshakeWizard::class,
             ModuleLocationsSynchronize::class,
             ModuleCPOCredentialsInitialize::class,
             ModuleTariffSynchronize::class,

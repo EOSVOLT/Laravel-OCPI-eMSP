@@ -4,15 +4,15 @@ namespace Ocpi\Modules\Credentials\Console\Commands\Receiver;
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Ocpi\Models\Party;
-use Ocpi\Models\PartyRole;
-use Ocpi\Models\PartyToken;
+use Ocpi\Modules\Credentials\Console\Commands\CredentialCommandTrait;
 use Ocpi\Support\Enums\Role;
 use Ocpi\Support\Helpers\GeneratorHelper;
 
 class Initialize extends Command
 {
+    use CredentialCommandTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -33,7 +33,6 @@ class Initialize extends Command
     public function handle()
     {
         $input = [];
-        $tokenName = $this->ask('Handshake alias');
         $countryCode = $this->ask('Country code');
         $input['version'] = $this->ask('OCPI version');
         $businessName = $this->ask('Company Name');
@@ -41,25 +40,21 @@ class Initialize extends Command
 
         $partyCode = GeneratorHelper::generateUniquePartyCode($countryCode);
         $input['code'] = $partyCode->getCodeFormatted();
-        $input['url'] = config('ocpi.client.server.url') . '/cpo/versions';
         try {
             /** @var Party $party */
             $party = Party::query()->create($input);
-            $partyToken = new PartyToken();
-            $partyToken->fill([
-                'token' => Str::random(32),
-                'registered' => false,
-                'name' => $tokenName
-            ]);
-            $partyRole = new PartyRole();
-            $partyRole->fill([
-                'code' => $partyCode->getCode(),
-                'role' => Role::CPO,
-                'country_code' => $partyCode->getCountryCode(),
-                'business_details' => ['name' => $businessName, 'website' => $businessWebsite],
-            ]);
-            $party->roles()->save($partyRole);
-            $party->tokens()->save($partyToken);
+            $cpo = $this->createPartyRole(
+                $party,
+                Role::CPO,
+                $partyCode->getCountryCode(),
+                ['name' => $businessName, 'website' => $businessWebsite]
+            );
+            $emsp = $this->createPartyRole(
+                $party,
+                Role::EMSP,
+                $partyCode->getCountryCode(),
+                ['name' => $businessName, 'website' => $businessWebsite]
+            );
         } catch (Exception $e) {
             $this->error('Error creating Party.');
             $this->newLine(2);
@@ -69,8 +64,10 @@ class Initialize extends Command
         }
 
         $this->info('Party "' . $party->code . '" created successfully.');
-        $this->info('Token "' . $partyToken->token . '" created successfully.');
-        $this->info('URL "' . $party->url . '" created successfully.');
+        $this->info('Role CPO "' . $cpo->tokens->first()->token . '" created successfully.');
+        $this->info('CPO URL "' . $cpo->url . '" created successfully.');
+        $this->info('Role EMSP "' . $emsp->tokens->first()->token . '" created successfully.');
+        $this->info('EMSP URL "' . $emsp->url . '" created successfully.');
         $this->info(
             'Credentials has been created, please share it to your 3rd party system and let them initiate the handshake.'
         );
