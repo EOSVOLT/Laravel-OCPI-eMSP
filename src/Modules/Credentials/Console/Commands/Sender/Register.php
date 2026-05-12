@@ -16,6 +16,7 @@ use Ocpi\Support\Client\ReceiverClient;
 use Ocpi\Support\Helpers\GeneratorHelper;
 
 /**
+ * @obsolete
  * @todo revisit again when we will doing as EMSP
  */
 class Register extends Command implements PromptsForMissingInput

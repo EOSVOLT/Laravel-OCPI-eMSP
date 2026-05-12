@@ -12,6 +12,9 @@ use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
 use Ocpi\Support\Client\Client;
 
+/**
+ * @obsolete
+ */
 class Update extends Command implements PromptsForMissingInput
 {
     /**

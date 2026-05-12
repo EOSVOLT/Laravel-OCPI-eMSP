@@ -8,6 +8,7 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyToken;
 
 /**
+ * @obsolete
  * @todo revisit again when doing a EMSP role.
  */
 class Initialize extends Command
@@ -37,7 +38,6 @@ class Initialize extends Command
             $this->error('Parent Party is missing, please create our party first.');
             return Command::FAILURE;
         }
-
         $name = $this->ask('Party alies name');
         $input['version'] = $this->ask('OCPI version');
         $input['code'] = $this->ask('Party ID or code');
@@ -51,13 +51,6 @@ class Initialize extends Command
         try {
             /** @var Party $party */
             $party = Party::query()->create($input);
-            $partyToken = new PartyToken();
-            $partyToken->fill([
-                'token' => $token,
-                'registered' => false,
-                'name' => $name . '_' . $input['code'],
-            ]);
-            $party->tokens()->save($partyToken);
         } catch (Exception $e) {
             $this->error('Error creating Party.');
             $this->newLine(2);

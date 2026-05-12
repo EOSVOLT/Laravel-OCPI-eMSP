@@ -7,6 +7,7 @@ use Ocpi\Models\Tariffs\TariffElement;
 use Ocpi\Models\Tariffs\TariffElementPriceComponents;
 use Ocpi\Models\Tariffs\TariffPriceComponents;
 use Ocpi\Models\Tariffs\TariffRestriction;
+use Ocpi\Modules\Tariffs\Enums\DayOfWeek;
 use Ocpi\Modules\Tariffs\Factories\TariffFactory;
 
 class TariffRepository
@@ -123,6 +124,15 @@ class TariffRepository
         if (empty($element['restriction'])) {
             return null;
         }
+
+        $dayOfWeek = $element['restriction']['day_of_week'] ?? null;
+        if (is_array($dayOfWeek)) {
+            $dayOfWeek = array_values(array_map(
+                fn (string $day) => DayOfWeek::from($day),
+                $dayOfWeek,
+            ));
+        }
+
         return TariffRestriction::query()->firstOrCreate([
             'start_time' => $element['restriction']['start_time'] ?? null,
             'end_time' => $element['restriction']['end_time'] ?? null,
@@ -136,7 +146,7 @@ class TariffRepository
             'max_power' => $element['restriction']['max_power'] ?? null,
             'min_duration' => $element['restriction']['min_duration'] ?? null,
             'max_duration' => $element['restriction']['max_duration'] ?? null,
-            'day_of_week' => $element['restriction']['day_of_week'] ?? null,
+            'day_of_week' => $dayOfWeek,
             'reservation' => $element['restriction']['reservation'] ?? null,
         ]);
     }
