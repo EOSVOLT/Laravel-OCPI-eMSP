@@ -189,7 +189,7 @@ class SenderWizard extends Command
         );
 
         $tokenA = password(
-            label: 'Token A (credentials token shared by the Client party)',
+            label: 'Token A (Decoded, a credentials token shared by the Client party)',
             required: true,
         );
 
