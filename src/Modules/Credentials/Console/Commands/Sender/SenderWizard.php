@@ -5,10 +5,12 @@ namespace Ocpi\Modules\Credentials\Console\Commands\Sender;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Modules\Credentials\Actions\Party\SelfCredentialsGetAction;
+use Ocpi\Modules\Credentials\Actions\PartyRole\SyncPartyRoleAction;
 use Ocpi\Modules\Credentials\Console\Commands\CredentialCommandTrait;
 use Ocpi\Modules\Credentials\Validators\V2_2_1\CredentialsValidator;
 use Ocpi\Modules\Versions\Actions\PartyInformationAndDetailsSynchronizeAction;
@@ -35,9 +37,10 @@ class SenderWizard extends Command
     public function handle(
         PartyInformationAndDetailsSynchronizeAction $versionsSync,
         SelfCredentialsGetAction $selfCredentialsGet,
+        SyncPartyRoleAction $syncPartyRoleAction,
     ): int {
         info('OCPI Handshake Wizard — Sender flow');
-        note('Register a counter-party from their Token A and complete the credentials exchange.');
+        note('Register a Mocked-party from their Token A and complete the credentials exchange.');
 
         $parentChoice = select(
             label: 'Parent party (your local OCPI identity for this handshake)',
@@ -136,9 +139,29 @@ class SenderWizard extends Command
         /** @var PartyToken|null $parentToken */
         $parentToken = $parentRole->tokens()->where('registered', false)->first();
         if ($parentToken === null) {
-            $this->error('Selected local party ' . $ourRole->value . ' role has no unregistered token available.');
+            if (!confirm(
+                label: 'No unregistered token found on ' . $ourRole->value . ' role. Generate a new one?',
+                default: true,
+            )) {
+                $this->warn('Aborted by user.');
 
-            return Command::FAILURE;
+                return Command::FAILURE;
+            }
+
+            $newTokenName = text(
+                label: 'Token label',
+                default: 'wizard',
+                required: true,
+            );
+
+            /** @var PartyToken $parentToken */
+            $parentToken = $parentRole->tokens()->create([
+                'token' => GeneratorHelper::generateToken($parentParty->code),
+                'name' => $newTokenName,
+                'registered' => false,
+            ]);
+
+            info('Generated new token "' . $parentToken->token . '" on ' . $ourRole->value . ' role.');
         }
 
         if ($parentRole->url === null) {
@@ -152,7 +175,7 @@ class SenderWizard extends Command
         $clientRole = $ourRole === Role::CPO ? Role::EMSP : Role::CPO;
 
         $alias = text(
-            label: 'Counter-party alias (free-form name for this handshake)',
+            label: 'Mocked-party alias (free-form name for this handshake)',
             required: true,
         );
 
@@ -163,24 +186,24 @@ class SenderWizard extends Command
         );
 
         $versionsUrl = text(
-            label: 'Counter-party Versions endpoint URL',
+            label: 'Mocked-party Versions endpoint URL',
             placeholder: 'https://example.com/ocpi/cpo/versions',
             required: true,
             validate: fn(string $v) => filter_var($v, FILTER_VALIDATE_URL) ? null : 'Must be a valid URL.',
         );
 
         $tokenA = password(
-            label: 'Token A (credentials token shared by the counter-party)',
+            label: 'Token A (credentials token shared by the Mocked-party)',
             required: true,
         );
 
-        $mockCode = uniqid('PENDING_', true);
+        $mockCode = 'TEMP_' . Str::upper(Str::random(6));
         $mockPartyId = 'MOC';
         $mockCountryCode = 'XX';
 
         note(
             sprintf(
-                "Review:\n  Local party  : %s\n  Counter-party: (pending — IDs received from %s response) — %s\n  Expected role: %s\n  Versions URL : %s\n  OCPI version : %s",
+                "Review:\n  Local party  : %s\n  Mocked-party: (pending — IDs received from %s response) — %s\n  Expected role: %s\n  Versions URL : %s\n  OCPI version : %s",
                 $parentParty->code,
                 'credentials',
                 $alias,
@@ -190,7 +213,7 @@ class SenderWizard extends Command
             )
         );
 
-        if (!confirm('Create this counter-party and run the credentials exchange now?', default: true)) {
+        if (!confirm('Create this Mocked-party and run the credentials exchange now?', default: true)) {
             $this->warn('Aborted by user.');
 
             return Command::FAILURE;
@@ -201,16 +224,16 @@ class SenderWizard extends Command
         try {
             DB::connection($connection)->beginTransaction();
 
-            /** @var Party $party */
-            $party = Party::query()->create([
+            /** @var Party $mockedParty */
+            $mockedParty = Party::query()->create([
                 'code' => $mockCode,
                 'version' => $version,
                 'version_url' => $versionsUrl,
                 'parent_id' => $parentParty->id,
             ]);
 
-            /** @var PartyRole $partyRole */
-            $partyRole = $party->roles()->create([
+            /** @var PartyRole $mockedPartyRole */
+            $mockedPartyRole = $mockedParty->roles()->create([
                 'code' => $mockPartyId,
                 'role' => $clientRole->value,
                 'country_code' => $mockCountryCode,
@@ -218,8 +241,8 @@ class SenderWizard extends Command
                 'url' => $versionsUrl,
             ]);
 
-            /** @var PartyToken $partyToken */
-            $partyToken = $partyRole->tokens()->create([
+            /** @var PartyToken $mockedPartyToken */
+            $mockedPartyToken = $mockedPartyRole->tokens()->create([
                 'token' => GeneratorHelper::decodeToken($tokenA, $version),
                 'name' => $alias,
                 'registered' => false,
@@ -228,90 +251,52 @@ class SenderWizard extends Command
             DB::connection($connection)->commit();
         } catch (Exception $e) {
             DB::connection($connection)->rollBack();
-            $this->error('Failed to create counter-party: ' . $e->getMessage());
+            $this->error('Failed to create Mocked-party: ' . $e->getMessage());
 
             return Command::FAILURE;
         }
 
-        info('Counter-party ' . $party->code . ' stored. Starting credentials exchange.');
+        info('Mocked-party ' . $mockedParty->code . ' stored. Starting credentials exchange.');
 
         try {
             DB::connection($connection)->beginTransaction();
 
             spin(
-                fn() => $versionsSync->handle($partyToken),
+                fn() => $versionsSync->handle($mockedPartyToken),
                 'GET versions information & details',
             );
-            $party->refresh();
-            $partyToken->refresh();
+            $mockedParty->refresh();
+            $mockedPartyToken->refresh();
 
-            $client = new ReceiverClient($partyToken, 'credentials');
+            $client = new ReceiverClient($mockedPartyToken, 'credentials');
             $self = $selfCredentialsGet->handle($parentToken);
             $response = spin(
                 fn() => $client->credentials()->post($self),
                 'POST credentials',
             );
             $validated = CredentialsValidator::validate($response);
-            $tokenB = GeneratorHelper::decodeToken($validated['token'], $party->version);
-            $partyToken->token = $tokenB;
-            $partyToken->registered = true;
-            $partyToken->save();
-
-            $returnedRoles = $validated['roles'];
-            $returnedRoleNames = array_column($returnedRoles, 'role');
-
-            $party->roles()
-                ->whereNotIn('role', $returnedRoleNames)
-                ->get()
-                ->each(fn(PartyRole $r) => $r->delete());
-
-            foreach ($returnedRoles as $i => $roleData) {
-                $attributes = [
-                    'code' => $roleData['party_id'],
-                    'country_code' => $roleData['country_code'],
-                    'business_details' => $roleData['business_details'],
-                    'url' => $validated['url'],
-                ];
-
-                $existing = $party->roles()->where('role', $roleData['role'])->first();
-                if ($existing === null) {
-                    /** @var PartyRole $newRole */
-                    $newRole = $party->roles()->create(array_merge($attributes, [
-                        'role' => $roleData['role'],
-                        'parent_role_id' => $parentRole->id,
-                    ]));
-                    /** @var PartyToken $newToken */
-                    $newToken = $newRole->tokens()->create([
-                        'token' => $tokenB,
-                        'name' => $alias . '_' . $clientRole->value,
-                        'registered' => true,
-                    ]);
-                    $versionsSync->handle($newToken);
-                } else {
-                    $existing->fill($attributes)->save();
-                }
-
-                if ($i === 0) {
-                    $party->code = $roleData['country_code'] . '*' . $roleData['party_id'];
-                    $party->save();
-                }
-            }
-
+            //create children's parties and roles according to the response
+            $syncPartyRoleAction->handle($parentToken, $validated);
             $parentToken->registered = true;
             $parentToken->save();
+
+            //rename code to free the unique slot, then soft-delete (cascades to its role and token).
+            $mockedParty->code = $mockedParty->code . '_DELETED_' . now()->timestamp;
+            $mockedParty->save();
+            $mockedParty->delete();
 
             DB::connection($connection)->commit();
         } catch (Exception|\Throwable $e) {
             DB::connection($connection)->rollBack();
             $this->error('Credentials exchange failed: ' . $e->getMessage());
             $this->warn(
-                'Counter-party ' . $party->code . ' is saved. Retry with: php artisan ocpi:sender:credentials:register ' . $party->code
+                'Mocked-party ' . $mockedParty->code . ' is saved. Retry with: php artisan ocpi:sender:credentials:register ' . $mockedParty->code
             );
 
             return Command::FAILURE;
         }
 
-        info('Handshake completed for ' . $party->code . '.');
+        info('Handshake completed. Mocked-party removed; real children registered from credentials response.');
 
         return Command::SUCCESS;
     }

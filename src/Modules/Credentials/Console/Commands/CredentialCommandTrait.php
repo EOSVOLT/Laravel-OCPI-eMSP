@@ -7,6 +7,7 @@ use Ocpi\Models\Party;
 use Ocpi\Models\PartyRole;
 use Ocpi\Models\PartyToken;
 use Ocpi\Support\Enums\Role;
+use Ocpi\Support\Helpers\GeneratorHelper;
 
 trait CredentialCommandTrait
 {
@@ -24,7 +25,7 @@ trait CredentialCommandTrait
 
         $token = new PartyToken();
         $token->fill([
-            'token' => Str::random(32),
+            'token' =>  GeneratorHelper::generateToken($party->code),
             'registered' => false,
             'name' => 'Token for ' . $role->value . '_' . $party->code . '_' . $countryCode,
         ]);

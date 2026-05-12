@@ -24,7 +24,8 @@ readonly class SyncPartyRoleAction
      */
     public function handle(PartyToken $parentToken, array $data): void
     {
-        $tokenB = $data['token'];
+        //token from a client, tokenB when doing a receiver, tokenC when doing a sender.
+        $clientToken = $data['token'];
         $url = $data['url'];
         $parentPartyRole = $parentToken->party_role;
         $parentParty = $parentPartyRole->party;
@@ -62,7 +63,7 @@ readonly class SyncPartyRoleAction
             $childrenPartyToken = new PartyToken();
             $tokenName = $role['business_details']['name'] ?? '';
             $childrenPartyToken->fill([
-                'token' => $tokenB,
+                'token' => $clientToken,
                 'registered' => true,
                 'name' => $tokenName . '_' . $partyCode->getCodeFormatted(),
             ]);
