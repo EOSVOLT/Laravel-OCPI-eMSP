@@ -59,7 +59,7 @@ class SenderWizard extends Command
             ));
             $localVersion = select(
                 label: 'Local OCPI version',
-                options: ['2.2.1' => '2.2.1', '2.1.1' => '2.1.1'],
+                options: ['2.2.1' => '2.2.1'],
                 default: '2.2.1',
             );
             $businessName = text(label: 'Local company name', required: true);
