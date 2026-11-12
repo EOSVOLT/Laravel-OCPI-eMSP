@@ -3,11 +3,8 @@
 namespace Ocpi\Support\Client\Middlewares;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Ocpi\Support\Helpers\HttpLogHelper;
 use Saloon\Contracts\RequestMiddleware;
 use Saloon\Http\PendingRequest;
-use WeakMap;
 
 class LogRequest implements RequestMiddleware
 {
@@ -20,20 +17,8 @@ class LogRequest implements RequestMiddleware
         'OCPI-from-country-code',
     ];
 
-    /**
-     * Request id and start time of every request in flight, read back by LogResponse
-     * to log the response under the same id.
-     *
-     * @var WeakMap<PendingRequest, array{request_id: string, started_at: float}>|null
-     */
-    private static ?WeakMap $inFlight = null;
-
     public function __invoke(PendingRequest $pendingRequest): void
     {
-        $requestId = Str::uuid()->toString();
-        self::$inFlight ??= new WeakMap();
-        self::$inFlight[$pendingRequest] = ['request_id' => $requestId, 'started_at' => microtime(true)];
-
         $body = $pendingRequest->body()?->isNotEmpty()
             ? json_encode($pendingRequest->body()->all(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             : null;
@@ -50,18 +35,8 @@ class LogRequest implements RequestMiddleware
         Log::channel('ocpi')->debug(
             '[OUT] ' . $pendingRequest->getMethod()->value . ' '
             . $pendingRequest->getUrl()
-            . HttpLogHelper::requestIdTag($requestId)
             . ($body ? PHP_EOL . $body : '')
-            . $headersString,
-            ['request_id' => $requestId]
+            . $headersString
         );
-    }
-
-    /**
-     * @return array{request_id: string, started_at: float}|null null when the request was not logged by this middleware.
-     */
-    public static function inFlight(PendingRequest $pendingRequest): ?array
-    {
-        return self::$inFlight[$pendingRequest] ?? null;
     }
 }

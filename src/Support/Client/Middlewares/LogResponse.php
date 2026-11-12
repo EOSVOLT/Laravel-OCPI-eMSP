@@ -3,42 +3,35 @@
 namespace Ocpi\Support\Client\Middlewares;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Ocpi\Support\Helpers\HttpLogHelper;
 use Saloon\Contracts\ResponseMiddleware;
 use Saloon\Http\Response;
 
-/**
- * Logs the response of an outbound OCPI request under the request id LogRequest gave it.
- */
 class LogResponse implements ResponseMiddleware
 {
     public function __invoke(Response $response): void
     {
-        $pendingRequest = $response->getPendingRequest();
-        $inFlight = LogRequest::inFlight($pendingRequest);
-        $requestId = $inFlight['request_id'] ?? Str::uuid()->toString();
-        $context = ['request_id' => $requestId];
-        $failed = $response->failed();
+        if ($response->failed()) {
+            $body = $response->getPendingRequest()->body()?->isNotEmpty()
+                ? json_encode($response->getPendingRequest()->body()->all(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+                : null;
 
-        Log::channel('ocpi')->log(
-            $failed ? 'error' : 'debug',
-            '[OUT] RESPONSE ' . $response->status() . ' '
-            . $pendingRequest->getMethod()->value . ' '
-            . $pendingRequest->getUrl()
-            . HttpLogHelper::requestIdTag($requestId)
-            . (null !== $inFlight ? ' [' . HttpLogHelper::durationMs($inFlight['started_at']) . ' ms]' : '')
-            . HttpLogHelper::body(
-                $response->body(),
-                (int)config('ocpi.logging.response_body_max_length', HttpLogHelper::DEFAULT_BODY_MAX_LENGTH)
-            ),
-            $context
-        );
+            $headers = $response->getPendingRequest()->headers()->all();
+            $logHeaders = [];
+            foreach (LogRequest::LOG_HEADERS as $header) {
+                if (true === isset($headers[$header])) {
+                    $logHeaders[$header] = $headers[$header];
+                }
+            }
+            $headersString = json_encode($logHeaders, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
-        if ($failed) {
-            $exception = $response->toException();
-            Log::channel('ocpi')->error($exception->getMessage(), $context);
-            Log::channel('ocpi')->error($exception->getTraceAsString(), $context);
+            Log::channel('ocpi')->error(
+                '[OUT] ' . $response->getPendingRequest()->getMethod()->value . ' '
+                . $response->getPendingRequest()->getUrl()
+                . ($body ? PHP_EOL . $body : '')
+                . $headersString
+            );
+            Log::channel('ocpi')->error($response->toException()->getMessage());
+            Log::channel('ocpi')->error($response->toException()->getTraceAsString());
         }
     }
 }

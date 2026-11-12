@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Logs an inbound OCPI request and its response. Both lines carry the same request id.
+ * The response body is logged only when the response is a failure.
  */
 class LogRequest
 {
@@ -33,15 +34,18 @@ class LogRequest
         /** @var Response $response */
         $response = $next($request);
 
+        // The body is logged for failures only: successful responses (location / EVSE lists)
+        // are large, their status and duration are enough to pair them with the request.
         $status = $response->getStatusCode();
+        $failed = $status >= 400;
         Log::channel('ocpi')->log(
-            $status >= 400 ? 'error' : 'debug',
+            $failed ? 'error' : 'debug',
             '[IN] RESPONSE ' . $status . ' ' . $target
             . ' [' . HttpLogHelper::durationMs($startedAt) . ' ms]'
-            . HttpLogHelper::body(
+            . ($failed ? HttpLogHelper::body(
                 $response->getContent() ?: null,
                 (int)config('ocpi.logging.response_body_max_length', HttpLogHelper::DEFAULT_BODY_MAX_LENGTH)
-            ),
+            ) : ''),
             $context
         );
 
