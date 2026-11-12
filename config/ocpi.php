@@ -47,4 +47,16 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Logging
+    |--------------------------------------------------------------------------
+    */
+
+    'logging' => [
+        // Response bodies are logged for failed requests only. Maximum number of characters
+        // of such a body written to the ocpi log, 0 = no limit.
+        'response_body_max_length' => (int) env('OCPI_LOG_RESPONSE_BODY_MAX_LENGTH', 10000),
+    ],
+
 ];
